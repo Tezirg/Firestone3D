@@ -1,0 +1,19 @@
+cmake_minimum_required( VERSION 3.0 )
+
+SET ( sample_viewer_src main.cpp )
+
+INCLUDE_DIRECTORIES( ${F3D_INCLUDE_INSTALL_DIR}
+					 "${CMAKE_CURRENT_SOURCE_DIR}/include"
+ )
+LINK_DIRECTORIES( ${F3D_LIB_INSTALL_DIR} )
+
+ADD_EXECUTABLE( sample_viewer ${sample_viewer_src} )
+TARGET_LINK_LIBRARIES( sample_viewer f3d )
+SET_TARGET_PROPERTIES( sample_viewer PROPERTIES
+						OUTPUT_NAME sample_viewer
+)
+INSTALL( TARGETS sample_viewer
+		 LIBRARY DESTINATION ${F3D_LIB_INSTALL_DIR}
+		 ARCHIVE DESTINATION ${F3D_LIB_INSTALL_DIR}
+		 RUNTIME DESTINATION ${F3D_BIN_INSTALL_DIR}
+)
