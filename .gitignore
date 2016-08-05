@@ -3,3 +3,4 @@ build
 *~
 */*~
 contrib/assimp*/*
+contrib/glfw*/*
