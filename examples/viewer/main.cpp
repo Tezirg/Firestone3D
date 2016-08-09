@@ -7,7 +7,7 @@ int main() {
 	engine->settings->fpsCap = 60;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
-	engine->settings->fullScreen = false;
+	engine->settings->fullScreen = true;
 	engine->execute();
 
 	return 0;

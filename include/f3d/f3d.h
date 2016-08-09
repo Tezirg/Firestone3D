@@ -12,6 +12,8 @@
 
 #include "core/settings.h"
 #include "core/window.h"
+#include "utils/vulkan.h"
+#include "utils/logging.h"
 
 namespace f3d {
 

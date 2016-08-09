@@ -6,12 +6,14 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/f3d.h
   ${F3D_HEADER_PATH}/core/settings.h
   ${F3D_HEADER_PATH}/core/window.h
+  ${F3D_HEADER_PATH}/utils/vulkan.h
  )
 
 SET( f3d_src
 	 firestone.cpp
 	 core/settings.cpp
 	 core/window.cpp
+	 utils/vulkan.cpp
 	 
 	 ${F3D_HEADERS}
 )

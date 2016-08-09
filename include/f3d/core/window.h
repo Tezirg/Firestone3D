@@ -25,6 +25,7 @@ namespace f3d {
 			GLFWmonitor								*_monitor;
 			const GLFWvidmode						*_videoMode;
 			GLFWwindow								*_window;
+			VkSurfaceKHR							_surface;
 		};
 	}
 }
