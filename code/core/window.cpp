@@ -1,4 +1,4 @@
-#include "window.h"
+#include "core/window.h"
 
 namespace f3d {
 	namespace core {
@@ -6,7 +6,7 @@ namespace f3d {
 		Window::Window(std::shared_ptr<f3d::core::Settings>& settingsPtr) 
 			: _settings(settingsPtr) 
 		{
-			GLFWmonitor	*createWindowMonitor = NULL;
+			GLFWmonitor*	createWindowMonitor = NULL;
 
 			_window = nullptr;
 			_monitor = glfwGetPrimaryMonitor();
@@ -29,13 +29,14 @@ namespace f3d {
 			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->windowTitle.c_str(), createWindowMonitor, NULL);
 
 		}
+
 		Window::~Window() {
 			if (_window != nullptr && _window != NULL)
 				glfwDestroyWindow(_window);
 		}
 
-		void		Window::applySettings() {
-			GLFWmonitor	*updateWindowMonitor = NULL;
+		void				Window::applySettings() {
+			GLFWmonitor*	updateWindowMonitor = NULL;
 
 			if (_settings->fullScreen == true) {
 				updateWindowMonitor = _monitor;

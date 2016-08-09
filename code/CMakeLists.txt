@@ -4,14 +4,14 @@ SET( F3D_LIB_NAME f3d )
 SET( F3D_HEADER_PATH ../include/f3d/ )
 SET( F3D_HEADERS 
   ${F3D_HEADER_PATH}/f3d.h
-  ${F3D_HEADER_PATH}/settings.h
-  ${F3D_HEADER_PATH}/window.h
+  ${F3D_HEADER_PATH}/core/settings.h
+  ${F3D_HEADER_PATH}/core/window.h
  )
 
 SET( f3d_src
 	 firestone.cpp
-	 settings.cpp
-	 window.cpp
+	 core/settings.cpp
+	 core/window.cpp
 	 
 	 ${F3D_HEADERS}
 )

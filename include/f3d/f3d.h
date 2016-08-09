@@ -10,8 +10,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include "settings.h"
-#include "window.h"
+#include "core/settings.h"
+#include "core/window.h"
 
 namespace f3d {
 

@@ -1,5 +1,4 @@
 #include <f3d/f3d.h>
-#include <f3d/settings.h>
 
 int main() {
 	f3d::Firestone	*engine = f3d::getF3D();

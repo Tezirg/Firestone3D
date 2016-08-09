@@ -6,8 +6,9 @@
 #include <memory>
 #include <cstdint>
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
-#include "settings.h"
+#include "core/settings.h"
 
 namespace f3d {
 	namespace core {
@@ -15,7 +16,10 @@ namespace f3d {
 		public:
 			Window(std::shared_ptr<f3d::core::Settings>& settingsPtr);
 			~Window();
-			void	applySettings(void);
+			void			applySettings(void);
+
+			GLFWwindow*		getGLFWwindow();
+			VkSurfaceKHR	getVulkanSurface();
 		private:
 			std::shared_ptr<f3d::core::Settings>	_settings;
 			GLFWmonitor								*_monitor;

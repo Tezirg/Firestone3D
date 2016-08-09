@@ -1,4 +1,4 @@
-#include "settings.h"
+#include "core/settings.h"
 
 namespace f3d {
 	namespace core {
