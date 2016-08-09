@@ -15,8 +15,12 @@ namespace f3d {
 		public:
 			Window(std::shared_ptr<f3d::core::Settings>& settingsPtr);
 			~Window();
+			void	applySettings(void);
 		private:
 			std::shared_ptr<f3d::core::Settings>	_settings;
+			GLFWmonitor								*_monitor;
+			const GLFWvidmode						*_videoMode;
+			GLFWwindow								*_window;
 		};
 	}
 }

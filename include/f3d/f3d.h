@@ -5,6 +5,9 @@
 
 #include <memory>
 #include <cstdint>
+#include <thread>
+#include <chrono> 
+
 #include <GLFW/glfw3.h>
 
 #include "settings.h"

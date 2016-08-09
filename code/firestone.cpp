@@ -41,18 +41,23 @@ namespace f3d {
 		if (_start != nullptr)
 			_start(*this, _start_arg);
 		_run = true;
-		
+	
 		while (_run == true) {
 
 		}
+		
+		
 
 		if (_end != nullptr)
 			_end(*this, _end_arg);
-		
+
+		window.reset();
+		glfwTerminate();
 		return true;
 	}
 
 	bool	Firestone::applySettings() {
+		window->applySettings();
 		return false;
 	}
 }

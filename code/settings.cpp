@@ -15,6 +15,7 @@ namespace f3d {
 			windowHeight = 600;
 			fullScreen = false;
 			fpsCap = 30;
+			vSync = false;
 		}
 	}
 }

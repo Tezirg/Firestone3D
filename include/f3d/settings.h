@@ -21,6 +21,7 @@ namespace f3d {
 				uint32_t		windowHeight;
 				bool			fullScreen;
 				uint32_t		fpsCap;
+				bool			vSync;
 		};
 	}
 }
