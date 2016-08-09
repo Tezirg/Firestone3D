@@ -1,13 +1,19 @@
 cmake_minimum_required( VERSION 3.0 )
 
 SET( F3D_LIB_NAME f3d )
-SET( HEADER_PATH ../include/ )
-SET( PUBLIC_HEADERS 
-  ${HEADER_PATH}/f3d.h
+SET( F3D_HEADER_PATH ../include/f3d/ )
+SET( F3D_HEADERS 
+  ${F3D_HEADER_PATH}/f3d.h
+  ${F3D_HEADER_PATH}/settings.h
+  ${F3D_HEADER_PATH}/window.h
  )
 
 SET( f3d_src
-	 osef.cpp
+	 firestone.cpp
+	 settings.cpp
+	 window.cpp
+	 
+	 ${F3D_HEADERS}
 )
 
 if ( MSVC )
@@ -15,7 +21,7 @@ if ( MSVC )
   ADD_DEFINITIONS( -D_CRT_SECURE_NO_WARNINGS )
 endif ( MSVC )
 
-INCLUDE_DIRECTORIES ( ${ASSIMP_INCLUDE_DIRS} ${VULKAN_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES ( ${F3D_HEADER_PATH} ${VULKAN_INCLUDE_DIRS} ${ASSIMP_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS})
 ADD_LIBRARY ( firestone ${f3d_src} )
 TARGET_LINK_LIBRARIES ( firestone ${ASSIMP_LIBRARIES} ${VULKAN_LIBRARIES} ${GLFW_LIBRARIES} )
 
