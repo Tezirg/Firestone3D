@@ -3,6 +3,54 @@
 namespace f3d {
 	namespace utils {
 
+		bool							queryInstancePFN(VkInstance instance) {
+			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfaceSupportKHR);
+			if (f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR == NULL)
+				return false;
+
+			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfaceCapabilitiesKHR);
+			if (f3d::utils::fpGetPhysicalDeviceSurfaceCapabilitiesKHR == NULL)
+				return false;
+
+			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfaceFormatsKHR);
+			if (f3d::utils::fpGetPhysicalDeviceSurfaceFormatsKHR == NULL)
+				return false;
+			
+			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfacePresentModesKHR);
+			if (f3d::utils::fpGetPhysicalDeviceSurfacePresentModesKHR == NULL)
+				return false;
+			
+			GET_INSTANCE_PROC_ADDR(instance, GetSwapchainImagesKHR);
+			if (f3d::utils::fpGetSwapchainImagesKHR == NULL)
+				return false;
+
+			return true;
+		}
+
+		bool							queryDevicePFN(VkDevice device) {
+			GET_DEVICE_PROC_ADDR(device, CreateSwapchainKHR);
+			if (f3d::utils::fpCreateSwapchainKHR == NULL)
+				return false;
+			
+			GET_DEVICE_PROC_ADDR(device, DestroySwapchainKHR);
+			if (f3d::utils::fpDestroySwapchainKHR == NULL)
+				return false;
+			
+			GET_DEVICE_PROC_ADDR(device, GetSwapchainImagesKHR);
+			if (f3d::utils::fpGetSwapchainImagesKHR == NULL)
+				return false;
+			
+			GET_DEVICE_PROC_ADDR(device, AcquireNextImageKHR);
+			if (f3d::utils::fpAcquireNextImageKHR == NULL)
+				return false;
+			
+			GET_DEVICE_PROC_ADDR(device, QueuePresentKHR);
+			if (f3d::utils::fpQueuePresentKHR == NULL)
+				return false;
+
+			return true;
+		}
+
 		char const*						vkResultToString(VkResult code) {
 			static const char			*positive_code_strs[] = {
 				"VK_SUCCESS",

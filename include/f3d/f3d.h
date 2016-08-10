@@ -34,20 +34,23 @@ namespace f3d {
 	public:
 		Firestone();
 
+		VkInstance		getVulkanInstance();
+
 		bool	execute();
 		bool	applySettings();
 
-	public:
-		VkInstance								vk_instance;
 
+	public:
 		std::shared_ptr<f3d::core::Settings>	settings;
 		std::shared_ptr<f3d::core::Window>		window;
-
 		//			std::shared_ptr<f3d::tree::Scene>		scene;
 		//			std::shared_ptr<f3d::core::Timer>		timer;
 
 	private:
 		bool									_run;
+		VkInstance								_vk_instance;
+
+	private://Callbacks 
 		f3d_start_handle_t						_start;
 		void									*_start_arg;
 		f3d_end_handle_t						_end;

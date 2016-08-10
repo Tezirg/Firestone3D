@@ -3,8 +3,8 @@
 namespace f3d {
 	namespace core {
 		
-		Window::Window(std::shared_ptr<f3d::core::Settings>& settingsPtr) 
-			: _settings(settingsPtr), _window(nullptr), _surface((VkSurfaceKHR)0)
+		Window::Window(VkInstance instance, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
+			: _vk_instance(instance), _settings(settingsPtr), _window(nullptr), _vk_surface((VkSurfaceKHR)0)
 		{
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
@@ -43,7 +43,7 @@ namespace f3d {
 		}
 
 		VkSurfaceKHR	Window::getVulkanSurface() {
-			return		_surface;
+			return		_vk_surface;
 		}
 	}
 }

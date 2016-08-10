@@ -11,7 +11,7 @@
 
 #define F3D_FATAL_ERROR(err_msg)												\
 {																				\
-	MessageBox(NULL, err_msg, "F3D failure", MB_OK);							\
+	MessageBox(NULL, err_msg, "F3D Fatal error", MB_OK);						\
 	exit(EXIT_FAILURE);															\
 } 
 
@@ -21,7 +21,7 @@
 
 #define F3D_FATAL_ERROR(err_msg)												\
 {																				\
-    ((void)__android_log_print(ANDROID_LOG_INFO, "F3D", err_msg));				\
+    ((void)__android_log_print(ANDROID_LOG_INFO, "F3D Fatal error", err_msg));	\
 	exit(EXIT_FAILURE);															\
 }
 
@@ -29,10 +29,19 @@
 
 #define F3D_FATAL_ERROR(err_msg)												\
 {																				\
-    printf(err_msg);															\
+    printf("F3D Fatal error: %s", err_msg);										\
     fflush(stdout);																\
 	exit(EXIT_FAILURE);															\
 }
 #endif
+
+#define F3D_ASSERT(test, err_msg)												\
+{																				\
+	if (test == false) {														\
+		std::string		msg("F3D assertion failed: ");							\
+		msg.append(err_msg);													\
+		F3D_FATAL_ERROR(msg.c_str());											\
+	}																			\
+}
 
 #endif

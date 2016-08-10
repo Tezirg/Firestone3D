@@ -29,6 +29,11 @@ namespace f3d {
 		_resize = nullptr; _resize_arg = false;
 	}
 
+	VkInstance		Firestone::getVulkanInstance() {
+		return _vk_instance;
+	}
+
+
 	bool	Firestone::execute() {
 		
 		if (glfwInit() == GLFW_FALSE)
@@ -57,11 +62,12 @@ namespace f3d {
 			info.ppEnabledExtensionNames = extensions;
 			info.pApplicationInfo = &app_info;
 
-			result = vkCreateInstance(&info, NULL, &vk_instance);
+			result = vkCreateInstance(&info, NULL, &_vk_instance);
 			F3D_ASSERT_VK(result, VK_SUCCESS, "Failed to create a Vulkan instance");
+			F3D_ASSERT(f3d::utils::queryInstancePFN(_vk_instance), "Failed to retreive Vulkan instance functions");
 		}
 
-		window.reset(new f3d::core::Window(settings));
+		window.reset(new f3d::core::Window(_vk_instance, settings));
 		if (_start != nullptr)
 			_start(*this, _start_arg);
 		_run = true;
@@ -81,7 +87,9 @@ namespace f3d {
 	}
 
 	bool	Firestone::applySettings() {
-		window->applySettings();
+		if (window != nullptr)
+			window->applySettings();
+		
 		return false;
 	}
 }

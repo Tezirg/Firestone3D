@@ -14,7 +14,7 @@ namespace f3d {
 	namespace core {
 		class Window {
 		public:
-			Window(std::shared_ptr<f3d::core::Settings>& settingsPtr);
+			Window(VkInstance instance, std::shared_ptr<f3d::core::Settings>& settingsPtr);
 			~Window();
 			void			applySettings(void);
 
@@ -25,7 +25,8 @@ namespace f3d {
 			GLFWmonitor								*_monitor;
 			const GLFWvidmode						*_videoMode;
 			GLFWwindow								*_window;
-			VkSurfaceKHR							_surface;
+			VkInstance								_vk_instance;
+			VkSurfaceKHR							_vk_surface;
 		};
 	}
 }
