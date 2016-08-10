@@ -7,6 +7,7 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/core/settings.h
   ${F3D_HEADER_PATH}/core/window.h
   ${F3D_HEADER_PATH}/utils/vulkan.h
+  ${F3D_HEADER_PATH}/utils/logging.h
  )
 
 SET( f3d_src

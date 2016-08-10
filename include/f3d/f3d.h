@@ -8,8 +8,10 @@
 #include <thread>
 #include <chrono> 
 
+#include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
+#include "version.h"
 #include "core/settings.h"
 #include "core/window.h"
 #include "utils/vulkan.h"
@@ -36,11 +38,13 @@ namespace f3d {
 		bool	applySettings();
 
 	public:
+		VkInstance								vk_instance;
+
 		std::shared_ptr<f3d::core::Settings>	settings;
+		std::shared_ptr<f3d::core::Window>		window;
 
 		//			std::shared_ptr<f3d::tree::Scene>		scene;
 		//			std::shared_ptr<f3d::core::Timer>		timer;
-		std::shared_ptr<f3d::core::Window>		window;
 
 	private:
 		bool									_run;

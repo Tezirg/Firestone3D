@@ -16,7 +16,8 @@ namespace f3d {
 
 				void			default();
 
-				std::string		windowTitle;
+				std::string		applicationName;
+				uint32_t		applicationVersion;
 				uint32_t		windowWidth;
 				uint32_t		windowHeight;
 				bool			fullScreen;

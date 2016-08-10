@@ -10,7 +10,8 @@ namespace f3d {
 		}
 
 		void		Settings::default() {
-			windowTitle = "F3D Engine";
+			applicationName = "F3D application";
+			applicationVersion = (1 << 24);
 			windowWidth = 800;
 			windowHeight = 600;
 			fullScreen = false;

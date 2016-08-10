@@ -6,29 +6,33 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
-#define ERR_EXIT(err_msg)														\
+
+#include <windows.h>
+
+#define F3D_FATAL_ERROR(err_msg)												\
 {																				\
 	MessageBox(NULL, err_msg, "F3D failure", MB_OK);							\
-	exit(1);																	\
+	exit(EXIT_FAILURE);															\
 } 
+
 #elif defined __ANDROID__
+
 #include <android/log.h>
-#define ERR_EXIT(err_msg)														\
+
+#define F3D_FATAL_ERROR(err_msg)												\
 {																				\
     ((void)__android_log_print(ANDROID_LOG_INFO, "F3D", err_msg));				\
-    exit(1);																	\
+	exit(EXIT_FAILURE);															\
 }
+
 #else
-#define ERR_EXIT(err_msg)														\
+
+#define F3D_FATAL_ERROR(err_msg)												\
 {																				\
-        printf(err_msg);														\
-        fflush(stdout);															\
-        exit(1);																\
+    printf(err_msg);															\
+    fflush(stdout);																\
+	exit(EXIT_FAILURE);															\
 }
 #endif
 
-namespace f3d {
-	namespace utils {
-	}
-}
 #endif

@@ -4,17 +4,14 @@ namespace f3d {
 	namespace core {
 		
 		Window::Window(std::shared_ptr<f3d::core::Settings>& settingsPtr) 
-			: _settings(settingsPtr) 
+			: _settings(settingsPtr), _window(nullptr), _surface((VkSurfaceKHR)0)
 		{
-			_window = nullptr;
-			_surface = (VkSurfaceKHR)0;
-
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
 			glfwWindowHint(GLFW_REFRESH_RATE, _videoMode->refreshRate);
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->windowTitle.c_str(), NULL, NULL);
+			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->applicationName.c_str(), NULL, NULL);
 			applySettings();
 
 		}

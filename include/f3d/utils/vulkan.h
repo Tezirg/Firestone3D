@@ -1,9 +1,11 @@
 #pragma once
 
+
 #ifndef _F3D_VULKAN_H
 #define _F3D_VULKAN_H
 
 #include <cstdlib>
+#include <iostream>
 #include <vulkan/vulkan.h>
 #include "utils/logging.h"
 
@@ -28,7 +30,6 @@
     }																								\
 }
 
-
 namespace f3d {
 	namespace utils {
 
@@ -42,9 +43,24 @@ namespace f3d {
 		static PFN_vkAcquireNextImageKHR						fpAcquireNextImageKHR;
 		static PFN_vkQueuePresentKHR							fpQueuePresentKHR;
 
+		bool													queryInstancePFN(VkInstance instance);
+		bool													queryDevicePFN(VkDevice device);
 		char const*												vkResultToString(VkResult code);
 
 	}
+}
+
+#define F3D_ASSERT_VK(value, expected, err_msg)														\
+{																									\
+	if (value != expected) {																		\
+		std::string		msg("F3D assert failed [");													\
+		msg.append(f3d::utils::vkResultToString(value));											\
+		msg.append(" != ");																			\
+		msg.append(f3d::utils::vkResultToString(expected));											\
+		msg.append("] : ");																			\
+		msg.append(err_msg);																		\
+		F3D_FATAL_ERROR(err_msg)																	\
+	}																								\
 }
 
 #endif

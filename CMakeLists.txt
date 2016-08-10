@@ -14,6 +14,9 @@ SET( F3D_VERSION_TWEAK 0 )
 SET( F3D_VERSION ${F3D_VERSION_MAJOR}.${F3D_VERSION_MINOR}.${F3D_VERSION_PATCH}.${F3D_VERSION_TWEAK} )
 SET( F3D_SOVERSION ${F3D_VERSION_MAJOR} )
 
+configure_file ("${CMAKE_SOURCE_DIR}/include/f3d/version.h.in"
+				"${CMAKE_BINARY_DIR}/include/version.h")
+				
 #Install targets
 SET( F3D_LIB_INSTALL_DIR "${CMAKE_BINARY_DIR}/lib" CACHE PATH
 		"Path the built library files are installed to." )
@@ -38,6 +41,7 @@ FIND_PACKAGE( Vulkan REQUIRED )
 FIND_PACKAGE( Assimp REQUIRED )
 FIND_PACKAGE( GLFW REQUIRED )
 
+INCLUDE_DIRECTORIES( "${CMAKE_BINARY_DIR}/include/" )
 INCLUDE_DIRECTORIES( includes/ )
 INCLUDE_DIRECTORIES( includes/f3d/ )
 
