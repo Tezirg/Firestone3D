@@ -6,6 +6,10 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/f3d.h
   ${F3D_HEADER_PATH}/core/settings.h
   ${F3D_HEADER_PATH}/core/window.h
+  ${F3D_HEADER_PATH}/tree/scene.h
+  ${F3D_HEADER_PATH}/tree/mesh.h
+  ${F3D_HEADER_PATH}/tree/light.h
+  ${F3D_HEADER_PATH}/tree/camera.h
   ${F3D_HEADER_PATH}/utils/vulkan.h
   ${F3D_HEADER_PATH}/utils/logging.h
  )
@@ -14,6 +18,10 @@ SET( f3d_src
 	 firestone.cpp
 	 core/settings.cpp
 	 core/window.cpp
+	 tree/scene.cpp
+	 tree/mesh.cpp
+	 tree/light.cpp
+	 tree/camera.cpp
 	 utils/vulkan.cpp
 	 
 	 ${F3D_HEADERS}

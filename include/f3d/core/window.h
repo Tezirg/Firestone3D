@@ -5,10 +5,11 @@
 
 #include <memory>
 #include <cstdint>
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
 
 #include "core/settings.h"
+#include "utils/vulkan.h"
 
 namespace f3d {
 	namespace core {

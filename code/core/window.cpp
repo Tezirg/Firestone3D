@@ -17,6 +17,9 @@ namespace f3d {
 		}
 
 		Window::~Window() {
+			if (_vk_surface != 0)
+				vkDestroySurfaceKHR(_vk_instance, _vk_surface, NULL);
+
 			if (_window != nullptr && _window != NULL)
 				glfwDestroyWindow(_window);
 		}
@@ -36,6 +39,14 @@ namespace f3d {
 				updateWindowMonitor = _monitor;
 			}
 			glfwSetWindowMonitor(_window, updateWindowMonitor, 100, 100, _settings->windowWidth, _settings->windowHeight, GLFW_DONT_CARE);
+
+			//Destroy old surface if exists
+			if (_vk_surface != 0)
+				vkDestroySurfaceKHR(_vk_instance, _vk_surface, NULL);
+			
+			_vk_surface = (VkSurfaceKHR)0;
+			VkResult res = glfwCreateWindowSurface(_vk_instance, _window, 0, &_vk_surface);
+			F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
 		}
 
 		GLFWwindow*		Window::getGLFWwindow() {

@@ -14,6 +14,7 @@
 #include "version.h"
 #include "core/settings.h"
 #include "core/window.h"
+#include "tree/scene.h"
 #include "utils/vulkan.h"
 #include "utils/logging.h"
 
@@ -43,7 +44,7 @@ namespace f3d {
 	public:
 		std::shared_ptr<f3d::core::Settings>	settings;
 		std::shared_ptr<f3d::core::Window>		window;
-		//			std::shared_ptr<f3d::tree::Scene>		scene;
+		//			std::shared_ptr<f3d::core::Scene>		scene;
 		//			std::shared_ptr<f3d::core::Timer>		timer;
 
 	private:
