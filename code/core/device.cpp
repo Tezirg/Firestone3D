@@ -2,8 +2,8 @@
 
 namespace f3d {
 	namespace core {
-		Device::Device(VkPhysicalDevice physical, VkSurfaceKHR surface)
-			: _vk_physical_device(physical), _vk_surface(surface)
+		Device::Device(VkInstance instance, VkPhysicalDevice physical)
+			: _vk_instance(instance), _vk_physical_device(physical)
 		{
 
 			//Get nb family
@@ -30,7 +30,8 @@ namespace f3d {
 			// Iterate over each queue to learn whether it supports presenting:
 			VkBool32 *supportsPresent = new VkBool32[_queue_families_count];
 			for (uint32_t i = 0; i < _queue_families_count; i++) {
-				f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR(_vk_physical_device, i, _vk_surface, &supportsPresent[i]);
+				supportsPresent[i] = glfwGetPhysicalDevicePresentationSupport(_vk_instance, _vk_physical_device, i);
+//				f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR(_vk_physical_device, i, _vk_surface, &supportsPresent[i]);
 			}
 
 			flagQueueNodeIndex = _queue_families_count;
@@ -140,7 +141,7 @@ namespace f3d {
 			std::memset(&device_infos, 0, sizeof(VkDeviceCreateInfo));
 			device_infos.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 			device_infos.enabledExtensionCount = 0;
-			device_infos.ppEnabledExtensionNames = 0;// glfwGetRequiredInstanceExtensions(&device_infos.enabledExtensionCount);
+			device_infos.ppEnabledExtensionNames = 0;
 			device_infos.queueCreateInfoCount = 1;//_queue_families_count;
 			device_infos.pQueueCreateInfos = &using_queue;
 			device_infos.pEnabledFeatures = &features;
@@ -173,7 +174,7 @@ namespace f3d {
 			cmd_info.commandBufferCount = 1;
 
 			r = vkAllocateCommandBuffers(vk_device, &cmd_info, &cmd);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating Init command bufer fails");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating Image layout command buffer fails");
 
 			cmd_buf_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 			cmd_buf_hinfo.pNext = NULL;

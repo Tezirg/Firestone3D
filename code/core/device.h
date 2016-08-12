@@ -16,7 +16,7 @@ namespace f3d {
 	namespace core {
 		/*!
 		* @class Device
-		* @brief A device is associated with a physical device (GPU) and a window
+		* @brief A device is associated with a physical device (GPU) and a Vulkan context
 		* The universe is allocated and submited throught the vulkan device native type
 		*/
 		class Device
@@ -25,10 +25,10 @@ namespace f3d {
 			/*!
 			* @func Device
 			* @brief Constructor
+			* @param[in] innstance Vulkan instance in use
 			* @param[in] physical GPU in use
-			* @param[in] surface What surface to render to
 			*/
-			Device(VkPhysicalDevice physical, VkSurfaceKHR surface);
+			Device(VkInstance instance, VkPhysicalDevice physical);
 			~Device();
 
 			/*!
@@ -105,7 +105,7 @@ namespace f3d {
 
 		private:
 			VkPhysicalDevice		_vk_physical_device;
-			VkSurfaceKHR			_vk_surface;
+			VkInstance				_vk_instance;
 			uint32_t				_queue_families_count; //!< Number of families
 		};
 	}

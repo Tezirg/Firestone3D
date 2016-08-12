@@ -15,7 +15,7 @@ namespace f3d {
 	namespace core {
 		class WindowImpl : public Window {
 		public:
-			WindowImpl(VkInstance instance, VkPhysicalDevice physical, std::shared_ptr<f3d::core::Settings>& settingsPtr);
+			WindowImpl(VkInstance instance, VkPhysicalDevice physical, VkDevice device, std::shared_ptr<f3d::core::Settings>& settingsPtr);
 			~WindowImpl();
 
 			void			applySettings(void);
@@ -27,6 +27,7 @@ namespace f3d {
 		public:
 			VkInstance								vk_instance;
 			VkPhysicalDevice						vk_physical_device;
+			VkDevice								vk_device;
 			VkSurfaceKHR							vk_surface; //Surface
 			VkFormat								vk_format; //!< Vulkan format native type
 			VkColorSpaceKHR							vk_color_space; //!< Vulkan color space

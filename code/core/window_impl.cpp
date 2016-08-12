@@ -3,8 +3,9 @@
 namespace f3d {
 	namespace core {
 		
-		WindowImpl::WindowImpl(VkInstance instance, VkPhysicalDevice physical, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
-			: vk_instance(instance), vk_physical_device(physical), _settings(settingsPtr), vk_surface((VkSurfaceKHR)0), _window(nullptr)
+		WindowImpl::WindowImpl(VkInstance instance, VkPhysicalDevice physical, VkDevice device, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
+			: vk_instance(instance), vk_physical_device(physical), vk_device(device), 
+			_settings(settingsPtr), vk_surface((VkSurfaceKHR)0), _window(nullptr)
 		{
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
