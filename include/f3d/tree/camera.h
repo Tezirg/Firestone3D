@@ -3,10 +3,7 @@
 #ifndef __F3D_CAMERA_H
 #define __F3D_CAMERA_H
 
-#include <memory>
-#include <cstdint>
-
-#include <assimp/camera.h>
+#include "f3d.h"
 
 namespace f3d {
 	namespace tree {
@@ -48,30 +45,27 @@ namespace f3d {
 		class Camera {
 		public:
 			Camera();
-			Camera(aiCamera *);
-			~Camera();
+			virtual ~Camera();
 
-			void				applyPreset(eCameraPresetType preset);
+			virtual void				applyPreset(eCameraPresetType preset);
 
 			//Underlying Assimp attributes
-			float 				getAspect() const;
-			void 				setAspect(float val);
-			float 				getClipPlaneFar() const;
-			void 				setClipPlaneFar(float val);
-			float 				getClipPlaneNear() const;
-			void 				setClipPlaneNear(float val);
-			float 				getHorizontalFOV() const;
-			void 				setHorizontalFOV(float val);
-			const aiVector3D& 	getLookAt() const;
-			void				setLookAt(const aiVector3D& val);
-			std::string 		getName() const;
-			void				setName(std::string& val);
-			const aiVector3D& 	getPosition() const;
-			void				setPosition(const aiVector3D& val);
-			const aiVector3D& 	getUpDirection();
-			void				setUpDirection(const aiVector3D& val);
-		private:
-			std::shared_ptr<aiCamera>		_ai_camera;
+			virtual float 				getAspect() const = 0;
+			virtual void 				setAspect(float val) = 0;
+			virtual float 				getClipPlaneFar() const = 0;
+			virtual void 				setClipPlaneFar(float val) = 0;
+			virtual float 				getClipPlaneNear() const = 0;
+			virtual void 				setClipPlaneNear(float val) = 0;
+			virtual float 				getHorizontalFOV() const = 0;
+			virtual void 				setHorizontalFOV(float val) = 0;
+			virtual aiVector3D		 	getLookAt() const = 0;
+			virtual void				setLookAt(const aiVector3D& val) = 0;
+			virtual std::string 		getName() const = 0;
+			virtual void				setName(std::string& val) = 0;
+			virtual aiVector3D		 	getPosition() const = 0;
+			virtual void				setPosition(const aiVector3D& val) = 0;
+			virtual aiVector3D			getUpDirection() = 0;
+			virtual void				setUpDirection(const aiVector3D& val) = 0;
 		};
 	}
 }

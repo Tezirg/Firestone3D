@@ -6,15 +6,18 @@
 #include <memory>
 #include <cstdint>
 #include <iostream>
-#include <assimp/light.h>
+
+#include <assimp/vector3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/matrix3x3.h>
+#include <assimp/types.h>
 
 namespace f3d {
 	namespace tree {
 		class Light {
 		public:
 			Light();
-			Light(aiLight *);
-			~Light();
+			virtual ~Light();
 
 			enum eLightType {
 				F3D_LIGHT_UNDEFINED = 0,
@@ -27,32 +30,30 @@ namespace f3d {
 				F3D_LIGHT_MAX_ENUM = 0x7FFFFFFF
 			};
 
-			float					getAngleInnerCone() const;
-			void					setAngleInnerCone(float val);
-			float					getAngleOuterCone() const;
-			void					setAngleOuterCone(float val);
-			float					getAttenuationConstant() const;
-			void					setAttenuationConstant(float val);
-			float					getAttenuationLinear() const;
-			void					setAttenuationLinear(float val);
-			float					getAttenuationQuadratic() const;
-			void					setAttenuationQuadratic(float val);
-			const aiColor3D&		getColorAmbient() const;
-			void					setColorAmbient(const aiColor3D& val);
-			const aiColor3D&		getColorDiffuse() const;
-			void					setColorDiffuse(const aiColor3D& val);
-			const aiColor3D&		getColorSpecular() const;
-			void					setColorSpecular(const aiColor3D& val);
-			const aiVector3D&		getDirection() const;
-			void					setDirection(const aiVector3D& val);
-			std::string				getName() const;
-			void					setName(const std::string& val);
-			const aiVector3D&		getPosition() const;
-			void					setPosition(const aiVector3D& val);
-			eLightType 				getType() const;
-			void			 		setType(eLightType val);
-		private:
-			std::unique_ptr<aiLight>		_ai_light;
+			virtual float					getAngleInnerCone() const = 0;
+			virtual void					setAngleInnerCone(float val) = 0;
+			virtual float					getAngleOuterCone() const = 0;
+			virtual void					setAngleOuterCone(float val) = 0;
+			virtual float					getAttenuationConstant() const = 0;
+			virtual void					setAttenuationConstant(float val) = 0;
+			virtual float					getAttenuationLinear() const = 0;
+			virtual void					setAttenuationLinear(float val) = 0;
+			virtual float					getAttenuationQuadratic() const = 0;
+			virtual void					setAttenuationQuadratic(float val) = 0;
+			virtual aiColor3D				getColorAmbient() const = 0;
+			virtual void					setColorAmbient(const aiColor3D& val) = 0;
+			virtual aiColor3D		 		getColorDiffuse() const = 0;
+			virtual void					setColorDiffuse(const aiColor3D& val) = 0;
+			virtual aiColor3D		 		getColorSpecular() const = 0;
+			virtual void					setColorSpecular(const aiColor3D& val) = 0;
+			virtual aiVector3D				getDirection() const = 0;
+			virtual void					setDirection(const aiVector3D& val) = 0;
+			virtual std::string				getName() const = 0;
+			virtual void					setName(const std::string& val) = 0;
+			virtual aiVector3D				getPosition() const = 0;
+			virtual void					setPosition(const aiVector3D& val) = 0;
+			virtual eLightType 				getType() const = 0;
+			virtual void			 		setType(eLightType val) = 0;
 		};
 	}
 }
