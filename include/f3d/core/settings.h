@@ -9,6 +9,8 @@
 
 namespace f3d {
 	namespace core {
+		class Window;
+
 		class Settings {
 			public:
 				Settings();

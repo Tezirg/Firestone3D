@@ -6,7 +6,7 @@
 #include <memory>
 #include <cstdint>
 
-#include "core/settings.h"
+#include "f3d.h"
 
 namespace f3d {
 	namespace core {

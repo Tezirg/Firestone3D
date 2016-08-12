@@ -7,7 +7,9 @@
 #include <GLFW/glfw3.h>
 
 #include "f3d.h"
-
+#include "physical_device.h"
+#include "device.h"
+#include "window_impl.h"
 
 namespace f3d {
 	class FirestoneImpl : public Firestone {
@@ -15,12 +17,17 @@ namespace f3d {
 		FirestoneImpl();
 		~FirestoneImpl();
 
-		void	initVK();
 		bool	execute();
 		bool	applySettings();
+	private:
+		void	initVkInstance();
 
 	public:
-		VkInstance								vk_instance;
+		VkInstance									vk_instance;
+		std::shared_ptr<f3d::core::WindowImpl>		win; 
+		std::unique_ptr<f3d::core::PhysicalDevice>	gpu;
+		std::unique_ptr<f3d::core::Device>			device;
+
 	};
 }
 

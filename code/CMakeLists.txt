@@ -18,6 +18,8 @@ SET( F3D_HEADERS
  SET( F3D_PRIVATE_HEADERS 
   ${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/device.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/scene_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
@@ -31,6 +33,8 @@ SET( f3d_src
 	 core/settings.cpp
 	 core/window.cpp
 	 core/window_impl.cpp
+	 core/physical_device.cpp
+	 core/device.cpp
 	 tree/scene.cpp
 	 tree/scene_impl.cpp
 	 tree/mesh.cpp

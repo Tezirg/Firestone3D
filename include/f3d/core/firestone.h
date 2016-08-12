@@ -10,15 +10,6 @@
 
 #include "f3d.h"
 
-#include "version.h"
-#include "core/settings.h"
-#include "core/window.h"
-#include "tree/scene.h"
-#include "tree/mesh.h"
-#include "tree/light.h"
-#include "utils/logging.h"
-
-
 namespace f3d {
 
 	class Firestone;
@@ -44,7 +35,7 @@ namespace f3d {
 	public:
 		std::shared_ptr<f3d::core::Settings>	settings;
 		std::shared_ptr<f3d::core::Window>		window;
-		//std::shared_ptr<f3d::tree::Scene>		scene;
+		std::shared_ptr<f3d::tree::Scene>		scene;
 		//			std::shared_ptr<f3d::core::Timer>		timer;
 
 	protected: //Callbacks 

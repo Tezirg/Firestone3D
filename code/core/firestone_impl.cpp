@@ -1,5 +1,4 @@
 #include "firestone_impl.h"
-#include "window_impl.h"
 
 namespace f3d {
 
@@ -10,7 +9,7 @@ namespace f3d {
 	FirestoneImpl::~FirestoneImpl() {
 	}
 
-	void	FirestoneImpl::initVK()
+	void	FirestoneImpl::initVkInstance()
 	{ //Init Vulkan instance
 		VkResult				result;
 		VkApplicationInfo		app_info;
@@ -43,8 +42,12 @@ namespace f3d {
 			F3D_FATAL_ERROR("GLFW init failed");
 		if (glfwVulkanSupported() == GLFW_FALSE)
 			F3D_FATAL_ERROR("No Vulkan installation found");
-			initVK();
-			window.reset(new f3d::core::WindowImpl(vk_instance, settings));
+
+		initVkInstance();
+		gpu.reset(new f3d::core::PhysicalDevice(vk_instance));
+		win.reset(new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, settings));
+		device.reset(new f3d::core::Device(gpu->vk_physical_device, win->vk_surface));
+		window.reset(win.get());
 		if (_start != nullptr)
 			_start(*this, _start_arg);
 		_run = true;

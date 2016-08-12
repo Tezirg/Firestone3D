@@ -15,7 +15,25 @@
 #define F3D_EXPORTS
 #endif
 
+#include <assimp/types.h>
+
 #include "version.h"
+
+namespace f3d {
+	namespace core {
+		class Firestone;
+		class Settings;
+		class Window;
+	}
+	namespace tree {
+		class Scene;
+		class Camera;
+		class Mesh;
+		class Light;
+	}
+
+}
+
 #include "core/firestone.h"
 #include "core/settings.h"
 #include "core/window.h"

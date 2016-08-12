@@ -11,15 +11,15 @@
 namespace f3d {
 	namespace utils {
 
-		static PFN_vkGetPhysicalDeviceSurfaceSupportKHR			fpGetPhysicalDeviceSurfaceSupportKHR = 0;
-		static PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = 0;
-		static PFN_vkGetPhysicalDeviceSurfaceFormatsKHR			fpGetPhysicalDeviceSurfaceFormatsKHR = 0;
-		static PFN_vkGetPhysicalDeviceSurfacePresentModesKHR	fpGetPhysicalDeviceSurfacePresentModesKHR = 0;
-		static PFN_vkCreateSwapchainKHR							fpCreateSwapchainKHR = 0;
-		static PFN_vkDestroySwapchainKHR						fpDestroySwapchainKHR = 0;
-		static PFN_vkGetSwapchainImagesKHR						fpGetSwapchainImagesKHR = 0;
-		static PFN_vkAcquireNextImageKHR						fpAcquireNextImageKHR = 0;
-		static PFN_vkQueuePresentKHR							fpQueuePresentKHR = 0;
+		extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR			fpGetPhysicalDeviceSurfaceSupportKHR;
+		extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR	fpGetPhysicalDeviceSurfaceCapabilitiesKHR;
+		extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR			fpGetPhysicalDeviceSurfaceFormatsKHR;
+		extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR	fpGetPhysicalDeviceSurfacePresentModesKHR;
+		extern PFN_vkCreateSwapchainKHR							fpCreateSwapchainKHR;
+		extern PFN_vkDestroySwapchainKHR						fpDestroySwapchainKHR;
+		extern PFN_vkGetSwapchainImagesKHR						fpGetSwapchainImagesKHR;
+		extern PFN_vkAcquireNextImageKHR						fpAcquireNextImageKHR;
+		extern PFN_vkQueuePresentKHR							fpQueuePresentKHR;
 
 		bool													queryInstancePFN(VkInstance instance);
 		bool													queryDevicePFN(VkDevice device);

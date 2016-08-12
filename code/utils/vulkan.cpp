@@ -3,6 +3,16 @@
 namespace f3d {
 	namespace utils {
 
+		PFN_vkGetPhysicalDeviceSurfaceSupportKHR			fpGetPhysicalDeviceSurfaceSupportKHR = 0;
+		PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR		fpGetPhysicalDeviceSurfaceCapabilitiesKHR = 0;
+		PFN_vkGetPhysicalDeviceSurfaceFormatsKHR			fpGetPhysicalDeviceSurfaceFormatsKHR = 0;
+		PFN_vkGetPhysicalDeviceSurfacePresentModesKHR		fpGetPhysicalDeviceSurfacePresentModesKHR = 0;
+		PFN_vkCreateSwapchainKHR							fpCreateSwapchainKHR = 0;
+		PFN_vkDestroySwapchainKHR							fpDestroySwapchainKHR = 0;
+		PFN_vkGetSwapchainImagesKHR							fpGetSwapchainImagesKHR = 0;
+		PFN_vkAcquireNextImageKHR							fpAcquireNextImageKHR = 0;
+		PFN_vkQueuePresentKHR								fpQueuePresentKHR = 0;
+
 		bool							queryInstancePFN(VkInstance instance) {
 			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfaceSupportKHR);
 			if (f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR == NULL)
@@ -18,10 +28,6 @@ namespace f3d {
 			
 			GET_INSTANCE_PROC_ADDR(instance, GetPhysicalDeviceSurfacePresentModesKHR);
 			if (f3d::utils::fpGetPhysicalDeviceSurfacePresentModesKHR == NULL)
-				return false;
-			
-			GET_INSTANCE_PROC_ADDR(instance, GetSwapchainImagesKHR);
-			if (f3d::utils::fpGetSwapchainImagesKHR == NULL)
 				return false;
 
 			return true;
