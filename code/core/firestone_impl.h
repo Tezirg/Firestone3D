@@ -28,7 +28,7 @@ namespace f3d {
 		std::shared_ptr<f3d::core::WindowImpl>		win; 
 		std::unique_ptr<f3d::core::PhysicalDevice>	gpu;
 		std::shared_ptr<f3d::core::Device>			device;
-
+		std::shared_ptr<f3d::utils::Timer>			timer;
 	};
 }
 

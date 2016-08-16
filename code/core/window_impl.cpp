@@ -12,6 +12,7 @@ namespace f3d {
 			glfwWindowHint(GLFW_REFRESH_RATE, _videoMode->refreshRate);
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
+			vk_present_frame = 0;
 			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->applicationName.c_str(), NULL, NULL);
 			applySettings();
 		}

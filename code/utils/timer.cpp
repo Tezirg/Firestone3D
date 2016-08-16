@@ -31,7 +31,10 @@ namespace f3d {
 		}
 
 		uint64_t	Timer::ticks() const {
-			return _duration.count();
+			std::chrono::nanoseconds	tmp(_duration);
+			if (_running == true)
+				tmp += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - _start_clock);
+			return tmp.count();
 		}
 
 		uint64_t						Timer::seconds() const {

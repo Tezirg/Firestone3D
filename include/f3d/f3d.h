@@ -27,7 +27,6 @@ namespace f3d {
 		class Settings;
 		class Window;
 		class Renderer;
-		class Timer;
 	}
 	namespace tree {
 		class Scene;
@@ -35,7 +34,9 @@ namespace f3d {
 		class Mesh;
 		class Light;
 	}
-
+	namespace utils {
+		class Timer;
+	}
 }
 
 #include "core/firestone.h"

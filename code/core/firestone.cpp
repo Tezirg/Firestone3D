@@ -22,12 +22,17 @@ namespace f3d {
 	}
 }
 
+static void			defaultInputCallback(f3d::Firestone& f3d, void *arg) {
+	(void)arg;
+	return;
+}
+
 namespace f3d {
 	Firestone::Firestone() : settings(nullptr), window(nullptr), renderer(nullptr) {
 		_run = false;
 		_start = nullptr; _start_arg = false;
 		_end = nullptr; _end_arg = false;
-		_input = nullptr; _input_arg = false;
+		_input = defaultInputCallback; _input_arg = false;
 		_draw = nullptr; _draw_arg = false;
 		_resize = nullptr; _resize_arg = false;
 	}
@@ -35,4 +40,29 @@ namespace f3d {
 	Firestone::~Firestone() {
 	}
 
+	void	Firestone::startCallback(f3d_start_handle_t handle, void *arg) {
+		_start = handle;
+		_start_arg = arg;
+	}
+
+	void	Firestone::endCallback(f3d_end_handle_t handle, void *arg) {
+		_end = handle;
+		_end_arg = arg;
+	}
+
+	void	Firestone::resizeCallback(f3d_resize_handle_t handle, void *arg) {
+		_resize = handle;
+		_resize_arg = arg;
+	}
+
+	void	Firestone::drawCallback(f3d_draw_handle_t handle, void *arg) {
+		_draw = handle;
+		_draw_arg = arg;
+	}
+
+	void	Firestone::inputCallback(f3d_input_handle_t handle, void *arg) {
+		_input = handle;
+		_input_arg = arg;
+
+	}
 }

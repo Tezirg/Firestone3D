@@ -1,9 +1,21 @@
 #include "firestone_impl.h"
+#include "core/window_impl.h"
+
+
+static void					key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	f3d::Firestone*			f3d = f3d::getF3D();
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (f3d->_input != nullptr) {
+		f3d->_input(*f3d, f3d->_input_arg);
+	}
+}
 
 namespace f3d {
 
 	FirestoneImpl::FirestoneImpl() {
 		settings.reset(new f3d::core::Settings());
+		timer.reset(new f3d::utils::Timer());
 	}
 
 	FirestoneImpl::~FirestoneImpl() {
@@ -36,7 +48,8 @@ namespace f3d {
 		F3D_ASSERT(f3d::utils::queryInstancePFN(vk_instance), "Failed to retreive Vulkan instance functions");
 	}
 
-	bool	FirestoneImpl::execute() {
+	bool							FirestoneImpl::execute() {
+		f3d::core::WindowImpl		*win = nullptr;
 
 		if (glfwInit() == GLFW_FALSE)
 			F3D_FATAL_ERROR("GLFW init failed");
@@ -44,28 +57,40 @@ namespace f3d {
 			F3D_FATAL_ERROR("No Vulkan installation found");
 
 		initVkInstance();
-
 		gpu.reset(new f3d::core::PhysicalDevice(vk_instance));
 		device.reset(new f3d::core::Device(vk_instance, gpu->vk_physical_device));
-		win.reset(new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device->vk_device, settings));
-		
-		window.reset(win.get()); //Assign public pointer
-
+		win = new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device->vk_device, settings);
+		window.reset(win);
 		renderer.reset(new f3d::core::RendererImpl(settings, device, window));
 		
+		glfwSetKeyCallback(win->getGLFWwindow(), key_callback);
+
 		if (_start != nullptr)
 			_start(*this, _start_arg);
-		_run = true;
 
+		_run = true;
+		timer->start();
 		while (_run == true) {
-			renderer->render(scene);
-			renderer->display();
+			uint64_t fps_nano = (uint64_t)1e9 / settings->fpsCap;
+			if (timer->ticks() >= fps_nano) {
+				renderer->render(scene);
+				renderer->display();
+				timer->restart();
+				if (_draw != nullptr) {
+					_draw(*this, _draw_arg);
+				}
+			}
+			glfwPollEvents();
+			_run = (glfwWindowShouldClose(win->getGLFWwindow()) == GLFW_FALSE);
 		}
 
-		if (_end != nullptr)
-		_end(*this, _end_arg);
+		if (_end != nullptr) {
+			_end(*this, _end_arg);
+		}
+
 		window.reset();
 		glfwTerminate();
+		
 		return true;
 	}
 

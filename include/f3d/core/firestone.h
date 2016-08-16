@@ -31,16 +31,19 @@ namespace f3d {
 
 		virtual bool	execute() = 0;
 		virtual bool	applySettings() = 0;
-
+	public:
+		void	startCallback(f3d_start_handle_t, void *arg);
+		void	endCallback(f3d_end_handle_t, void *arg);
+		void	resizeCallback(f3d_resize_handle_t, void *arg);
+		void	drawCallback(f3d_draw_handle_t, void *arg);
+		void	inputCallback(f3d_input_handle_t, void *arg);
+	
 	public:
 		std::shared_ptr<f3d::core::Settings>	settings;
 		std::shared_ptr<f3d::core::Window>		window;
 		std::shared_ptr<f3d::tree::Scene>		scene;
 		std::shared_ptr<f3d::core::Renderer>	renderer;
-		//			std::shared_ptr<f3d::core::Timer>		timer;
 
-	protected: //Callbacks 
-		bool									_run;
 		f3d_start_handle_t						_start;
 		void									*_start_arg;
 		f3d_end_handle_t						_end;
@@ -51,6 +54,9 @@ namespace f3d {
 		void									*_draw_arg;
 		f3d_input_handle_t						_input;
 		void									*_input_arg;
+
+	protected: //Callbacks 
+		bool									_run;
 	};
 
 }
