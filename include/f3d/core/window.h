@@ -16,6 +16,11 @@ namespace f3d {
 			virtual ~Window();
 			virtual void			applySettings(void) = 0;
 			virtual void			swapBuffers() = 0;
+			int						width() const;
+			int						height() const;
+			
+		protected:
+			std::shared_ptr<f3d::core::Settings>		_settings;
 		};
 	}
 }

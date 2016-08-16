@@ -7,8 +7,9 @@ namespace f3d {
 			std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
 			: vk_instance(instance), vk_physical_device(physical), vk_device(device->vk_device),
 			  vk_surface((VkSurfaceKHR)0), vk_swapchain((VkSwapchainKHR)0),
-			  _settings(settingsPtr), _device(device), _window(nullptr)
+			  _device(device), _window(nullptr)
 		{
+			_settings = settingsPtr;
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
 			glfwWindowHint(GLFW_REFRESH_RATE, _videoMode->refreshRate);

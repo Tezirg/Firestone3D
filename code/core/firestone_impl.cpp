@@ -70,7 +70,7 @@ namespace f3d {
 		device.reset(new f3d::core::Device(vk_instance, gpu->vk_physical_device));
 		win = new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device, settings);
 		window.reset(win);
-		renderer.reset(new f3d::core::RendererImpl(settings, device, window));
+		renderer.reset(new f3d::core::RendererImpl(settings, device, gpu, window));
 		
 		glfwSetKeyCallback(win->getGLFWwindow(), key_callback);
 		glfwSetWindowSizeCallback(win->getGLFWwindow(), size_callback);

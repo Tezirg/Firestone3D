@@ -49,7 +49,6 @@ namespace f3d {
 			uint32_t								vk_present_frame;//Index of the next presentable in the swapchain
 
 		private:
-			std::shared_ptr<f3d::core::Settings>	_settings;
 			std::shared_ptr<f3d::core::Device>		_device;
 			GLFWmonitor								*_monitor;
 			const GLFWvidmode						*_videoMode;
