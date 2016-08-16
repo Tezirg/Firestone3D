@@ -11,6 +11,15 @@ static void					key_callback(GLFWwindow* window, int key, int scancode, int acti
 	}
 }
 
+static void					size_callback(GLFWwindow *window, int width, int height) {
+	f3d::Firestone*			f3d = f3d::getF3D();
+
+	if (f3d->_resize != nullptr) {
+		f3d->_resize(*f3d, width, height, f3d->_resize_arg);
+	}
+}
+
+
 namespace f3d {
 
 	FirestoneImpl::FirestoneImpl() {
@@ -64,6 +73,7 @@ namespace f3d {
 		renderer.reset(new f3d::core::RendererImpl(settings, device, window));
 		
 		glfwSetKeyCallback(win->getGLFWwindow(), key_callback);
+		glfwSetWindowSizeCallback(win->getGLFWwindow(), size_callback);
 
 		if (_start != nullptr)
 			_start(*this, _start_arg);

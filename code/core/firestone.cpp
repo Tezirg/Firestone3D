@@ -27,6 +27,13 @@ static void			defaultInputCallback(f3d::Firestone& f3d, void *arg) {
 	return;
 }
 
+static void			defaultResizeCallback(f3d::Firestone& f3d, int w, int h, void *arg) {
+	(void)arg;
+	f3d.settings->windowWidth = w;
+	f3d.settings->windowHeight = h;
+	f3d.applySettings();
+}
+
 namespace f3d {
 	Firestone::Firestone() : settings(nullptr), window(nullptr), renderer(nullptr) {
 		_run = false;
@@ -34,7 +41,7 @@ namespace f3d {
 		_end = nullptr; _end_arg = false;
 		_input = defaultInputCallback; _input_arg = false;
 		_draw = nullptr; _draw_arg = false;
-		_resize = nullptr; _resize_arg = false;
+		_resize = defaultResizeCallback; _resize_arg = false;
 	}
 
 	Firestone::~Firestone() {

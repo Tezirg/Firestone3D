@@ -26,7 +26,10 @@ namespace f3d {
 		}
 
 		void				WindowImpl::applySettings() {
+			int				x = 10, y = 10;
 			GLFWmonitor*	updateWindowMonitor = NULL;
+
+			glfwGetWindowPos(_window,&x, &y);
 
 			if (_settings->fullScreen == true) {
 				updateWindowMonitor = _monitor;
@@ -39,7 +42,7 @@ namespace f3d {
 				_videoMode->height == _settings->windowHeight) {
 				updateWindowMonitor = _monitor;
 			}
-			glfwSetWindowMonitor(_window, updateWindowMonitor, 100, 100, _settings->windowWidth, _settings->windowHeight, GLFW_DONT_CARE);
+			glfwSetWindowMonitor(_window, updateWindowMonitor, x, y, _settings->windowWidth, _settings->windowHeight, GLFW_DONT_CARE);
 
 			//Destroy old surface if exists
 			if (vk_surface != 0)
