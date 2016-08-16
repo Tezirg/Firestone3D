@@ -40,13 +40,13 @@ namespace f3d {
 
 #include "core/firestone.h"
 #include "core/settings.h"
-#include "core/timer.h"
 #include "core/window.h"
 #include "core/renderer.h"
 #include "tree/scene.h"
 #include "tree/camera.h"
 #include "tree/mesh.h"
 #include "tree/light.h"
+#include "utils/timer.h"
 #include "utils/logging.h"
 
 

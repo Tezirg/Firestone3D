@@ -11,7 +11,7 @@
 #include "f3d.h"
 
 namespace f3d {
-	namespace core {
+	namespace utils {
 		class Timer {
 		public:
 			Timer();

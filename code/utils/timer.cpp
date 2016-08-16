@@ -1,7 +1,7 @@
-#include "core/timer.h"
+#include "utils/timer.h"
 
 namespace f3d {
-	namespace core {
+	namespace utils {
 		Timer::Timer() : _running(false) {
 			_start_clock = std::chrono::steady_clock::now();
 			_stop_clock = std::chrono::steady_clock::now();

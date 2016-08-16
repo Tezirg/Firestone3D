@@ -7,13 +7,13 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/f3d.h
   ${F3D_HEADER_PATH}/core/firestone.h
   ${F3D_HEADER_PATH}/core/settings.h
-  ${F3D_HEADER_PATH}/core/timer.h
   ${F3D_HEADER_PATH}/core/window.h
   ${F3D_HEADER_PATH}/core/renderer.h
   ${F3D_HEADER_PATH}/tree/scene.h
   ${F3D_HEADER_PATH}/tree/mesh.h
   ${F3D_HEADER_PATH}/tree/light.h
   ${F3D_HEADER_PATH}/tree/camera.h
+  ${F3D_HEADER_PATH}/utils/timer.h
   ${F3D_HEADER_PATH}/utils/logging.h
  )
  
@@ -38,7 +38,6 @@ SET( f3d_src
 	 core/firestone.cpp
 	 core/firestone_impl.cpp
 	 core/settings.cpp
-	 core/timer.cpp
 	 core/window.cpp
 	 core/window_impl.cpp
 	 core/physical_device.cpp
@@ -57,6 +56,7 @@ SET( f3d_src
 	 tree/light_impl.cpp
 	 tree/camera.cpp
 	 tree/camera_impl.cpp
+	 utils/timer.cpp
 	 utils/vulkan.cpp
 	 
 	 ${F3D_HEADERS}
