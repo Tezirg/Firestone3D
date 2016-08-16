@@ -68,7 +68,7 @@ namespace f3d {
 		initVkInstance();
 		gpu.reset(new f3d::core::PhysicalDevice(vk_instance));
 		device.reset(new f3d::core::Device(vk_instance, gpu->vk_physical_device));
-		win = new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device->vk_device, settings);
+		win = new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device, settings);
 		window.reset(win);
 		renderer.reset(new f3d::core::RendererImpl(settings, device, window));
 		

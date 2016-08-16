@@ -156,7 +156,7 @@ namespace f3d {
 		}
 
 		bool								Device::initImageLayout(VkImage image, VkImageLayout old_image_layout, VkImageLayout new_image_layout,
-			VkAccessFlags srcAccessMask, VkAccessFlags destAccessMask, VkImageAspectFlags aspectMask) {
+																	VkAccessFlags srcAccessMask, VkAccessFlags destAccessMask, VkImageAspectFlags aspectMask) {
 			VkResult						r;
 			VkCommandBuffer					cmd;
 			VkCommandBufferAllocateInfo		cmd_info;

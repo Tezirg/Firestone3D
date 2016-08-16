@@ -3,9 +3,11 @@
 namespace f3d {
 	namespace core {
 		
-		WindowImpl::WindowImpl(VkInstance instance, VkPhysicalDevice physical, VkDevice device, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
-			: vk_instance(instance), vk_physical_device(physical), vk_device(device), 
-			_settings(settingsPtr), vk_surface((VkSurfaceKHR)0), vk_swapchain((VkSwapchainKHR)0), _window(nullptr)
+		WindowImpl::WindowImpl(VkInstance instance, VkPhysicalDevice physical, 
+			std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
+			: vk_instance(instance), vk_physical_device(physical), vk_device(device->vk_device),
+			  vk_surface((VkSurfaceKHR)0), vk_swapchain((VkSwapchainKHR)0),
+			  _settings(settingsPtr), _device(device), _window(nullptr)
 		{
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
@@ -13,6 +15,9 @@ namespace f3d {
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 			vk_present_frame = 0;
+			vk_images = nullptr;
+			vk_image_count = 0;
+
 			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->applicationName.c_str(), NULL, NULL);
 			applySettings();
 		}
@@ -51,6 +56,7 @@ namespace f3d {
 			initSurface();
 			initFormatAndColor();
 			initSwapchain();
+			initImages();
 		}
 
 		void			WindowImpl::swapBuffers() {
@@ -190,6 +196,25 @@ namespace f3d {
 
 			r = f3d::utils::fpCreateSwapchainKHR(vk_device, &swap_info, NULL, &vk_swapchain);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Create swap chain failed");
+		}
+
+		void				WindowImpl::initImages() {
+			VkResult		r;
+
+			if (vk_images != nullptr)
+				delete [] vk_images;
+
+			r = f3d::utils::fpGetSwapchainImagesKHR(vk_device, vk_swapchain, &vk_image_count, NULL);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain imge count failed");
+
+			vk_images = new VkImage[vk_image_count];
+
+			r = f3d::utils::fpGetSwapchainImagesKHR(vk_device, vk_swapchain, &vk_image_count, vk_images);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain Images failed");
+
+			for (uint32_t i = 0; i < vk_image_count; i++) {
+				_device->initImageLayout(vk_images[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+			}
 		}
 
 	}

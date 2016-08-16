@@ -30,9 +30,9 @@ namespace f3d {
 		private:
 
 		private:
-			std::shared_ptr<f3d::core::Device>	_device;
-			std::shared_ptr<f3d::core::Window>	_window;
-			std::map< eRenderPassType, std::unique_ptr<RenderPass> > _renders;
+			std::shared_ptr<f3d::core::Device>							_device;
+			std::shared_ptr<f3d::core::Window>							_window;
+			std::map< eRenderPassType, std::unique_ptr<RenderPass> >	_renders;
 		};
 	}
 }

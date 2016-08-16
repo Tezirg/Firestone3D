@@ -10,13 +10,14 @@
 
 #include "f3d.h"
 #include "utils/vulkan.h"
+#include "core/device.h"
 
 namespace f3d {
 	namespace core {
 		class WindowImpl : public Window {
 		//Implements Window interface
 		public:
-			WindowImpl(VkInstance instance, VkPhysicalDevice physical, VkDevice device, std::shared_ptr<f3d::core::Settings>& settingsPtr);
+			WindowImpl(VkInstance instance, VkPhysicalDevice physical, std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::Settings>& settingsPtr);
 			~WindowImpl();
 
 			void			applySettings(void);
@@ -29,6 +30,7 @@ namespace f3d {
 			void			initSurface();
 			void			initFormatAndColor();
 			void			initSwapchain();
+			void			initImages();
 		public:
 			//Depdencies vars
 			VkInstance								vk_instance;
@@ -48,6 +50,7 @@ namespace f3d {
 
 		private:
 			std::shared_ptr<f3d::core::Settings>	_settings;
+			std::shared_ptr<f3d::core::Device>		_device;
 			GLFWmonitor								*_monitor;
 			const GLFWvidmode						*_videoMode;
 			GLFWwindow								*_window;
