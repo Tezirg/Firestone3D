@@ -72,7 +72,7 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
 
 			r = vkCreateFence(vk_device, &presentFenceInfo, NULL, &presentFence);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't create prensentation fence");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't create Presentation fence");
 
 			// Get the index of the next available swapchain image:
 			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, VK_NULL_HANDLE, presentFence, &vk_present_frame);
@@ -205,7 +205,7 @@ namespace f3d {
 				delete [] vk_images;
 
 			r = f3d::utils::fpGetSwapchainImagesKHR(vk_device, vk_swapchain, &vk_image_count, NULL);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain imge count failed");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain image count failed");
 
 			vk_images = new VkImage[vk_image_count];
 
