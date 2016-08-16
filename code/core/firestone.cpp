@@ -23,7 +23,7 @@ namespace f3d {
 }
 
 namespace f3d {
-	Firestone::Firestone() : settings(nullptr), window(nullptr) {
+	Firestone::Firestone() : settings(nullptr), window(nullptr), renderer(nullptr) {
 		_run = false;
 		_start = nullptr; _start_arg = false;
 		_end = nullptr; _end_arg = false;

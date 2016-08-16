@@ -44,21 +44,27 @@ namespace f3d {
 			F3D_FATAL_ERROR("No Vulkan installation found");
 
 		initVkInstance();
+
 		gpu.reset(new f3d::core::PhysicalDevice(vk_instance));
 		device.reset(new f3d::core::Device(vk_instance, gpu->vk_physical_device));
-
 		win.reset(new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device->vk_device, settings));
+		
+		window.reset(win.get()); //Assign public pointer
 
-		window.reset(win.get());
+		renderer.reset(new f3d::core::RendererImpl(settings, device, window));
+		
 		if (_start != nullptr)
 			_start(*this, _start_arg);
 		_run = true;
-			while (_run == true) {
-			}
 
-			if (_end != nullptr)
-			_end(*this, _end_arg);
-			window.reset();
+		while (_run == true) {
+			renderer->render(scene);
+			renderer->display();
+		}
+
+		if (_end != nullptr)
+		_end(*this, _end_arg);
+		window.reset();
 		glfwTerminate();
 		return true;
 	}

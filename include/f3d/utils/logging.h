@@ -9,11 +9,19 @@
 
 #include <windows.h>
 
+#define F3D_ERROR(err_msg)														\
+{																				\
+	MessageBox(NULL, err_msg, "F3D Error", MB_OK);								\
+}
+
 #define F3D_FATAL_ERROR(err_msg)												\
 {																				\
 	MessageBox(NULL, err_msg, "F3D Fatal error", MB_OK);						\
 	exit(EXIT_FAILURE);															\
 } 
+
+
+
 
 #elif defined __ANDROID__
 
@@ -25,6 +33,11 @@
 	exit(EXIT_FAILURE);															\
 }
 
+#define F3D_ERROR(err_msg)														\
+{																				\
+    ((void)__android_log_print(ANDROID_LOG_INFO, "F3D Error", err_msg));		\
+}
+
 #else
 
 #define F3D_FATAL_ERROR(err_msg)												\
@@ -33,6 +46,13 @@
     fflush(stdout);																\
 	exit(EXIT_FAILURE);															\
 }
+
+#define F3D_ERROR(err_msg)														\
+{																				\
+    printf("F3D Error: %s", err_msg);											\
+    fflush(stdout);																\
+}
+
 #endif
 
 #define F3D_ASSERT(test, err_msg)												\

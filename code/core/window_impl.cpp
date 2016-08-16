@@ -5,7 +5,7 @@ namespace f3d {
 		
 		WindowImpl::WindowImpl(VkInstance instance, VkPhysicalDevice physical, VkDevice device, std::shared_ptr<f3d::core::Settings>& settingsPtr) 
 			: vk_instance(instance), vk_physical_device(physical), vk_device(device), 
-			_settings(settingsPtr), vk_surface((VkSurfaceKHR)0), _window(nullptr)
+			_settings(settingsPtr), vk_surface((VkSurfaceKHR)0), vk_swapchain((VkSwapchainKHR)0), _window(nullptr)
 		{
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
@@ -46,7 +46,34 @@ namespace f3d {
 			vk_surface = (VkSurfaceKHR)0;
 			initSurface();
 			initFormatAndColor();
+			initSwapchain();
 		}
+
+		void			WindowImpl::swapBuffers() {
+			VkResult					r;
+			VkFence						presentFence;
+			VkFenceCreateInfo			presentFenceInfo;
+			VkFence						nullFence = VK_NULL_HANDLE;
+
+			std::memset(&presentFenceInfo, 0, sizeof(VkFenceCreateInfo));
+			presentFenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+			r = vkDeviceWaitIdle(vk_device);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
+
+			r = vkCreateFence(vk_device, &presentFenceInfo, NULL, &presentFence);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't create prensentation fence");
+
+			// Get the index of the next available swapchain image:
+			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, VK_NULL_HANDLE, presentFence, &vk_present_frame);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
+
+			r = vkWaitForFences(vk_device, 1, &presentFence, VK_TRUE, UINT64_MAX);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for presentation fence");
+
+			vkDestroyFence(vk_device, presentFence, NULL);
+		}
+
 
 		GLFWwindow*		WindowImpl::getGLFWwindow() {
 			return		_window;
@@ -79,6 +106,86 @@ namespace f3d {
 				vk_format = surfFormats[0].format;
 			}
 			vk_color_space = surfFormats[0].colorSpace;
+		}
+
+		void							WindowImpl::initSwapchain() {
+			VkResult					r;
+			VkSwapchainKHR				old_swap_chain = vk_swapchain;
+			VkSurfaceCapabilitiesKHR	surf_cap;
+			VkSwapchainCreateInfoKHR	swap_info;
+			uint32_t					presentModeCount = 0;
+			VkExtent2D					swapchainExtent;
+
+			std::memset(&swap_info, 0, sizeof(VkSwapchainCreateInfoKHR));
+			swap_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+
+			// Check the surface capabilities and formats
+			r = f3d::utils::fpGetPhysicalDeviceSurfaceCapabilitiesKHR(vk_physical_device, vk_surface, &surf_cap);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Get surface capabilities failed");
+			r = f3d::utils::fpGetPhysicalDeviceSurfacePresentModesKHR(vk_physical_device, vk_surface, &presentModeCount, NULL);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "get surface present modes count failed");
+			VkPresentModeKHR *presentModes = new VkPresentModeKHR[presentModeCount];
+			r = f3d::utils::fpGetPhysicalDeviceSurfacePresentModesKHR(vk_physical_device, vk_surface, &presentModeCount, presentModes);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "get surface present modes failed");
+
+			if (surf_cap.currentExtent.width == (uint32_t)-1) { // If the surface size is undefined, set to the size of the window.
+				swapchainExtent.width = _settings->windowWidth;
+				swapchainExtent.height = _settings->windowHeight;
+			}
+			else { 	// If the surface size is defined, the swap chain size must match
+				swapchainExtent = surf_cap.currentExtent;
+				_settings->windowWidth = surf_cap.currentExtent.width;
+				_settings->windowHeight = surf_cap.currentExtent.height;
+			}
+
+			
+			//Compute optimal present mode
+			VkPresentModeKHR	swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+			for (size_t i = 0; i < presentModeCount; i++) {
+				if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR) {
+					swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+					break;
+				}
+				if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) &&
+					(presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR)) {
+					swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+				}
+			}
+
+			uint32_t desiredNumberOfSwapchainImages = 2;
+			if ((surf_cap.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surf_cap.maxImageCount)) {
+				desiredNumberOfSwapchainImages = surf_cap.maxImageCount;
+			}
+
+			VkSurfaceTransformFlagsKHR preTransform;
+			if (surf_cap.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
+				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+			}
+			else {
+				preTransform = surf_cap.currentTransform;
+			}
+
+			swap_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+			swap_info.pNext = NULL;
+			swap_info.surface = vk_surface;
+			swap_info.minImageCount = desiredNumberOfSwapchainImages;
+			swap_info.imageFormat = vk_format; //Default is VK_FORMAT_B8G8R8A8_UNORM; 
+			swap_info.imageColorSpace = vk_color_space; //No choice, only one value is available VK_COLORSPACE_SRGB_NONLINEAR_KHR;
+			swap_info.imageExtent.width = swapchainExtent.width;
+			swap_info.imageExtent.height = swapchainExtent.height;
+			swap_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			swap_info.preTransform = (VkSurfaceTransformFlagBitsKHR)preTransform;
+			swap_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+			swap_info.imageArrayLayers = 1;
+			swap_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			swap_info.queueFamilyIndexCount = 0;
+			swap_info.pQueueFamilyIndices = NULL;
+			swap_info.presentMode = swapchainPresentMode;
+			swap_info.oldSwapchain = old_swap_chain;
+			swap_info.clipped = true;
+
+			r = f3d::utils::fpCreateSwapchainKHR(vk_device, &swap_info, NULL, &vk_swapchain);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Create swap chain failed");
 		}
 
 	}

@@ -7,7 +7,9 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/f3d.h
   ${F3D_HEADER_PATH}/core/firestone.h
   ${F3D_HEADER_PATH}/core/settings.h
+  ${F3D_HEADER_PATH}/core/timer.h
   ${F3D_HEADER_PATH}/core/window.h
+  ${F3D_HEADER_PATH}/core/renderer.h
   ${F3D_HEADER_PATH}/tree/scene.h
   ${F3D_HEADER_PATH}/tree/mesh.h
   ${F3D_HEADER_PATH}/tree/light.h
@@ -20,6 +22,11 @@ SET( F3D_HEADERS
   ${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
   ${F3D_PRIVATE_HEADER_PATH}/core/device.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/scene_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
@@ -31,10 +38,17 @@ SET( f3d_src
 	 core/firestone.cpp
 	 core/firestone_impl.cpp
 	 core/settings.cpp
+	 core/timer.cpp
 	 core/window.cpp
 	 core/window_impl.cpp
 	 core/physical_device.cpp
 	 core/device.cpp
+	 core/renderer.cpp
+	 core/renderer_impl.cpp
+	 core/renderpasses/render_pass.cpp
+	 core/renderpasses/rp_simple.cpp
+	 core/programs/program.cpp
+	 core/programs/prog_flat.cpp
 	 tree/scene.cpp
 	 tree/scene_impl.cpp
 	 tree/mesh.cpp

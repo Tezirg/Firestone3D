@@ -11,11 +11,11 @@
 namespace f3d {
 	namespace core {
 		class Window {
-		protected:
-			Window();
 		public:
+			Window();
 			virtual ~Window();
 			virtual void			applySettings(void) = 0;
+			virtual void			swapBuffers() = 0;
 		};
 	}
 }

@@ -36,6 +36,7 @@ namespace f3d {
 		std::shared_ptr<f3d::core::Settings>	settings;
 		std::shared_ptr<f3d::core::Window>		window;
 		std::shared_ptr<f3d::tree::Scene>		scene;
+		std::shared_ptr<f3d::core::Renderer>	renderer;
 		//			std::shared_ptr<f3d::core::Timer>		timer;
 
 	protected: //Callbacks 

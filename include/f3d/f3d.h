@@ -15,6 +15,8 @@
 #define F3D_EXPORTS
 #endif
 
+#include <memory>
+#include <cstdint>
 #include <assimp/types.h>
 
 #include "version.h"
@@ -24,6 +26,8 @@ namespace f3d {
 		class Firestone;
 		class Settings;
 		class Window;
+		class Renderer;
+		class Timer;
 	}
 	namespace tree {
 		class Scene;
@@ -36,7 +40,9 @@ namespace f3d {
 
 #include "core/firestone.h"
 #include "core/settings.h"
+#include "core/timer.h"
 #include "core/window.h"
+#include "core/renderer.h"
 #include "tree/scene.h"
 #include "tree/camera.h"
 #include "tree/mesh.h"
