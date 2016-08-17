@@ -2,6 +2,8 @@
 
 int main() {
 	f3d::Firestone	*engine = f3d::getF3D();
+	f3d::tree::Scene	*scene = f3d::tree::Scene::loadFromFile("../../../assets/Adventurer-Militia/Militia-Adventurer-RIGGED.blend");
+
 
 	engine->settings->applicationName.assign("Sample viewer");
 	engine->settings->fpsCap = 60;
