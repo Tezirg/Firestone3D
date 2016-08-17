@@ -17,23 +17,10 @@ namespace f3d {
 		class MeshImpl : public Mesh {
 		public:
 			MeshImpl();
-			MeshImpl(aiScene *);
 			~MeshImpl();
-			
-			aiMatrix4x4						getTransformation() const;
-			void							setTransformation(const aiMatrix4x4& val);
-			aiMatrix3x3						getRotation() const;
-			void							rotate(const aiMatrix3x3& val);
-			aiVector3D						getTranslation() const;
-			void							translate(const aiVector3D& val);
-			aiVector3D						getScale() const;
-			void							scale(const aiVector3D& val);
-		public:
-			static void						deepCopy(Mesh* dst, Mesh* src);
-			static void						shallowCopy(Mesh *dst, Mesh *src);
-		private:
-			std::shared_ptr<aiScene>		_ai_scene;
-			std::unique_ptr<aiMatrix4x4>	_ai_mat4; //Model space transformation
+	
+			virtual bool			makeRenderReady();
+			virtual bool			isRenderReady();
 		};
 	}
 }

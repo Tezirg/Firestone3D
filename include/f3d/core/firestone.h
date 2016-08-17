@@ -12,9 +12,9 @@
 
 namespace f3d {
 
-	class Firestone;
-	Firestone	*getF3D();
-	bool		releaseF3D();
+	class			Firestone;
+	Firestone		*getF3D();
+	bool			releaseF3D();
 
 
 	typedef void(*f3d_start_handle_t)(Firestone& f3d, void *argument);
@@ -24,9 +24,8 @@ namespace f3d {
 	typedef void(*f3d_input_handle_t)(Firestone& f3d, void *argument);
 
 	class Firestone {
-	protected:
-		Firestone();
 	public:
+		Firestone();
 		virtual ~Firestone();
 
 		virtual bool	execute() = 0;

@@ -5,10 +5,10 @@
 
 #include <memory>
 #include <cstdint>
-
-#include <assimp/types.h>
+#include <vector>
 
 #include "f3d.h"
+#include "utils/transform.h"
 
 namespace f3d {
 	namespace tree {
@@ -17,16 +17,32 @@ namespace f3d {
 			Mesh();
 			~Mesh();
 			
-			virtual aiMatrix4x4						getTransformation() const = 0;
-			virtual void							setTransformation(const aiMatrix4x4& val) = 0;
-			virtual aiMatrix3x3						getRotation() const = 0;
-			virtual void							rotate(const aiMatrix3x3& val) = 0;
-			virtual aiVector3D						getTranslation() const = 0;
-			virtual void							translate(const aiVector3D& val) = 0;
-			virtual aiVector3D						getScale() const = 0;
-			virtual void							scale(const aiVector3D& val) = 0;
-		public:
-			static Mesh*					loadFromFile(std::string& path);
+			std::string		getName() const;
+			void			setName(const std::string val);
+
+			uint32_t		numVertices() const;
+			void			addVertex(const float x, const float y, const float z);
+			void			addVertex(aiVector3D& v);
+
+			uint32_t		numNormals() const;
+			void			addNormal(const float x, const float y, const float z);
+			void			addNormal(aiVector3D& n);
+
+			uint32_t		numTriangles() const;
+			void			addTriangle(uint32_t a, uint32_t b, uint32_t c);
+
+			uint32_t		numUV() const;
+			void			addUV(float u, float v);
+
+			virtual bool			makeRenderReady() = 0;
+			virtual bool			isRenderReady() = 0;
+
+		protected:
+			std::string					_name;
+			std::vector<float>			_vertices;
+			std::vector<float>			_normals;
+			std::vector<uint32_t>		_indices;
+			std::vector<float>			_uvs;
 		};
 	}
 }

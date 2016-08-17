@@ -10,11 +10,14 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/core/window.h
   ${F3D_HEADER_PATH}/core/renderer.h
   ${F3D_HEADER_PATH}/tree/scene.h
+  ${F3D_HEADER_PATH}/tree/object.h
   ${F3D_HEADER_PATH}/tree/mesh.h
   ${F3D_HEADER_PATH}/tree/light.h
   ${F3D_HEADER_PATH}/tree/camera.h
+  ${F3D_HEADER_PATH}/tree/node.h
   ${F3D_HEADER_PATH}/utils/timer.h
   ${F3D_HEADER_PATH}/utils/logging.h
+  ${F3D_HEADER_PATH}/utils/transform.h
  )
  
  SET( F3D_PRIVATE_HEADERS 
@@ -52,13 +55,16 @@ SET( f3d_src
 	 core/programs/prog_flat.cpp
 	 tree/scene.cpp
 	 tree/scene_impl.cpp
+	 tree/object.cpp
 	 tree/mesh.cpp
 	 tree/mesh_impl.cpp
 	 tree/light.cpp
 	 tree/light_impl.cpp
 	 tree/camera.cpp
 	 tree/camera_impl.cpp
+	 tree/node.cpp
 	 utils/timer.cpp
+	 utils/transform.cpp
 	 utils/vulkan.cpp
 	 
 	 ${F3D_HEADERS}

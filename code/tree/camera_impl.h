@@ -12,7 +12,7 @@
 namespace f3d {
 	namespace tree {
 		
-		class CameraImpl : public Camera {
+		class CameraImpl final : public Camera {
 		public:
 			CameraImpl();
 			CameraImpl(aiCamera *);

@@ -10,8 +10,13 @@
 #include <assimp/mesh.h>
 #include <assimp/light.h>
 #include <assimp/camera.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 
 #include "f3d.h"
+#include "tree/camera_impl.h"
+#include "tree/light_impl.h"
+#include "tree/mesh_impl.h"
 
 namespace f3d {
 	namespace tree {
@@ -19,11 +24,10 @@ namespace f3d {
 		public:
 			SceneImpl();
 			~SceneImpl();
+
+			static SceneImpl*	loadFromFile(const std::string& path);
 		private:
-			std::unique_ptr< aiScene >							_ai_scene;
-			std::unique_ptr< f3d::tree::Camera >				_camera;
-			std::vector< std::shared_ptr<f3d::tree::Mesh> >		_meshes;
-			std::vector< std::shared_ptr<f3d::tree::Light> >	_lights;
+			std::unique_ptr< const aiScene >							_ai_scene;
 		};
 	}
 }

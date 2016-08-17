@@ -3,12 +3,6 @@
 namespace f3d {
 	namespace tree {
 		Camera::Camera() {
-			applyPreset(F3D_CAMERA_PRESET_DEFAULT);
-			setClipPlaneNear(1.0f);
-			setClipPlaneFar(500.0f);
-			setUpDirection(aiVector3D(0.0f, -1.0f, 0.0f));
-			setName(std::string("DefaultCamera"));
-			setLookAt(aiVector3D(0.0f, 0.0f, 1.0f));
 		}
 
 		Camera::~Camera() {

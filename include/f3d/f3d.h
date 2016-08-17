@@ -31,24 +31,30 @@ namespace f3d {
 	namespace tree {
 		class Scene;
 		class Camera;
-		class Mesh;
 		class Light;
+		class Object;
+		class Node;
+		class Mesh;
 	}
 	namespace utils {
 		class Timer;
+		class Transform;
 	}
 }
+
 
 #include "core/firestone.h"
 #include "core/settings.h"
 #include "core/window.h"
 #include "core/renderer.h"
 #include "tree/scene.h"
+#include "tree/object.h"
 #include "tree/camera.h"
-#include "tree/mesh.h"
 #include "tree/light.h"
+#include "tree/node.h"
+#include "tree/mesh.h"
 #include "utils/timer.h"
+#include "utils/transform.h"
 #include "utils/logging.h"
-
 
 #endif
