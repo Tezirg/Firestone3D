@@ -10,6 +10,7 @@
 #include "core/window_impl.h"
 #include "render_pass.h"
 #include "core/device.h"
+#include "core/depth.h"
 #include "core/physical_device.h"
 #include "core/programs/prog_flat.h"
 #include "utils/vulkan.h"
@@ -22,14 +23,14 @@ namespace f3d {
 				SimpleRenderPass(std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Window>& window);
 				~SimpleRenderPass();
 
-				void		render(VkCommandBuffer cmd, VkFramebuffer frame, std::shared_ptr<f3d::tree::Scene> scene);
+				void		render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene);
 			private:
 				void		initRenderPass();
-				void		initDepth();
 				void		initViews();
 				void		initFramebuffers();
 				void		updateDescriptorSet(f3d::tree::Camera& cam);
 			private:
+				std::unique_ptr<f3d::core::Depth>					_depth;
 				VkFormat											_color_format;
 				std::unique_ptr<f3d::core::prog::FlatProgram>		_prog;
 				VkDescriptorSet										_set;

@@ -26,12 +26,67 @@ namespace f3d {
 				initRenderPass();
 				_prog->initVkPipeline(vk_renderpass, 0);
 				
-				initDepth();
-				//initViews();
-				//initFramebuffers();
+				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
+				initViews();
+				initFramebuffers();
 			}
 			
 			SimpleRenderPass::~SimpleRenderPass() {
+			}
+
+			void						SimpleRenderPass::initFramebuffers() {
+				VkImageView					attachments[2];
+				VkFramebufferCreateInfo		fb_info;
+				VkResult					r;
+				WindowImpl					*win = dynamic_cast<WindowImpl *>(window.get());
+
+				attachments[1] = _depth->vk_view;
+
+				std::memset(&fb_info, 0, sizeof(VkFramebufferCreateInfo));
+				fb_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+				fb_info.pNext = NULL;
+				fb_info.renderPass = vk_renderpass;
+				fb_info.attachmentCount = 2;
+				fb_info.pAttachments = attachments;
+				fb_info.width = window->width();
+				fb_info.height = window->height();
+				fb_info.layers = 1;
+
+				vk_framebuffers = new VkFramebuffer[win->vk_image_count];
+
+				for (uint32_t i = 0; i < win->vk_image_count; i++) {
+					attachments[0] = vk_views[i];
+					r = vkCreateFramebuffer(device->vk_device, &fb_info, NULL, &(vk_framebuffers[i]));
+					F3D_ASSERT_VK(r, VK_SUCCESS, "Framebuffer creation fail");
+				}
+			}
+
+			void						SimpleRenderPass::initViews() {
+				VkResult				r;
+				VkImageViewCreateInfo	img_view_info;
+				WindowImpl				*win = dynamic_cast<WindowImpl *>(window.get());
+
+				vk_views = new VkImageView[win->vk_image_count];
+				for (uint32_t i = 0; i < win->vk_image_count; i++) {
+
+					std::memset(&img_view_info, 0, sizeof(VkImageViewCreateInfo));
+					img_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+					img_view_info.image = win->vk_images[i];
+					img_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+					img_view_info.format = win->vk_format;
+					img_view_info.components.r = VK_COMPONENT_SWIZZLE_R;
+					img_view_info.components.g = VK_COMPONENT_SWIZZLE_G;
+					img_view_info.components.b = VK_COMPONENT_SWIZZLE_B;
+					img_view_info.components.a = VK_COMPONENT_SWIZZLE_A;
+					img_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					img_view_info.subresourceRange.baseMipLevel = 0;
+					img_view_info.subresourceRange.levelCount = 1;
+					img_view_info.subresourceRange.baseArrayLayer = 0;
+					img_view_info.subresourceRange.layerCount = 1;
+
+					r = vkCreateImageView(device->vk_device, &img_view_info, NULL, &(vk_views[i]));
+					F3D_ASSERT_VK(r, VK_SUCCESS, "Create image view failed");
+				}
 			}
 
 			void						SimpleRenderPass::initRenderPass() {
@@ -87,75 +142,14 @@ namespace f3d {
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Render pass creation failed");
 			}
 
-			void						SimpleRenderPass::initDepth() {
-				VkResult				r;
-				bool					r_bool;
-				VkMemoryRequirements	mem_reqs;
-				VkImageCreateInfo		image_info;
-				VkImageViewCreateInfo	view_info;
-				VkMemoryAllocateInfo	mem_info;
-
-
-				std::memset(&image_info, 0, sizeof(VkImageCreateInfo));
-				image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-				image_info.pNext = NULL;
-				image_info.imageType = VK_IMAGE_TYPE_2D;
-				image_info.format = (dynamic_cast<WindowImpl *>(window.get()))->vk_format;
-				image_info.extent.width = window->width();
-				image_info.extent.height = window->height();
-				image_info.extent.depth = 1;
-				image_info.mipLevels = 1;
-				image_info.arrayLayers = 1;
-				image_info.samples = VK_SAMPLE_COUNT_1_BIT;
-				image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-				image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-				image_info.flags = 0;
-
-				std::memset(&view_info, 0, sizeof(VkImageViewCreateInfo));
-				view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-				view_info.pNext = NULL;
-				view_info.image = VK_NULL_HANDLE;
-				view_info.format = (dynamic_cast<WindowImpl *>(window.get()))->vk_format;
-				view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-				view_info.subresourceRange.baseMipLevel = 0;
-				view_info.subresourceRange.levelCount = 1;
-				view_info.subresourceRange.baseArrayLayer = 0;
-				view_info.subresourceRange.layerCount = 1;
-				view_info.flags = 0;
-				view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-
-				r = vkCreateImage(device->vk_device, &image_info, NULL, &depth_vk_image);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Cannot create depth image");
-
-				vkGetImageMemoryRequirements(device->vk_device, depth_vk_image, &mem_reqs);
-
-				mem_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-				mem_info.pNext = NULL;
-				mem_info.allocationSize = mem_reqs.size;
-				mem_info.memoryTypeIndex = physical->getMemoryIndex(mem_reqs.memoryTypeBits, 0);
-				F3D_ASSERT(mem_info.memoryTypeIndex != -1, "Cant find depth memory type");
-
-				r = vkAllocateMemory(device->vk_device, &mem_info, NULL, &depth_vk_memory);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating depth buffer memory failed");
-
-				r = vkBindImageMemory(device->vk_device, depth_vk_image, depth_vk_memory, 0);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Cant vind depth image to depth buffer");
-
-				view_info.image = depth_vk_image;
-				r = vkCreateImageView(device->vk_device, &view_info, NULL, &depth_vk_view);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Create depth image view failed");
-
-				r_bool = device->initImageLayout(depth_vk_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
-				F3D_ASSERT(r_bool == true, "Init depth buffer image layout failed");
-			}
-
-			void		SimpleRenderPass::render(VkCommandBuffer cmd, VkFramebuffer frame, std::shared_ptr< f3d::tree::Scene> scene) {
+			void		SimpleRenderPass::render(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene> scene) {
 				{
+					WindowImpl				*win = dynamic_cast<WindowImpl *>(window.get());
 					VkRenderPassBeginInfo	rp_begin_info;
 					std::memset(&rp_begin_info, 0, sizeof(VkRenderPassBeginInfo));
 					rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 					rp_begin_info.renderPass = vk_renderpass;
-					rp_begin_info.framebuffer = frame;
+					rp_begin_info.framebuffer = vk_framebuffers[win->vk_present_frame];
 					rp_begin_info.renderArea.offset.x = 0;
 					rp_begin_info.renderArea.offset.y = 0;
 					rp_begin_info.renderArea.extent.width = window->width();

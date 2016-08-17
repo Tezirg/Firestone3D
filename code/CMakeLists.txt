@@ -22,6 +22,7 @@ SET( F3D_HEADERS
   ${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
   ${F3D_PRIVATE_HEADER_PATH}/core/device.h
+  ${F3D_PRIVATE_HEADER_PATH}/core/depth.h
   ${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
   ${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
   ${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
@@ -42,6 +43,7 @@ SET( f3d_src
 	 core/window_impl.cpp
 	 core/physical_device.cpp
 	 core/device.cpp
+	 core/depth.cpp
 	 core/renderer.cpp
 	 core/renderer_impl.cpp
 	 core/renderpasses/render_pass.cpp

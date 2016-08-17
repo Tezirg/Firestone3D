@@ -30,7 +30,7 @@ namespace f3d {
 			eRenderPassType		getType() const;
 			void				setType(const eRenderPassType val);
 
-			virtual void		render(VkCommandBuffer cmd, VkFramebuffer frame, std::shared_ptr<f3d::tree::Scene> scene) = 0;
+			virtual void		render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene) = 0;
 
 		private:
 			eRenderPassType		_type;

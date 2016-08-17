@@ -16,10 +16,13 @@ namespace f3d {
 
 		}
 
-		void	RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
-			_window->swapBuffers();
+		void				RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
 
-			//_renders[F3D_RENDERPASS_SIMPLE]->render(0, 0, scene);
+			WindowImpl		*win = dynamic_cast<WindowImpl *>(_window.get());
+
+			_window->swapBuffers();
+			
+			//_renders[F3D_RENDERPASS_SIMPLE]->render(cmd, scene);
 		}
 
 		void					RendererImpl::display() {
