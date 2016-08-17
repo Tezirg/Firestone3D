@@ -159,12 +159,15 @@ namespace f3d {
 					vkCmdBeginRenderPass(cmd, &rp_begin_info, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 				}
 				{
+					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
+					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
+
 					_prog->bind(cmd);
+
+
 
 					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, &_set, 0, VK_NULL_HANDLE);
 
-					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
-					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
 
 					//vkCmdBindVertexBuffers(cmd, 0, mesh.vk_buffer_count(), mesh.vk_buffers(), mesh.vk_offsets());
 					//vkCmdBindIndexBuffer(cmd, mesh.vk_indices(), 0, VK_INDEX_TYPE_UINT32);
