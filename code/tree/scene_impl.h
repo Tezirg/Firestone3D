@@ -17,17 +17,22 @@
 #include "tree/camera_impl.h"
 #include "tree/light_impl.h"
 #include "tree/mesh_impl.h"
+#include "core/physical_device.h"
+#include "core/device.h"
 
 namespace f3d {
 	namespace tree {
 		class SceneImpl : public Scene {
 		public:
-			SceneImpl();
+			SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device);
 			~SceneImpl();
 
-			static SceneImpl*	loadFromFile(const std::string& path);
+			void				loadFromFile(const std::string& path);
 		private:
-			std::unique_ptr< const aiScene >							_ai_scene;
+			void				recurs_aiNodeToF3d(const aiScene* scene, aiNode *ainode, f3d::tree::Node* f3d_node);
+		private:
+			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
+			std::shared_ptr<f3d::core::Device>			_device;
 		};
 	}
 }

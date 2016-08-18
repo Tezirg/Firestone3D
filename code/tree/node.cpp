@@ -40,6 +40,9 @@ namespace f3d {
 			_meshes.remove(m);
 		}
 
+		f3d::utils::Transform&			Node::transformation() {
+			return _transformation;
+		}
 
 	}
 }

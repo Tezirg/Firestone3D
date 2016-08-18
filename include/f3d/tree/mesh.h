@@ -35,13 +35,18 @@ namespace f3d {
 			void			addUV(float u, float v);
 
 			virtual bool			makeRenderReady() = 0;
-			virtual bool			isRenderReady() = 0;
+			virtual bool			isRenderReady() const;
 
 		protected:
+			bool						_ready;
 			std::string					_name;
+			uint32_t					_vertices_count;
 			std::vector<float>			_vertices;
+			uint32_t					_normals_count;
 			std::vector<float>			_normals;
+			uint32_t					_indices_count;
 			std::vector<uint32_t>		_indices;
+			uint32_t					_uv_count;
 			std::vector<float>			_uvs;
 		};
 	}

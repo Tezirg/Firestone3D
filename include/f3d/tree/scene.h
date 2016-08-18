@@ -27,7 +27,7 @@ namespace f3d {
 			void											addLight(f3d::tree::Light* light);
 			void											removeLight(f3d::tree::Light* light);
 
-			static Scene*									loadFromFile(const std::string& path);
+			virtual void									loadFromFile(const std::string& path) = 0;
 		protected:
 			bool											_dirty;
 			std::shared_ptr< f3d::tree::Camera >			_camera;

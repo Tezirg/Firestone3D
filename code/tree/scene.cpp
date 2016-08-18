@@ -4,7 +4,7 @@
 
 namespace f3d {
 	namespace tree {
-		Scene::Scene() : _dirty(true), _camera(new f3d::tree::CameraImpl()){
+		Scene::Scene() : _dirty(true), _camera(new f3d::tree::CameraImpl()) {
 
 		}
 
@@ -37,10 +37,6 @@ namespace f3d {
 		void											Scene::removeLight(f3d::tree::Light* light) {
 			_lights.remove(light);
 			_dirty = true;
-		}
-
-		Scene*		Scene::loadFromFile(const std::string& path) {
-			return SceneImpl::loadFromFile(path);
 		}
 
 	}

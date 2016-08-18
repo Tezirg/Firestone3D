@@ -15,7 +15,7 @@ namespace f3d {
 			setType(F3D_LIGHT_DIRECTIONAL);
 		}
 		
-		LightImpl::LightImpl(aiLight *light) : _ai_light(light) {
+		LightImpl::LightImpl(aiLight *light) : _ai_light(new aiLight(*light)) {
 		}
 
 		LightImpl::~LightImpl() {

@@ -11,7 +11,7 @@ namespace f3d {
 			setLookAt(aiVector3D(0.0f, 0.0f, 1.0f));
 		}
 
-		CameraImpl::CameraImpl(aiCamera *camera) : _ai_camera(camera) {
+		CameraImpl::CameraImpl(aiCamera *camera) : _ai_camera(new aiCamera(*camera)) {
 		}
 
 		CameraImpl::~CameraImpl() {

@@ -29,7 +29,7 @@ namespace f3d {
 			void							addMesh(f3d::tree::Mesh *);
 			void							removeMesh(f3d::tree::Mesh *);
 
-
+			f3d::utils::Transform&			transformation();
 		protected:
 			Node*						_parent;
 			std::list<Node *>			_children;
