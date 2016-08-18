@@ -30,10 +30,18 @@ namespace f3d {
 
 				/*!
 				* @func createVkDescriptorPool
-				* @brief Create a descriptor pool to allocate the unique uniform buffer
+				* @brief Create a descriptor pool to allocate the uniform buffer
 				*/
 				virtual void				initVkDecriptorPool();
+
+				/*!
+				* @func createVkDescriptorSets
+				* @brief Create this program descriptor sets
+				*/
+				virtual void				initVkDescriptorSets();
 			public:
+				VkDescriptorSet					world_set;
+				VkDescriptorSet					model_set;
 			private:
 				VkVertexInputAttributeDescription		_vi_attr[2]; //!< pipeline has 2 inputs
 				VkVertexInputBindingDescription			_vi_bind[2]; //!< pipeline has one binding per input (total 2)

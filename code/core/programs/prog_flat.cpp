@@ -19,6 +19,7 @@ namespace f3d {
 				initVkLayout();
 				initVkPipelineInfos();
 				initVkDecriptorPool();
+				initVkDescriptorSets();
 
 				_create_infos.stageCount = 2;
 
@@ -96,50 +97,87 @@ namespace f3d {
 
 			void									FlatProgram::initVkLayout() {
 				VkResult							r;
-				VkDescriptorSetLayoutBinding		layout_bindings[2];
-				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
+				VkDescriptorSetLayoutBinding		layout_bindings;
+				VkDescriptorSetLayoutBinding		layout_bindings_dynamic;
+				VkDescriptorSetLayoutCreateInfo		desc_layout_info[2];
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
 
-				std::memset(layout_bindings, 0, sizeof(VkDescriptorSetLayoutBinding) * 1);
-				layout_bindings[0].binding = 0;
-				layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				layout_bindings[0].descriptorCount = 1;
-				layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings[0].pImmutableSamplers = NULL;
+				std::memset(&layout_bindings, 0, sizeof(VkDescriptorSetLayoutBinding));
+				layout_bindings.binding = 0;
+				layout_bindings.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				layout_bindings.descriptorCount = 1;
+				layout_bindings.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				layout_bindings.pImmutableSamplers = NULL;
 
+				std::memset(&layout_bindings_dynamic, 0, sizeof(VkDescriptorSetLayoutBinding));
+				layout_bindings_dynamic.binding = 1;
+				layout_bindings_dynamic.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+				layout_bindings_dynamic.descriptorCount = 1;
+				layout_bindings_dynamic.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				layout_bindings_dynamic.pImmutableSamplers = NULL;
 
-				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info.bindingCount = 1;
-				desc_layout_info.pBindings = layout_bindings;
-				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout failed");
+				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo) * 2);
+				desc_layout_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info[0].bindingCount = 1;
+				desc_layout_info[0].pBindings = &layout_bindings;
+				desc_layout_info[1].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info[1].bindingCount = 1;
+				desc_layout_info[1].pBindings = &layout_bindings_dynamic;
+
+				vk_desc_layout = new VkDescriptorSetLayout[2];
+				r = vkCreateDescriptorSetLayout(vk_device, &(desc_layout_info[0]), NULL, &(vk_desc_layout[0]));
+				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[0] failed");
+				r = vkCreateDescriptorSetLayout(vk_device, &(desc_layout_info[1]), NULL, &(vk_desc_layout[1]));
+				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[1] failed");
 
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 				pipe_layout_info.pNext = NULL;
 				pipe_layout_info.setLayoutCount = 1;
-				pipe_layout_info.pSetLayouts = &vk_desc_layout;
+				pipe_layout_info.pSetLayouts = vk_desc_layout;
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create pipeline layout failed");
 			}
 
 			void							FlatProgram::initVkDecriptorPool() {
 				VkResult					r;
-				VkDescriptorPoolSize		pool_types[1];
+				VkDescriptorPoolSize		pool_types[2];
 				VkDescriptorPoolCreateInfo	pool_info;
 
 				pool_types[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pool_types[0].descriptorCount = 1;
+				pool_types[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
+				pool_types[1].descriptorCount = 1;
 
 				std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
 				pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-				pool_info.poolSizeCount = 1;
-				pool_info.maxSets = 1;
+				pool_info.poolSizeCount = 2;
+				pool_info.maxSets = 2;
 				pool_info.pPoolSizes = pool_types;
 				r = vkCreateDescriptorPool(vk_device, &pool_info, NULL, &vk_desc_pool);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Descriptor pool creation failed");
+			}
+
+			void								FlatProgram::initVkDescriptorSets() {
+				VkResult						r;
+				VkDescriptorSetAllocateInfo		desc_set_alloc;
+
+				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
+				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				desc_set_alloc.descriptorPool = vk_desc_pool;
+				desc_set_alloc.descriptorSetCount = 1;
+				desc_set_alloc.pSetLayouts = &(vk_desc_layout[0]);
+				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &world_set);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocaiton failed");
+
+				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
+				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				desc_set_alloc.descriptorPool = vk_desc_pool;
+				desc_set_alloc.descriptorSetCount = 1;
+				desc_set_alloc.pSetLayouts = &(vk_desc_layout[1]);
+				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &model_set);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocaiton failed");
 			}
 		}
 	}

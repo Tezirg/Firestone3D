@@ -31,7 +31,7 @@ namespace f3d {
 			VkPipeline				vk_pipeline; //!< Vulkan pipeline native type
 			VkPipelineLayout		vk_pipeline_layout;
 			VkPipelineCache			vk_pipeline_cache;
-			VkDescriptorSetLayout	vk_desc_layout;
+			VkDescriptorSetLayout	*vk_desc_layout;
 			VkDescriptorPool		vk_desc_pool;
 		protected:
 			VkPipelineVertexInputStateCreateInfo	_vi;
