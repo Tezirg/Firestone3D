@@ -19,56 +19,70 @@ SET( F3D_HEADERS
   ${F3D_HEADER_PATH}/utils/logging.h
   ${F3D_HEADER_PATH}/utils/transform.h
  )
+
+SET ( f3d_core_src
+		core/firestone.cpp
+		core/firestone_impl.cpp
+		core/settings.cpp
+		core/window.cpp
+		core/window_impl.cpp
+		core/physical_device.cpp
+		core/device.cpp
+		core/depth.cpp
+		core/renderer.cpp
+		core/renderer_impl.cpp
+		core/renderpasses/render_pass.cpp
+		core/renderpasses/rp_simple.cpp
+		core/programs/program.cpp
+		core/programs/prog_flat.cpp
+		
+		${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
+		${F3D_PRIVATE_HEADER_PATH}/core/device.h
+		${F3D_PRIVATE_HEADER_PATH}/core/depth.h
+		${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
+		${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
+		${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h
+		${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
+)
+SOURCE_GROUP( core FILES ${f3d_core_src} )
  
- SET( F3D_PRIVATE_HEADERS 
-  ${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/device.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/depth.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h
-  ${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
-  ${F3D_PRIVATE_HEADER_PATH}/tree/scene_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/tree/camera_impl.h
-  ${F3D_PRIVATE_HEADER_PATH}/utils/vulkan.h
+SET ( f3d_tree_src 
+		tree/scene.cpp
+		tree/scene_impl.cpp
+		tree/object.cpp
+		tree/mesh.cpp
+		tree/mesh_impl.cpp
+		tree/light.cpp
+		tree/light_impl.cpp
+		tree/camera.cpp
+		tree/camera_impl.cpp
+		tree/node.cpp
+		
+		${F3D_PRIVATE_HEADER_PATH}/tree/scene_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
+		${F3D_PRIVATE_HEADER_PATH}/tree/camera_impl.h
+)
+SOURCE_GROUP( tree FILES ${f3d_tree_src} )
+ 
+ SET ( f3d_utils_src
+		utils/timer.cpp
+		utils/transform.cpp
+		utils/vulkan.cpp
+		
+		${F3D_PRIVATE_HEADER_PATH}/utils/vulkan.h
  )
+SOURCE_GROUP( utils FILES ${f3d_utils_src} )
 
 SET( f3d_src
-	 core/firestone.cpp
-	 core/firestone_impl.cpp
-	 core/settings.cpp
-	 core/window.cpp
-	 core/window_impl.cpp
-	 core/physical_device.cpp
-	 core/device.cpp
-	 core/depth.cpp
-	 core/renderer.cpp
-	 core/renderer_impl.cpp
-	 core/renderpasses/render_pass.cpp
-	 core/renderpasses/rp_simple.cpp
-	 core/programs/program.cpp
-	 core/programs/prog_flat.cpp
-	 tree/scene.cpp
-	 tree/scene_impl.cpp
-	 tree/object.cpp
-	 tree/mesh.cpp
-	 tree/mesh_impl.cpp
-	 tree/light.cpp
-	 tree/light_impl.cpp
-	 tree/camera.cpp
-	 tree/camera_impl.cpp
-	 tree/node.cpp
-	 utils/timer.cpp
-	 utils/transform.cpp
-	 utils/vulkan.cpp
+	 ${f3d_core_src}
+	 ${f3d_tree_src}
+	 ${f3d_utils_src}
 	 
 	 ${F3D_HEADERS}
-	 ${F3D_PRIVATE_HEADERS}
 )
 
 if ( MSVC )
