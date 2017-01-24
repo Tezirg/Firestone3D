@@ -8,13 +8,16 @@
 #include <assimp/camera.h>
 
 #include "f3d.h"
+#include "utils/vulkan.h"
+#include "core/physical_device.h"
+#include "core/device.h"
 
 namespace f3d {
 	namespace tree {
 		
 		class CameraImpl final : public Camera {
 		public:
-			CameraImpl();
+			CameraImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device > device);
 			CameraImpl(aiCamera *);
 			~CameraImpl();
 
@@ -35,7 +38,16 @@ namespace f3d {
 			void				setPosition(const aiVector3D& val);
 			aiVector3D			getUpDirection();
 			void				setUpDirection(const aiVector3D& val);
+
+			void				updateAttribute();
 		private:
+			void				createAttribute();
+		public:
+			VkBuffer						_buffer;
+			VkDeviceMemory					_memory;
+		private:
+			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
+			std::shared_ptr<f3d::core::Device>			_device;
 			std::shared_ptr<aiCamera>		_ai_camera;
 		};
 	}

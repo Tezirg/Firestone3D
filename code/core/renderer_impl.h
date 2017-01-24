@@ -28,8 +28,9 @@ namespace f3d {
 			void	display();
 
 		private:
-			void						initView();
-			void						initFramebuffers();
+			void			initCommandBuffers();
+		public:
+			VkCommandBuffer												*vk_commands;
 		private:
 			std::shared_ptr<f3d::core::Device>							_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>					_physical;

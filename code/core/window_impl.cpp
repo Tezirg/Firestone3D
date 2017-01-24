@@ -10,20 +10,23 @@ namespace f3d {
 			  _device(device), _window(nullptr)
 		{
 			_settings = settingsPtr;
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			_monitor = glfwGetPrimaryMonitor();
 			_videoMode = glfwGetVideoMode(_monitor);
 			glfwWindowHint(GLFW_REFRESH_RATE, _videoMode->refreshRate);
-			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 			vk_present_frame = 0;
 			vk_images = nullptr;
 			vk_image_count = 0;
+			vk_presentation_semaphore = 0;
 
 			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->applicationName.c_str(), NULL, NULL);
 			applySettings();
 		}
 
 		WindowImpl::~WindowImpl() {
+			if (vk_swapchain != 0)
+				vkDestroySwapchainKHR(vk_device, vk_swapchain, NULL);
 			if (vk_surface != 0)
 				vkDestroySurfaceKHR(vk_instance, vk_surface, NULL);
 
@@ -50,39 +53,33 @@ namespace f3d {
 			}
 			glfwSetWindowMonitor(_window, updateWindowMonitor, x, y, _settings->windowWidth, _settings->windowHeight, GLFW_DONT_CARE);
 
-			//Destroy old surface if exists
-			if (vk_surface != 0)
-				vkDestroySurfaceKHR(vk_instance, vk_surface, NULL);
-			vk_surface = (VkSurfaceKHR)0;
 			initSurface();
 			initFormatAndColor();
 			initSwapchain();
 			initImages();
 		}
 
-		void			WindowImpl::swapBuffers() {
+		void							WindowImpl::swapBuffers() {
 			VkResult					r;
-			VkFence						presentFence;
-			VkFenceCreateInfo			presentFenceInfo;
 			VkFence						nullFence = VK_NULL_HANDLE;
+			VkSemaphoreCreateInfo		semaphore_infos;
 
-			std::memset(&presentFenceInfo, 0, sizeof(VkFenceCreateInfo));
-			presentFenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			if (vk_presentation_semaphore != 0) {
+				vkDestroySemaphore(_device->vk_device, vk_presentation_semaphore, NULL);
+				vk_presentation_semaphore = 0;
+			}
+			std::memset(&semaphore_infos, 0, sizeof(VkSemaphoreCreateInfo));
+			semaphore_infos.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 			r = vkDeviceWaitIdle(vk_device);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
 
-			r = vkCreateFence(vk_device, &presentFenceInfo, NULL, &presentFence);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't create Presentation fence");
+			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_presentation_semaphore);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Presentation semaphore creation failed");
 
 			// Get the index of the next available swapchain image:
-			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, VK_NULL_HANDLE, presentFence, &vk_present_frame);
+			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_presentation_semaphore, nullFence, &vk_present_frame);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
-
-			r = vkWaitForFences(vk_device, 1, &presentFence, VK_TRUE, UINT64_MAX);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for presentation fence");
-
-			vkDestroyFence(vk_device, presentFence, NULL);
 		}
 
 
@@ -91,8 +88,10 @@ namespace f3d {
 		}
 
 		void			WindowImpl::initSurface() {
-			VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
-			F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
+			if (vk_surface == 0) {
+				VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
+				F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
+			}
 		}
 
 		void			WindowImpl::initFormatAndColor() {

@@ -2,7 +2,7 @@
 
 namespace f3d {
 	namespace tree {
-		Object::Object() : _root(nullptr) {
+		Object::Object() : _root(new f3d::tree::Node()) {
 
 		}
 

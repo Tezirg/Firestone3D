@@ -19,7 +19,7 @@ namespace f3d {
 				_clear[0].color.float32[0] = 0.2f;
 				_clear[0].color.float32[1] = 0.2f;
 				_clear[0].color.float32[2] = 0.2f;
-				_clear[0].color.float32[3] = 0.2f;
+				_clear[0].color.float32[3] = 0.0f;
 				_clear[1].depthStencil.depth = 1.0f;
 				_clear[1].depthStencil.stencil = 0;
 
@@ -142,10 +142,32 @@ namespace f3d {
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Render pass creation failed");
 			}
 
-			void		SimpleRenderPass::render(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene> scene) {
+			void		SimpleRenderPass::render(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene) {
+				updateCameraDescriptorSet(scene->getCamera());
 				{
+					VkCommandBufferInheritanceInfo		cmd_hinfo;
+					VkCommandBufferBeginInfo			cmd_info;
+					VkResult							r;
+
+					std::memset(&cmd_hinfo, 0, sizeof(VkCommandBufferInheritanceInfo));
+					cmd_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+					cmd_hinfo.renderPass = VK_NULL_HANDLE;
+					cmd_hinfo.subpass = 0;
+					cmd_hinfo.framebuffer = VK_NULL_HANDLE;
+					cmd_hinfo.occlusionQueryEnable = VK_FALSE;
+					cmd_hinfo.queryFlags = 0;
+					cmd_hinfo.pipelineStatistics = 0;
+
+					std::memset(&cmd_info, 0, sizeof(VkCommandBufferBeginInfo));
+					cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+					cmd_info.pInheritanceInfo = &cmd_hinfo;
+					r = vkBeginCommandBuffer(cmd, &cmd_info);
+					F3D_ASSERT_VK(r, VK_SUCCESS, "Begin command buffer failed");
+				}
+				
 					WindowImpl				*win = dynamic_cast<WindowImpl *>(window.get());
 					VkRenderPassBeginInfo	rp_begin_info;
+
 					std::memset(&rp_begin_info, 0, sizeof(VkRenderPassBeginInfo));
 					rp_begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 					rp_begin_info.renderPass = vk_renderpass;
@@ -157,29 +179,99 @@ namespace f3d {
 					rp_begin_info.clearValueCount = 2;
 					rp_begin_info.pClearValues = _clear;
 					vkCmdBeginRenderPass(cmd, &rp_begin_info, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
-				}
+				
 				{
+					_prog->bind(cmd);
+
+					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, & _prog->world_set, 0, VK_NULL_HANDLE);
+
 					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
 					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
 
-					_prog->bind(cmd);
-
-
-
-					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, &_set, 0, VK_NULL_HANDLE);
-
-
-					//vkCmdBindVertexBuffers(cmd, 0, mesh.vk_buffer_count(), mesh.vk_buffers(), mesh.vk_offsets());
-					//vkCmdBindIndexBuffer(cmd, mesh.vk_indices(), 0, VK_INDEX_TYPE_UINT32);
-					//vkCmdDrawIndexed(cmd, mesh.vk_indices_count(), 1, 0, 0, 0);
-
+					for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it)
+						cmdDrawObject(cmd, (*it)->getRoot());
 				}
-				{
-					vkCmdEndRenderPass(cmd);
-				}
+
+				VkImageMemoryBarrier	prePresentBarrier;
+				std::memset(&prePresentBarrier, 0, sizeof(prePresentBarrier));
+				prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				prePresentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				prePresentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+				prePresentBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				prePresentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+				prePresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				prePresentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				prePresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+				prePresentBarrier.image = win->vk_images[win->vk_present_frame];
+				vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+					VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0,
+					NULL, 1, &prePresentBarrier);
+
+				vkCmdEndRenderPass(cmd);
+
+				vkEndCommandBuffer(cmd);
 			}
 			
-			void		SimpleRenderPass::updateDescriptorSet(f3d::tree::Camera& cam) {
+			void			SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, f3d::tree::Node* obj) {
+				if (obj == nullptr)
+					return;
+				for (auto it = obj->getMeshes().begin(); it != obj->getMeshes().end(); ++it)
+					cmdDrawMesh(cmd, *(*it));
+				for (auto it = obj->getChildren().begin(); it != obj->getChildren().end(); ++it)
+					cmdDrawObject(cmd, *it);
+			}
+
+			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
+				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+
+				VkWriteDescriptorSet	pWrites[1];
+				VkDescriptorBufferInfo	mesh_info;
+
+				//mesh.updateDescriptorSet();
+				//pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				//pWrites[0].dstSet = _prog->model_set;
+				//pWrites[0].dstBinding = 0;
+				//pWrites[0].descriptorCount = 0;
+				//pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				//pWrites[0].pBufferInfo = &mesh_info;
+				//mesh_info.offset = 0;
+				//mesh_info.range = 0;
+				//mesh_info.buffer = 0;
+
+				VkBuffer		vertex_bufs[2];
+				VkDeviceSize	vertex_offsets[2];
+
+				vertex_bufs[0] = m.getVertexBuffer();
+				vertex_bufs[1] = m.getNormalBuffer();
+				vertex_offsets[0] = 0;
+				vertex_offsets[1] = 0;
+				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
+				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
+				//vkCmdBindVertexBuffers(cmd, 0, mesh.vk_buffer_count(), mesh.vk_buffers(), mesh.vk_offsets());
+				//vkCmdBindIndexBuffer(cmd, mesh.vk_indices(), 0, VK_INDEX_TYPE_UINT32);
+				//vkCmdDrawIndexed(cmd, mesh.vk_indices_count(), 1, 0, 0, 0);
+				std::cout << "Drawn: " << m.numIndices() << std::endl;
+			}
+
+			void		SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {
+				f3d::tree::CameraImpl*	camera = dynamic_cast<f3d::tree::CameraImpl *>(cam.get());
+				VkWriteDescriptorSet	pWrites[1];
+				VkDescriptorBufferInfo	world_info;
+
+				camera->updateAttribute();
+				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet));
+				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				pWrites[0].dstSet = _prog->world_set;
+				pWrites[0].dstBinding = 0;
+				pWrites[0].descriptorCount = 1;
+				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				pWrites[0].pBufferInfo = &world_info;
+				world_info.offset = 0;
+				world_info.range = VK_WHOLE_SIZE;
+				world_info.buffer = camera->_buffer;
+
+				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, 0);
 			}
 		}
 	}

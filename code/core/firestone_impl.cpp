@@ -36,7 +36,7 @@ namespace f3d {
 		VkApplicationInfo		app_info;
 		VkInstanceCreateInfo	info;
 		uint32_t				count;
-		const char**			extensions = NULL;
+		const char**			extensions;
 
 		std::memset(&app_info, 0, sizeof(VkApplicationInfo));
 		app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;

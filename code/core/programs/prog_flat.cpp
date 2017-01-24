@@ -169,7 +169,7 @@ namespace f3d {
 				desc_set_alloc.descriptorSetCount = 1;
 				desc_set_alloc.pSetLayouts = &(vk_desc_layout[0]);
 				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &world_set);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocaiton failed");
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocation failed");
 
 				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
 				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;

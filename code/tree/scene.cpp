@@ -4,14 +4,14 @@
 
 namespace f3d {
 	namespace tree {
-		Scene::Scene() : _dirty(true), _camera(new f3d::tree::CameraImpl()) {
+		Scene::Scene() : _dirty(true), _camera(nullptr) {
 
 		}
 
 		Scene::~Scene() {
 		}
 
-		std::weak_ptr<f3d::tree::Camera>				Scene::getCamera() {
+		std::shared_ptr<f3d::tree::Camera>&				Scene::getCamera() {
 			return _camera;
 		}
 

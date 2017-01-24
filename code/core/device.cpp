@@ -80,6 +80,7 @@ namespace f3d {
 				std::memset(&pool_infos, 0, sizeof(VkCommandPoolCreateInfo));
 				pool_infos.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 				pool_infos.queueFamilyIndex = family_index;
+				pool_infos.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 				r = vkCreateCommandPool(vk_device, &pool_infos, NULL, &(vk_pools[family_index]));
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Cannot create command pool for this device");
 			}
@@ -138,10 +139,14 @@ namespace f3d {
 
 			F3D_ASSERT(found_queue, "Cannot find a queue with VK_QUEUE_GRAPHICS_BIT to compute graphics");
 
+			char	*extensions[] = 
+			{
+				VK_KHR_SWAPCHAIN_EXTENSION_NAME
+			};
 			std::memset(&device_infos, 0, sizeof(VkDeviceCreateInfo));
 			device_infos.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-			device_infos.enabledExtensionCount = 0;
-			device_infos.ppEnabledExtensionNames = 0;
+			device_infos.enabledExtensionCount = 1;
+			device_infos.ppEnabledExtensionNames = extensions;
 			device_infos.queueCreateInfoCount = 1;//_queue_families_count;
 			device_infos.pQueueCreateInfos = &using_queue;
 			device_infos.pEnabledFeatures = &features;

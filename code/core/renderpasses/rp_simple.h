@@ -13,6 +13,8 @@
 #include "core/depth.h"
 #include "core/physical_device.h"
 #include "core/programs/prog_flat.h"
+#include "tree/camera_impl.h"
+#include "tree/mesh_impl.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
@@ -28,12 +30,13 @@ namespace f3d {
 				void		initRenderPass();
 				void		initViews();
 				void		initFramebuffers();
-				void		updateDescriptorSet(f3d::tree::Camera& cam);
+				void		updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam);
+				void		cmdDrawObject(VkCommandBuffer cmd, f3d::tree::Node* obj);
+				void		cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh);
 			private:
 				std::unique_ptr<f3d::core::Depth>					_depth;
 				VkFormat											_color_format;
 				std::unique_ptr<f3d::core::prog::FlatProgram>		_prog;
-				VkDescriptorSet										_set;
 				VkClearValue										_clear[2]; //!< Color & depth clear values
 				VkAttachmentDescription								_attachments[2]; //!< Color & Depth description
 				VkAttachmentReference								_color_reference; //!< Color attachement details

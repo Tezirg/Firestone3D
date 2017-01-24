@@ -27,6 +27,7 @@ namespace f3d {
 			_vertices.push_back(x);
 			_vertices.push_back(y);
 			_vertices.push_back(z);
+			_vertices.push_back(1.0f);
 		}
 
 		void			Mesh::addVertex(aiVector3D& v) {
@@ -34,6 +35,7 @@ namespace f3d {
 			_vertices.push_back(v.x);
 			_vertices.push_back(v.y);
 			_vertices.push_back(v.z);
+			_vertices.push_back(1.0f);
 		}
 
 		uint32_t		Mesh::numNormals() const {
@@ -44,12 +46,18 @@ namespace f3d {
 			_normals.push_back(x);
 			_normals.push_back(y);
 			_normals.push_back(z);
+			_normals.push_back(1.0f);
 		}
 		void			Mesh::addNormal(aiVector3D& n) {
 			_normals_count += 1;
 			_normals.push_back(n.x);
 			_normals.push_back(n.y);
 			_normals.push_back(n.z);
+			_normals.push_back(1.0f);
+		}
+
+		uint32_t		Mesh::numIndices() const {
+			return _indices_count;
 		}
 
 		uint32_t		Mesh::numTriangles() const {

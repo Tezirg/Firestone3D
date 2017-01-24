@@ -1,14 +1,19 @@
 #include <f3d/f3d.h>
 
 void		loadScene(f3d::Firestone& f3d, void * arg) {
-	f3d.scene->loadFromFile("../../../assets/Adventurer-Militia/Militia-Adventurer-RIGGED.blend");
+	f3d.scene->loadFromFile((char *)arg);
 }
 
-int main() {
+int main(int ac, char **av) {
+	if (ac != 2) {
+		F3D_ERROR("No file to load");
+		return 1;
+	}
+
+
 	f3d::Firestone	*engine = f3d::getF3D();
 
-
-	engine->startCallback(loadScene, NULL);
+	engine->startCallback(loadScene, av[1]);
 	engine->settings->applicationName.assign("Sample viewer");
 	engine->settings->fpsCap = 60;
 	engine->settings->windowWidth = 1280;

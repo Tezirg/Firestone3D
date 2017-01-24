@@ -47,6 +47,7 @@ namespace f3d {
 			uint32_t								vk_image_count; //Swapchain image count
 			VkImage*								vk_images; //Swapchain images
 			uint32_t								vk_present_frame;//Index of the next presentable in the swapchain
+			VkSemaphore								vk_presentation_semaphore; //Semaphore signaled after presentation completes
 
 		private:
 			std::shared_ptr<f3d::core::Device>		_device;

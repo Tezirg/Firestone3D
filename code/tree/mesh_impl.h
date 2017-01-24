@@ -21,8 +21,12 @@ namespace f3d {
 			~MeshImpl();
 	
 			virtual bool			makeRenderReady();
+
+			VkBuffer				getVertexBuffer();
+			VkBuffer				getNormalBuffer();
+			VkBuffer				getIndexBuffer();
 		private:
-			bool					createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBuffer& buffer);
+			bool					createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer);
 			bool					updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size);
 			bool					deleteAttribute(VkDeviceMemory& mem, VkBuffer& buffer);
 		private:

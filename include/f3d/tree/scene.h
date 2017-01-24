@@ -17,7 +17,7 @@ namespace f3d {
 			Scene();
 			virtual ~Scene();
 		public:
-			std::weak_ptr<f3d::tree::Camera>				getCamera();
+			std::shared_ptr<f3d::tree::Camera>&				getCamera();
 			std::list< f3d::tree::Object * >&				getObjects();
 			std::list< f3d::tree::Light * >&				getLights();
 

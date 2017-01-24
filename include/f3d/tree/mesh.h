@@ -28,6 +28,7 @@ namespace f3d {
 			void			addNormal(const float x, const float y, const float z);
 			void			addNormal(aiVector3D& n);
 
+			uint32_t		numIndices() const;
 			uint32_t		numTriangles() const;
 			void			addTriangle(uint32_t a, uint32_t b, uint32_t c);
 

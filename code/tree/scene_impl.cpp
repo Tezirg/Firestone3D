@@ -4,7 +4,7 @@ namespace f3d {
 	namespace tree {
 		SceneImpl::SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device) :
 			_physical(physical), _device(device) {
-
+			_camera.reset(new f3d::tree::CameraImpl(physical, device));
 		}
 
 		SceneImpl::~SceneImpl() {
@@ -32,9 +32,12 @@ namespace f3d {
 
 					fmesh->makeRenderReady();
 					f3dchild->addMesh(fmesh);
+					std::cout << "Vertices: " << fmesh->numVertices() << std::endl;
+					std::cout << "Normals: " << fmesh->numNormals() << std::endl;
+					std::cout << "Indices: " << fmesh->numIndices() << std::endl;
 				}
-				std::cout << "Recurs" << std::endl;
 				recurs_aiNodeToF3d(scene, aichild, f3dchild);
+				f3d_node->addChildren(f3dchild);
 			}
 		}
 
@@ -42,6 +45,9 @@ namespace f3d {
 			Assimp::Importer		importer;
 			const aiScene*			ai_scene = importer.ReadFile(path.c_str(), aiProcessPreset_TargetRealtime_Fast);
 			
+			if (ai_scene == 0x0)
+				F3D_FATAL_ERROR(importer.GetErrorString());
+
 			if (ai_scene->HasCameras()) {
 				_camera.reset(new f3d::tree::CameraImpl(ai_scene->mCameras[0]));
 			}

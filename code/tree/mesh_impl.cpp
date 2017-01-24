@@ -11,16 +11,20 @@ namespace f3d {
 		MeshImpl::~MeshImpl() {
 		}
 		
+		VkBuffer				MeshImpl::getVertexBuffer() { return _vertex_buf;  }
+		VkBuffer				MeshImpl::getNormalBuffer() { return _normal_buf;  }
+		VkBuffer				MeshImpl::getIndexBuffer() { return _index_buf; }
+
 		bool			MeshImpl::makeRenderReady() {
-			createAttribute(_vertex_mem, _vertices.size() * sizeof(float), _vertex_buf);
+			createAttribute(_vertex_mem, _vertices.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _vertex_buf);
 			updateAttribute(_vertices.data(), _vertex_mem, _vertices.size() * sizeof(float));
 			_vertices.clear();
 
-			createAttribute(_normal_mem, _normals.size() * sizeof(float), _normal_buf);
+			createAttribute(_normal_mem, _normals.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _normal_buf);
 			updateAttribute(_normals.data(), _normal_mem, _normals.size() * sizeof(float));
 			_normals.clear();
 
-			createAttribute(_index_mem, _indices.size() * sizeof(uint32_t), _index_buf);
+			createAttribute(_index_mem, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, _index_buf);
 			updateAttribute(_indices.data(), _index_mem, _indices.size() * sizeof(uint32_t));
 			_indices.clear();
 
@@ -28,7 +32,7 @@ namespace f3d {
 			return true;
 		}
 
-		bool						MeshImpl::createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBuffer& buffer) {
+		bool						MeshImpl::createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer) {
 			VkResult				r;
 			VkBufferCreateInfo		buff_info;
 			VkMemoryRequirements	mem_reqs;
@@ -36,7 +40,7 @@ namespace f3d {
 
 			std::memset(&buff_info, 0, sizeof(VkBufferCreateInfo));
 			buff_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			buff_info.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+			buff_info.usage = usage;
 			buff_info.size = mem_size;
 			r = vkCreateBuffer(_device->vk_device, &buff_info, NULL, &buffer);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Creation vk buffer failed");
@@ -64,7 +68,6 @@ namespace f3d {
 		bool					MeshImpl::updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size) {
 			VkResult			r;
 			char				*pData;
-
 
 			r = vkMapMemory(_device->vk_device, mem, 0, size, 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
