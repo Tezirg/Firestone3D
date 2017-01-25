@@ -26,11 +26,11 @@ namespace f3d {
 				~SimpleRenderPass();
 
 				void		render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene);
+				void		updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam);
 			private:
 				void		initRenderPass();
 				void		initViews();
 				void		initFramebuffers();
-				void		updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam);
 				void		cmdDrawObject(VkCommandBuffer cmd, f3d::tree::Node* obj);
 				void		cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh);
 			private:

@@ -6,16 +6,15 @@ namespace f3d {
 			: _physical(phys), _device(device), _ai_camera(new aiCamera) 
 		{
 			//applyPreset(F3D_CAMERA_PRESET_DEFAULT);
-			setAspect(1280.0f/720.0f);
-			setHorizontalFOV(60.0f * 3.14f / 180.0f);
+			setUpDirection(aiVector3D(0.0f, 1.0f, 0.0f));
+			//setName(std::string("DefaultCamera"));
+			setPosition(aiVector3D(0.0f, 0.0f, -1000.0f));
+			setAspect(1280.0f / 720.0f);
+			setHorizontalFOV(60.0f);
 			setClipPlaneNear(0.1f);
 			setClipPlaneFar(5000.0f);
-			setUpDirection(aiVector3D(0.0f, 1.0f, 0.0f));
-			setName(std::string("DefaultCamera"));
-			setPosition(aiVector3D(0.0f, 500.0f, 500.0f));
-			setLookAt(aiVector3D(0.0f, 0.0f, 0.0f));
 			createAttribute();
-			updateAttribute();
+			//updateAttribute();
 		}
 
 		CameraImpl::CameraImpl(aiCamera *camera) : _ai_camera(new aiCamera(*camera)) {
@@ -57,9 +56,41 @@ namespace f3d {
 			r = vkMapMemory(_device->vk_device, _memory, 0, sizeof(aiMatrix4x4), 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
 
-			_ai_camera->GetCameraMatrix(m);
+			getMatrix(m);
+			
+			std::cout << m.a1 << "," << m.a2 << "," << m.a3 << "," << m.a4 << std::endl;
+			std::cout << m.b1 << "," << m.b2 << "," << m.b3 << "," << m.b4 << std::endl;
+			std::cout << m.c1 << "," << m.c2 << "," << m.c3 << "," << m.c4 << std::endl;
+			std::cout << m.d1 << "," << m.d2 << "," << m.d3 << "," << m.d4 << std::endl;
+
+			m.Transpose();
 			std::memcpy(pData, &m, sizeof(aiMatrix4x4));
 			vkUnmapMemory(_device->vk_device, _memory);
+		}
+
+		void				CameraImpl::getMatrix(aiMatrix4x4 & out) {
+			static uint32_t angle = 0.0;
+
+			double D2R = 3.1459 / 180.0;
+			double yScale = 1.0 / tan(D2R * _ai_camera->mHorizontalFOV / 2);
+			double xScale = yScale / _ai_camera->mAspect;
+			double nearmfar = _ai_camera->mClipPlaneNear - _ai_camera->mClipPlaneFar;
+			aiMatrix4x4 proj(
+				xScale, 0, 0, 0,
+				0, yScale, 0, 0,
+				0, 0, (_ai_camera->mClipPlaneFar + _ai_camera->mClipPlaneNear) / nearmfar, -1,
+				0, 0, 2 * _ai_camera->mClipPlaneFar*_ai_camera->mClipPlaneNear / nearmfar, 0
+			);
+
+			angle += 1;
+			angle = angle % 360;
+
+			aiMatrix4x4		view;
+			view.Translation(_ai_camera->mPosition, view);
+
+			aiMatrix4x4		model;
+			model.RotationY(angle * D2R, model);
+			out = proj * view * model;
 		}
 
 		//Underlying Assimp attributes

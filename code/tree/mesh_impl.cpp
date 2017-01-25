@@ -70,7 +70,7 @@ namespace f3d {
 			char				*pData;
 
 			r = vkMapMemory(_device->vk_device, mem, 0, size, 0, (void **)&pData);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
 
 			std::memcpy(pData, data, size);
 			vkUnmapMemory(_device->vk_device, mem);

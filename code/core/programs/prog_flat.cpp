@@ -21,8 +21,6 @@ namespace f3d {
 				initVkDecriptorPool();
 				initVkDescriptorSets();
 
-				_create_infos.stageCount = 2;
-
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
 
 				F3D_ASSERT(createSpvShader(flat_vert_spv, &vert_shader) != false, "Flat program vertex shader");
@@ -45,6 +43,7 @@ namespace f3d {
 				r = vkCreatePipelineCache(vk_device, &cache_infos, NULL, &vk_pipeline_cache);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Creating pipeline cache failed");
 
+				_create_infos.stageCount = 2;
 				_create_infos.pVertexInputState = &_vi;
 				_create_infos.pInputAssemblyState = &_ia;
 				_create_infos.pRasterizationState = &_rs;
@@ -98,7 +97,6 @@ namespace f3d {
 			void									FlatProgram::initVkLayout() {
 				VkResult							r;
 				VkDescriptorSetLayoutBinding		layout_bindings;
-				VkDescriptorSetLayoutBinding		layout_bindings_dynamic;
 				VkDescriptorSetLayoutCreateInfo		desc_layout_info[2];
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
@@ -110,26 +108,15 @@ namespace f3d {
 				layout_bindings.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 				layout_bindings.pImmutableSamplers = NULL;
 
-				std::memset(&layout_bindings_dynamic, 0, sizeof(VkDescriptorSetLayoutBinding));
-				layout_bindings_dynamic.binding = 1;
-				layout_bindings_dynamic.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-				layout_bindings_dynamic.descriptorCount = 1;
-				layout_bindings_dynamic.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings_dynamic.pImmutableSamplers = NULL;
 
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo) * 2);
 				desc_layout_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info[0].bindingCount = 1;
 				desc_layout_info[0].pBindings = &layout_bindings;
-				desc_layout_info[1].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info[1].bindingCount = 1;
-				desc_layout_info[1].pBindings = &layout_bindings_dynamic;
 
 				vk_desc_layout = new VkDescriptorSetLayout[2];
 				r = vkCreateDescriptorSetLayout(vk_device, &(desc_layout_info[0]), NULL, &(vk_desc_layout[0]));
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[0] failed");
-				r = vkCreateDescriptorSetLayout(vk_device, &(desc_layout_info[1]), NULL, &(vk_desc_layout[1]));
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[1] failed");
 
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -147,13 +134,11 @@ namespace f3d {
 
 				pool_types[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pool_types[0].descriptorCount = 1;
-				pool_types[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
-				pool_types[1].descriptorCount = 1;
 
 				std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
 				pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-				pool_info.poolSizeCount = 2;
-				pool_info.maxSets = 2;
+				pool_info.poolSizeCount = 1;
+				pool_info.maxSets = 1;
 				pool_info.pPoolSizes = pool_types;
 				r = vkCreateDescriptorPool(vk_device, &pool_info, NULL, &vk_desc_pool);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Descriptor pool creation failed");
@@ -170,14 +155,6 @@ namespace f3d {
 				desc_set_alloc.pSetLayouts = &(vk_desc_layout[0]);
 				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &world_set);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocation failed");
-
-				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
-				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-				desc_set_alloc.descriptorPool = vk_desc_pool;
-				desc_set_alloc.descriptorSetCount = 1;
-				desc_set_alloc.pSetLayouts = &(vk_desc_layout[1]);
-				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &model_set);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocaiton failed");
 			}
 		}
 	}

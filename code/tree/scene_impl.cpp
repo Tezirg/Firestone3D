@@ -24,7 +24,8 @@ namespace f3d {
 					fmesh->setName(aimesh->mName.C_Str());
 					for (uint32_t v = 0; v < aimesh->mNumVertices; v++) {
 						fmesh->addVertex(aimesh->mVertices[v]);
-						fmesh->addNormal(aimesh->mNormals[v]);
+						if (aimesh->mNormals != NULL)
+							fmesh->addNormal(aimesh->mNormals[v]);
 					}
 					for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
 						fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
@@ -43,7 +44,8 @@ namespace f3d {
 
 		void						SceneImpl::loadFromFile(const std::string& path) {
 			Assimp::Importer		importer;
-			const aiScene*			ai_scene = importer.ReadFile(path.c_str(), aiProcessPreset_TargetRealtime_Fast);
+			const aiScene*			ai_scene = importer.ReadFile(path.c_str(), aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |    \
+																			   aiProcess_SplitLargeMeshes | aiProcess_SortByPType | aiProcess_OptimizeMeshes);
 			
 			if (ai_scene == 0x0)
 				F3D_FATAL_ERROR(importer.GetErrorString());

@@ -268,10 +268,10 @@ namespace f3d {
 				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pWrites[0].pBufferInfo = &world_info;
 				world_info.offset = 0;
-				world_info.range = VK_WHOLE_SIZE;
+				world_info.range = sizeof(aiMatrix4x4);
 				world_info.buffer = camera->_buffer;
 
-				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, 0);
+				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, NULL);
 			}
 		}
 	}

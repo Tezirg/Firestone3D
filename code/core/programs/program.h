@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include "f3d.h"
 #include "utils/vulkan.h"
@@ -24,7 +25,6 @@ namespace f3d {
 			virtual void		initVkLayout() = 0;
 			virtual void		initVkPipelineInfos();
 			virtual void		initVkDecriptorPool() = 0;
-
 
 		public:
 			VkDevice				vk_device; //Device to create from

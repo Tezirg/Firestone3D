@@ -42,6 +42,7 @@ namespace f3d {
 			void				updateAttribute();
 		private:
 			void				createAttribute();
+			void				getMatrix(aiMatrix4x4& out);
 		public:
 			VkBuffer						_buffer;
 			VkDeviceMemory					_memory;
