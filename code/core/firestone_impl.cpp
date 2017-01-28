@@ -59,6 +59,7 @@ namespace f3d {
 
 	bool							FirestoneImpl::execute() {
 		f3d::core::WindowImpl		*win = nullptr;
+		f3d::core::RendererImpl		*render = nullptr;
 
 		if (glfwInit() == GLFW_FALSE)
 			F3D_FATAL_ERROR("GLFW init failed");
@@ -71,7 +72,8 @@ namespace f3d {
 		scene.reset(new f3d::tree::SceneImpl(gpu, device));
 		win = new f3d::core::WindowImpl(vk_instance, gpu->vk_physical_device, device, settings);
 		window.reset(win);
-		renderer.reset(new f3d::core::RendererImpl(settings, device, gpu, window));
+		render = new f3d::core::RendererImpl(settings, device, gpu, window);
+		renderer.reset(render);
 		
 		glfwSetKeyCallback(win->getGLFWwindow(), key_callback);
 		glfwSetWindowSizeCallback(win->getGLFWwindow(), size_callback);
@@ -81,6 +83,7 @@ namespace f3d {
 
 		_run = true;
 		timer->start();
+		render->computeCommandBuffers(scene);
 		while (_run == true) {
 			uint64_t fps_nano = (uint64_t)1e9 / settings->fpsCap;
 			if (timer->ticks() >= fps_nano) {

@@ -12,31 +12,34 @@ namespace f3d {
 		}
 
 		void				SceneImpl::recurs_aiNodeToF3d(const aiScene* scene, aiNode *ainode, f3d::tree::Node* f3d_node) {
+
+
+			for (uint32_t j = 0; j < ainode->mNumMeshes; j++) {
+				aiMesh*					aimesh = scene->mMeshes[ainode->mMeshes[j]];
+				f3d::tree::MeshImpl*	fmesh = new f3d::tree::MeshImpl(_physical, _device);
+
+				fmesh->setName(aimesh->mName.C_Str());
+				for (uint32_t v = 0; v < aimesh->mNumVertices; v++) {
+					fmesh->addVertex(aimesh->mVertices[v]);
+					if (aimesh->mNormals != NULL)
+						fmesh->addNormal(aimesh->mNormals[v]);
+				}
+				for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
+					fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
+				}
+
+				fmesh->makeRenderReady();
+				f3d_node->addMesh(fmesh);
+				std::cout << "Vertices: " << fmesh->numVertices() << std::endl;
+				std::cout << "Normals: " << fmesh->numNormals() << std::endl;
+				std::cout << "Indices: " << fmesh->numIndices() << std::endl;
+			}
+
 			for (uint32_t i = 0; i < ainode->mNumChildren; i++) {
 				aiNode *aichild = ainode->mChildren[i];
 				f3d::tree::Node *f3dchild = new f3d::tree::Node();
 				
 				f3dchild->transformation().setTransformation(aichild->mTransformation);
-				for (uint32_t j = 0; j < aichild->mNumMeshes; j++) {
-					aiMesh*					aimesh = scene->mMeshes[aichild->mMeshes[j]];
-					f3d::tree::MeshImpl*	fmesh = new f3d::tree::MeshImpl(_physical, _device);
-					
-					fmesh->setName(aimesh->mName.C_Str());
-					for (uint32_t v = 0; v < aimesh->mNumVertices; v++) {
-						fmesh->addVertex(aimesh->mVertices[v]);
-						if (aimesh->mNormals != NULL)
-							fmesh->addNormal(aimesh->mNormals[v]);
-					}
-					for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
-						fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
-					}
-
-					fmesh->makeRenderReady();
-					f3dchild->addMesh(fmesh);
-					std::cout << "Vertices: " << fmesh->numVertices() << std::endl;
-					std::cout << "Normals: " << fmesh->numNormals() << std::endl;
-					std::cout << "Indices: " << fmesh->numIndices() << std::endl;
-				}
 				recurs_aiNodeToF3d(scene, aichild, f3dchild);
 				f3d_node->addChildren(f3dchild);
 			}
@@ -68,6 +71,7 @@ namespace f3d {
 				}
 			}
 			else { //Only one object
+				std::cout << "Coucou hibou" << std::endl;
 				f3d::tree::Object	*o = new f3d::tree::Object();
 				recurs_aiNodeToF3d(ai_scene, ai_scene->mRootNode, o->getRoot());
 				addObject(o);

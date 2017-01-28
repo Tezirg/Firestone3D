@@ -192,6 +192,8 @@ namespace f3d {
 						cmdDrawObject(cmd, (*it)->getRoot());
 				}
 
+				vkCmdEndRenderPass(cmd);
+
 				VkImageMemoryBarrier	prePresentBarrier;
 				std::memset(&prePresentBarrier, 0, sizeof(prePresentBarrier));
 				prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -207,8 +209,6 @@ namespace f3d {
 					VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0,
 					NULL, 1, &prePresentBarrier);
 
-				vkCmdEndRenderPass(cmd);
-
 				vkEndCommandBuffer(cmd);
 			}
 			
@@ -223,21 +223,6 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
-
-				VkWriteDescriptorSet	pWrites[1];
-				VkDescriptorBufferInfo	mesh_info;
-
-				//mesh.updateDescriptorSet();
-				//pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				//pWrites[0].dstSet = _prog->model_set;
-				//pWrites[0].dstBinding = 0;
-				//pWrites[0].descriptorCount = 0;
-				//pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				//pWrites[0].pBufferInfo = &mesh_info;
-				//mesh_info.offset = 0;
-				//mesh_info.range = 0;
-				//mesh_info.buffer = 0;
-
 				VkBuffer		vertex_bufs[2];
 				VkDeviceSize	vertex_offsets[2];
 

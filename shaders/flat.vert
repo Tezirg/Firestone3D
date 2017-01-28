@@ -19,6 +19,6 @@ void main()
 	color = vec3(0.0, 0.0, 0.8);
 	
    // GL->VK conventions
-   gl_Position.y = -gl_Position.y;
-   gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
+   //gl_Position.y = -gl_Position.y;
+   //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
 }

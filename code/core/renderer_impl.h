@@ -26,11 +26,14 @@ namespace f3d {
 
 			void	render(std::shared_ptr<f3d::tree::Scene> scene);
 			void	display();
+			void	computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene);
 
 		private:
 			void			initCommandBuffers();
+
 		public:
 			VkCommandBuffer												*vk_commands;
+			VkSemaphore													vk_render_semaphore;
 		private:
 			std::shared_ptr<f3d::core::Device>							_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>					_physical;

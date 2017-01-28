@@ -24,7 +24,7 @@ namespace f3d {
 			WindowImpl		*win = dynamic_cast<WindowImpl *>(_window.get());
 
 			vk_commands = new VkCommandBuffer[win->vk_image_count];
-			pool_fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT);
+			pool_fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 			std::memset(&cmd_info, 0, sizeof(VkCommandBufferAllocateInfo));
 			cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 			cmd_info.commandPool = _device->getCommandPool(pool_fam_idx);
@@ -34,17 +34,34 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating swapchain command buffers failed");
 		}
 
-		void				RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
-			VkResult		r;
+		void				RendererImpl::computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene) {
 			WindowImpl		*win = dynamic_cast<WindowImpl *>(_window.get());
-			uint32_t		fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT);
+
+			for (uint32_t i = 0; i < win->vk_image_count; i++) {
+				win->vk_present_frame = i;
+				_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
+			}
+			win->vk_present_frame = 0;
+		}
+
+		void						RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
+			VkResult				r;
+			WindowImpl				*win = dynamic_cast<WindowImpl *>(_window.get());
+			VkSemaphoreCreateInfo	semaphoreInfo;
+			uint32_t				fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
 			win->swapBuffers();
-			
+
 			_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
-			bool il = _device->initImageLayout(win->vk_images[win->vk_present_frame], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
-			F3D_ASSERT(il, "Init back image buffer layout");
+			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			semaphoreInfo.pNext = 0;
+			semaphoreInfo.flags = 0;
+			r = vkCreateSemaphore(_device->vk_device, &semaphoreInfo, NULL, &vk_render_semaphore);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Creating render semaphore fails");
+
+			r = vkDeviceWaitIdle(_device->vk_device);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
 
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 			VkSubmitInfo submit_info;
@@ -55,8 +72,8 @@ namespace f3d {
 			submit_info.pWaitDstStageMask = &pipe_stage_flags;
 			submit_info.commandBufferCount = 1;
 			submit_info.pCommandBuffers = & vk_commands[win->vk_present_frame];
-			submit_info.signalSemaphoreCount = 0;
-			submit_info.pSignalSemaphores = NULL;
+			submit_info.signalSemaphoreCount = 1;
+			submit_info.pSignalSemaphores = &vk_render_semaphore;
 			r = vkQueueSubmit(_device->getQueue(fam_idx, 0), 1, &submit_info, VK_NULL_HANDLE);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Submit to Queue");
 		}
@@ -70,7 +87,7 @@ namespace f3d {
 
 
 			win = dynamic_cast<WindowImpl *>(_window.get());
-			fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT); 
+			fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface); 
 			frame_idx = win->vk_present_frame;
 
 			std::memset(&present, 0, sizeof(VkPresentInfoKHR));
@@ -79,12 +96,16 @@ namespace f3d {
 			present.swapchainCount = 1;
 			present.pSwapchains = & win->vk_swapchain;
 			present.pImageIndices = &frame_idx;
+			present.waitSemaphoreCount = 1;
+			present.pWaitSemaphores = &vk_render_semaphore;
 			
 			r = f3d::utils::fpQueuePresentKHR(_device->getQueue(fam_idx, 0), &present);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Queue presentation fails");
 
 			r = vkQueueWaitIdle(_device->getQueue(fam_idx, 0));
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for queue presentation fails");
+
+			vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
 		}
 
 	}

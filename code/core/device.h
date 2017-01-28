@@ -44,7 +44,7 @@ namespace f3d {
 			* @param[in] flags Vulkan flags to support (VK_QUEUE_GRAPHICS_BIT for example)
 			* @return the family index
 			*/
-			uint32_t		getQueueFamilyIndex(bool present, VkQueueFlags flags);
+			uint32_t		getQueueFamilyIndex(bool present, VkQueueFlags flags, VkSurfaceKHR surface = 0);
 
 			/*!
 			* @func getQueueFamilyCount

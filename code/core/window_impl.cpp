@@ -80,6 +80,9 @@ namespace f3d {
 			// Get the index of the next available swapchain image:
 			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_presentation_semaphore, nullFence, &vk_present_frame);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
+
+			bool il = _device->initImageLayout(vk_images[vk_present_frame], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+			F3D_ASSERT(il, "Init back image buffer layout");
 		}
 
 
@@ -92,6 +95,7 @@ namespace f3d {
 				VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
 				F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
 			}
+			F3D_ASSERT(_device->getQueueFamilyIndex(true, 0, vk_surface) != UINT32_MAX, "Did not find a queue supporting presentation");
 		}
 
 		void			WindowImpl::initFormatAndColor() {

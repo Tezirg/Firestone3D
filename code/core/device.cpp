@@ -21,7 +21,7 @@ namespace f3d {
 
 		}
 
-		uint32_t							Device::getQueueFamilyIndex(bool present, VkQueueFlags flags) {
+		uint32_t							Device::getQueueFamilyIndex(bool present, VkQueueFlags flags, VkSurfaceKHR surface) {
 			uint32_t						queue_family = UINT32_MAX;
 			uint32_t						flagQueueNodeIndex;
 			uint32_t						presentQueueNodeIndex;
@@ -29,9 +29,12 @@ namespace f3d {
 
 			// Iterate over each queue to learn whether it supports presenting:
 			VkBool32 *supportsPresent = new VkBool32[_queue_families_count];
-			for (uint32_t i = 0; i < _queue_families_count; i++) {
-				supportsPresent[i] = glfwGetPhysicalDevicePresentationSupport(_vk_instance, _vk_physical_device, i);
-//				f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR(_vk_physical_device, i, _vk_surface, &supportsPresent[i]);
+			std::memset(supportsPresent, 0, sizeof(VkBool32) * _queue_families_count);
+			if (surface != 0) {
+				for (uint32_t i = 0; i < _queue_families_count; i++) {
+					supportsPresent[i] = glfwGetPhysicalDevicePresentationSupport(_vk_instance, _vk_physical_device, i);
+					f3d::utils::fpGetPhysicalDeviceSurfaceSupportKHR(_vk_physical_device, i, surface, &supportsPresent[i]);
+				}
 			}
 
 			flagQueueNodeIndex = _queue_families_count;

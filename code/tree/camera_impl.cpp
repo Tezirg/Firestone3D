@@ -8,11 +8,11 @@ namespace f3d {
 			//applyPreset(F3D_CAMERA_PRESET_DEFAULT);
 			setUpDirection(aiVector3D(0.0f, 1.0f, 0.0f));
 			//setName(std::string("DefaultCamera"));
-			setPosition(aiVector3D(0.0f, 0.0f, -1000.0f));
+			setPosition(aiVector3D(0.0f, 0.0f, 20.0f));
 			setAspect(1280.0f / 720.0f);
-			setHorizontalFOV(60.0f);
+			setHorizontalFOV(45.0f);
 			setClipPlaneNear(0.1f);
-			setClipPlaneFar(5000.0f);
+			setClipPlaneFar(1000.0f);
 			createAttribute();
 			//updateAttribute();
 		}
@@ -58,10 +58,14 @@ namespace f3d {
 
 			getMatrix(m);
 			
+			/*
+			std::cout << "MVP" << std::endl;
 			std::cout << m.a1 << "," << m.a2 << "," << m.a3 << "," << m.a4 << std::endl;
 			std::cout << m.b1 << "," << m.b2 << "," << m.b3 << "," << m.b4 << std::endl;
 			std::cout << m.c1 << "," << m.c2 << "," << m.c3 << "," << m.c4 << std::endl;
 			std::cout << m.d1 << "," << m.d2 << "," << m.d3 << "," << m.d4 << std::endl;
+			std::cout << std::endl;
+			*/
 
 			m.Transpose();
 			std::memcpy(pData, &m, sizeof(aiMatrix4x4));
@@ -69,27 +73,60 @@ namespace f3d {
 		}
 
 		void				CameraImpl::getMatrix(aiMatrix4x4 & out) {
-			static uint32_t angle = 0.0;
+			static uint32_t angle = 0;
 
-			double D2R = 3.1459 / 180.0;
-			double yScale = 1.0 / tan(D2R * _ai_camera->mHorizontalFOV / 2);
-			double xScale = yScale / _ai_camera->mAspect;
-			double nearmfar = _ai_camera->mClipPlaneNear - _ai_camera->mClipPlaneFar;
+			float D2R = 3.1459f / 180.0f;
+			float yScale = 1.0f / tan(D2R * _ai_camera->mHorizontalFOV / 2.0f);
+			float xScale = yScale / _ai_camera->mAspect;
+			float nearmfar = _ai_camera->mClipPlaneNear - _ai_camera->mClipPlaneFar;
 			aiMatrix4x4 proj(
-				xScale, 0, 0, 0,
-				0, yScale, 0, 0,
-				0, 0, (_ai_camera->mClipPlaneFar + _ai_camera->mClipPlaneNear) / nearmfar, -1,
-				0, 0, 2 * _ai_camera->mClipPlaneFar*_ai_camera->mClipPlaneNear / nearmfar, 0
+				xScale, 0.0f, 0.0f, 0.0f,
+				0.0f, yScale, 0.0f, 0.0f,
+				0.0f, 0.0f, (_ai_camera->mClipPlaneFar + _ai_camera->mClipPlaneNear) / nearmfar, -1.0f,
+				0.0f, 0.0f, 2.0f * _ai_camera->mClipPlaneFar*_ai_camera->mClipPlaneNear / nearmfar, 0.0f
 			);
+			/*
+			std::cout << "Perspective " << std::endl;
+			std::cout << proj.a1 << "," << proj.a2 << "," << proj.a3 << "," << proj.a4 << std::endl;
+			std::cout << proj.b1 << "," << proj.b2 << "," << proj.b3 << "," << proj.b4 << std::endl;
+			std::cout << proj.c1 << "," << proj.c2 << "," << proj.c3 << "," << proj.c4 << std::endl;
+			std::cout << proj.d1 << "," << proj.d2 << "," << proj.d3 << "," << proj.d4 << std::endl;
+			std::cout << std::endl;
+			*/
 
 			angle += 1;
-			angle = angle % 360;
+			angle %= 360;
 
 			aiMatrix4x4		view;
 			view.Translation(_ai_camera->mPosition, view);
+			/*
+			std::cout << "View " << std::endl;
+			std::cout << view.a1 << "," << view.a2 << "," << view.a3 << "," << view.a4 << std::endl;
+			std::cout << view.b1 << "," << view.b2 << "," << view.b3 << "," << view.b4 << std::endl;
+			std::cout << view.c1 << "," << view.c2 << "," << view.c3 << "," << view.c4 << std::endl;
+			std::cout << view.d1 << "," << view.d2 << "," << view.d3 << "," << view.d4 << std::endl;
+			std::cout << std::endl;
+			*/
 
+			aiMatrix4x4		model_rotated;
+			aiMatrix4x4		model_translated;
+			aiMatrix4x4		model_scaled;
 			aiMatrix4x4		model;
-			model.RotationY(angle * D2R, model);
+			model.RotationY(angle * D2R, model_rotated);
+			model.Translation(aiVector3D(0.0, 0.0, -10.0f), model_translated);
+			model.Scaling(aiVector3D(200.0f), model_scaled);
+			model = model_scaled * model_rotated * model_translated;
+
+			/*
+			std::cout << "Model " << std::endl;
+			std::cout << model.a1 << "," << model.a2 << "," << model.a3 << "," << model.a4 << std::endl;
+			std::cout << model.b1 << "," << model.b2 << "," << model.b3 << "," << model.b4 << std::endl;
+			std::cout << model.c1 << "," << model.c2 << "," << model.c3 << "," << model.c4 << std::endl;
+			std::cout << model.d1 << "," << model.d2 << "," << model.d3 << "," << model.d4 << std::endl;
+			std::cout << std::endl;
+			*/
+
+			//out = model * view * proj;
 			out = proj * view * model;
 		}
 
