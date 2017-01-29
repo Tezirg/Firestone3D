@@ -3,14 +3,14 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+layout(binding = 0) uniform buf {
+	mat4 	MVP;
+}   uniformBuf;
+
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 normal;
 
 layout(location = 0) out vec3 color;
-
-uniform buf {
-	mat4 	MVP;
-}   uniformBuf;
 
 void main() 
 {
@@ -19,6 +19,6 @@ void main()
 	color = vec3(0.0, 0.0, 0.8);
 	
    // GL->VK conventions
-   //gl_Position.y = -gl_Position.y;
-   //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
+   gl_Position.y = -gl_Position.y;
+   gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
 }

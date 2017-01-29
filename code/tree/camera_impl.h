@@ -21,7 +21,6 @@ namespace f3d {
 			~CameraImpl();
 
 			void				updateAttribute();
-		private:
 			void				createAttribute();
 		public:
 			VkBuffer						_buffer;

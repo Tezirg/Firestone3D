@@ -97,7 +97,7 @@ namespace f3d {
 			void									FlatProgram::initVkLayout() {
 				VkResult							r;
 				VkDescriptorSetLayoutBinding		layout_bindings;
-				VkDescriptorSetLayoutCreateInfo		desc_layout_info[2];
+				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
 
@@ -109,13 +109,13 @@ namespace f3d {
 				layout_bindings.pImmutableSamplers = NULL;
 
 
-				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo) * 2);
-				desc_layout_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info[0].bindingCount = 1;
-				desc_layout_info[0].pBindings = &layout_bindings;
+				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info.bindingCount = 1;
+				desc_layout_info.pBindings = &layout_bindings;
 
-				vk_desc_layout = new VkDescriptorSetLayout[2];
-				r = vkCreateDescriptorSetLayout(vk_device, &(desc_layout_info[0]), NULL, &(vk_desc_layout[0]));
+				vk_desc_layout = new VkDescriptorSetLayout;
+				r = vkCreateDescriptorSetLayout(vk_device,& desc_layout_info, NULL, vk_desc_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[0] failed");
 
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));

@@ -143,7 +143,6 @@ namespace f3d {
 			}
 
 			void		SimpleRenderPass::render(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene) {
-				updateCameraDescriptorSet(scene->getCamera());
 				{
 					VkCommandBufferInheritanceInfo		cmd_hinfo;
 					VkCommandBufferBeginInfo			cmd_info;
@@ -233,9 +232,6 @@ namespace f3d {
 				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
 				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
-				//vkCmdBindVertexBuffers(cmd, 0, mesh.vk_buffer_count(), mesh.vk_buffers(), mesh.vk_offsets());
-				//vkCmdBindIndexBuffer(cmd, mesh.vk_indices(), 0, VK_INDEX_TYPE_UINT32);
-				//vkCmdDrawIndexed(cmd, mesh.vk_indices_count(), 1, 0, 0, 0);
 				std::cout << "Drawn: " << m.numIndices() << std::endl;
 			}
 
@@ -248,12 +244,11 @@ namespace f3d {
 				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet));
 				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 				pWrites[0].dstSet = _prog->world_set;
-				pWrites[0].dstBinding = 0;
 				pWrites[0].descriptorCount = 1;
 				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pWrites[0].pBufferInfo = &world_info;
 				world_info.offset = 0;
-				world_info.range = sizeof(aiMatrix4x4);
+				world_info.range = 16 * sizeof(float);
 				world_info.buffer = camera->_buffer;
 
 				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, NULL);
