@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 
+#include <glm/glm.hpp>
 #include <assimp/vector3.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/matrix3x3.h>
@@ -40,18 +41,18 @@ namespace f3d {
 			virtual void					setAttenuationLinear(float val) = 0;
 			virtual float					getAttenuationQuadratic() const = 0;
 			virtual void					setAttenuationQuadratic(float val) = 0;
-			virtual aiColor3D				getColorAmbient() const = 0;
+			virtual glm::vec3				getColorAmbient() const = 0;
 			virtual void					setColorAmbient(const aiColor3D& val) = 0;
-			virtual aiColor3D		 		getColorDiffuse() const = 0;
+			virtual glm::vec3		 		getColorDiffuse() const = 0;
 			virtual void					setColorDiffuse(const aiColor3D& val) = 0;
-			virtual aiColor3D		 		getColorSpecular() const = 0;
+			virtual glm::vec3		 		getColorSpecular() const = 0;
 			virtual void					setColorSpecular(const aiColor3D& val) = 0;
-			virtual aiVector3D				getDirection() const = 0;
-			virtual void					setDirection(const aiVector3D& val) = 0;
+			virtual glm::vec3				getDirection() const = 0;
+			virtual void					setDirection(const glm::vec3& val) = 0;
 			virtual std::string				getName() const = 0;
 			virtual void					setName(const std::string& val) = 0;
-			virtual aiVector3D				getPosition() const = 0;
-			virtual void					setPosition(const aiVector3D& val) = 0;
+			virtual glm::vec3				getPosition() const = 0;
+			virtual void					setPosition(const glm::vec3& val) = 0;
 			virtual eLightType 				getType() const = 0;
 			virtual void			 		setType(eLightType val) = 0;
 		};

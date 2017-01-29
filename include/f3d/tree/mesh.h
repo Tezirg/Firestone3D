@@ -22,11 +22,11 @@ namespace f3d {
 
 			uint32_t		numVertices() const;
 			void			addVertex(const float x, const float y, const float z);
-			void			addVertex(aiVector3D& v);
+			void			addVertex(glm::vec3& v);
 
 			uint32_t		numNormals() const;
 			void			addNormal(const float x, const float y, const float z);
-			void			addNormal(aiVector3D& n);
+			void			addNormal(glm::vec3& n);
 
 			uint32_t		numIndices() const;
 			uint32_t		numTriangles() const;

@@ -6,7 +6,10 @@
 #include <memory>
 #include <cstdint>
 
-#include <assimp/types.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace f3d {
 	namespace utils {
@@ -19,17 +22,26 @@ namespace f3d {
 			Transform&	operator=(const Transform& oth);
 
 
-			aiMatrix4x4						getTransformation() const;
-			void							setTransformation(const aiMatrix4x4& val);
-			aiMatrix3x3						getRotation() const;
-			void							rotate(const aiMatrix3x3& val);
-			aiVector3D						getTranslation() const;
-			void							translate(const aiVector3D& val);
-			aiVector3D						getScale() const;
-			void							scale(const aiVector3D& val);
+			glm::mat4&						getTransformation();
+			const glm::mat4&				getTransformation() const;
+			void							setTransformation(const glm::mat4& val);
+
+			glm::mat3&						getRotationMatrix();
+			const glm::mat3&				getRotationMatrix() const;
+			const glm::quat&				getRotationQuaternion() const;
+			glm::quat&						getRotationQuaternion();
+			void							rotate(const glm::mat3& val);
+			void							rotate(const glm::quat& val);
+
+			glm::vec3						getTranslation() const;
+			void							translate(const glm::vec3& val);
+
+			glm::vec3						getScale() const;
+			void							scale(const glm::vec3& val);
 
 		private:
-			std::unique_ptr<aiMatrix4x4>	_ai_mat4; //Model space transformation
+			glm::quat						_quat;
+			glm::mat4						_mat4; //Model space transformation
 		};
 	}
 }

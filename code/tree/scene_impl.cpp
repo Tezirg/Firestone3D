@@ -20,9 +20,9 @@ namespace f3d {
 
 				fmesh->setName(aimesh->mName.C_Str());
 				for (uint32_t v = 0; v < aimesh->mNumVertices; v++) {
-					fmesh->addVertex(aimesh->mVertices[v]);
+					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
 					if (aimesh->mNormals != NULL)
-						fmesh->addNormal(aimesh->mNormals[v]);
+						fmesh->addNormal(glm::vec3(aimesh->mNormals[v].x, aimesh->mNormals[v].y, aimesh->mNormals[v].z));
 				}
 				for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
 					fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
@@ -39,7 +39,12 @@ namespace f3d {
 				aiNode *aichild = ainode->mChildren[i];
 				f3d::tree::Node *f3dchild = new f3d::tree::Node();
 				
-				f3dchild->transformation().setTransformation(aichild->mTransformation);
+				glm::mat4 t;
+				t[0][0] = aichild->mTransformation.a1; t[1][0] = aichild->mTransformation.a2; t[2][0] = aichild->mTransformation.a3; t[3][0] = aichild->mTransformation.a4;
+				t[0][1] = aichild->mTransformation.b1; t[1][1] = aichild->mTransformation.b2; t[2][1] = aichild->mTransformation.b3; t[3][1] = aichild->mTransformation.b4;
+				t[0][2] = aichild->mTransformation.c1; t[1][2] = aichild->mTransformation.c2; t[2][2] = aichild->mTransformation.c3; t[3][2] = aichild->mTransformation.c4;
+				t[0][3] = aichild->mTransformation.d1; t[1][3] = aichild->mTransformation.d2; t[2][3] = aichild->mTransformation.d3; t[3][3] = aichild->mTransformation.d4;
+				f3dchild->transformation().setTransformation(t);
 				recurs_aiNodeToF3d(scene, aichild, f3dchild);
 				f3d_node->addChildren(f3dchild);
 			}
@@ -53,9 +58,11 @@ namespace f3d {
 			if (ai_scene == 0x0)
 				F3D_FATAL_ERROR(importer.GetErrorString());
 
+			/*
 			if (ai_scene->HasCameras()) {
 				_camera.reset(new f3d::tree::CameraImpl(ai_scene->mCameras[0]));
 			}
+			*/
 
 			for (uint32_t i = 0; i < ai_scene->mNumLights; i++) {
 				addLight(new f3d::tree::LightImpl(ai_scene->mLights[i]));

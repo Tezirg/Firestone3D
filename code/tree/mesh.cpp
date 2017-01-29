@@ -30,7 +30,7 @@ namespace f3d {
 			_vertices.push_back(1.0f);
 		}
 
-		void			Mesh::addVertex(aiVector3D& v) {
+		void			Mesh::addVertex(glm::vec3& v) {
 			_vertices_count += 1;
 			_vertices.push_back(v.x);
 			_vertices.push_back(v.y);
@@ -48,7 +48,7 @@ namespace f3d {
 			_normals.push_back(z);
 			_normals.push_back(1.0f);
 		}
-		void			Mesh::addNormal(aiVector3D& n) {
+		void			Mesh::addNormal(glm::vec3& n) {
 			_normals_count += 1;
 			_normals.push_back(n.x);
 			_normals.push_back(n.y);

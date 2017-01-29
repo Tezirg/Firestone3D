@@ -47,25 +47,45 @@ namespace f3d {
 			Camera();
 			virtual ~Camera();
 
+			glm::mat4&					getView();
+			const glm::mat4&			getView() const;
+			void						setView(const glm::mat4& view);
+			void						lookAt(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up);
+
+			glm::mat4&					getPerspective();
+			const glm::mat4&			getPerspective() const;
+			void						setPerspective(const glm::mat4& perspective);
+			void						setPerspective(float fov, float aspect, float nearPlane, float farPlane);
+
+			glm::mat4&					getViewPerspective();
+			const glm::mat4&			getViewPerspective() const;
+
+
 			virtual void				applyPreset(eCameraPresetType preset);
 
-			//Underlying Assimp attributes
-			virtual float 				getAspect() const = 0;
-			virtual void 				setAspect(float val) = 0;
-			virtual float 				getClipPlaneFar() const = 0;
-			virtual void 				setClipPlaneFar(float val) = 0;
-			virtual float 				getClipPlaneNear() const = 0;
-			virtual void 				setClipPlaneNear(float val) = 0;
-			virtual float 				getHorizontalFOV() const = 0;
-			virtual void 				setHorizontalFOV(float val) = 0;
-			virtual aiVector3D		 	getLookAt() const = 0;
-			virtual void				setLookAt(const aiVector3D& val) = 0;
-			virtual std::string 		getName() const = 0;
-			virtual void				setName(std::string& val) = 0;
-			virtual aiVector3D		 	getPosition() const = 0;
-			virtual void				setPosition(const aiVector3D& val) = 0;
-			virtual aiVector3D			getUpDirection() = 0;
-			virtual void				setUpDirection(const aiVector3D& val) = 0;
+			virtual float 				getAspect() const;
+			virtual void 				setAspect(float val);
+			virtual float 				getClipPlaneFar() const;
+			virtual void 				setClipPlaneFar(float val);
+			virtual float 				getClipPlaneNear() const;
+			virtual void 				setClipPlaneNear(float val);
+			virtual float 				getFOV() const;
+			virtual void 				setFOV(float val);
+			virtual std::string 		getName() const;
+			virtual void				setName(std::string& val);
+			virtual glm::vec3		 	getPosition() const;
+			virtual void				setPosition(const glm::vec3& val);
+		protected:
+			std::string					_name;
+
+			glm::mat4					_VP;
+			glm::mat4					_view;
+			glm::mat4					_perspective;
+
+			float						_far;
+			float						_near;
+			float						_fov;
+			float						_aspect;
 		};
 	}
 }
