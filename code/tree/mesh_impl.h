@@ -25,6 +25,9 @@ namespace f3d {
 			VkBuffer				getVertexBuffer();
 			VkBuffer				getNormalBuffer();
 			VkBuffer				getIndexBuffer();
+
+			VkDescriptorSet			getUniform();
+			bool					updateUniform(glm::mat4& model);
 		private:
 			bool					createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer);
 			bool					updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size);
@@ -33,10 +36,20 @@ namespace f3d {
 			std::shared_ptr<f3d::core::PhysicalDevice>	_phys;
 			std::shared_ptr<f3d::core::Device>			_device;
 
+
+			VkDescriptorPool		_uniform_pool;
+			VkDescriptorSetLayout	_uniform_layout;
+			VkDescriptorSet			_uniform_set;
+			VkBuffer				_uniform_buf;
+			VkDeviceMemory			_uniform_mem;
+
+
 			VkBuffer				_vertex_buf;
 			VkDeviceMemory			_vertex_mem;
+
 			VkBuffer				_normal_buf;
 			VkDeviceMemory			_normal_mem;
+			
 			VkBuffer				_index_buf;
 			VkDeviceMemory			_index_mem;
 		};

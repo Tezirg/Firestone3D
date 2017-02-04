@@ -47,17 +47,18 @@ namespace f3d {
 			r = vkMapMemory(_device->vk_device, _memory, 0, 16 * sizeof(float), 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
 
+			 /*
 			static float angle = 0.0f;
 			angle += 0.1f;
 			angle = fmod(angle, 360.0f);
-
 			glm::mat4 model;
 			model = glm::translate(model, glm::vec3(0.0f, -100.0f, 0.0f));
 			model = glm::rotate(model, (float)angle, glm::vec3(0.0, 1.0, 0.0));
 			model = glm::scale(model, glm::vec3(1000.0f));
-
 			glm::mat4 mvp = _VP * model;
-			std::memcpy(pData, glm::value_ptr(mvp), 16 * sizeof(float));
+			// */
+
+			std::memcpy(pData, glm::value_ptr(_VP), 16 * sizeof(float));
 			vkUnmapMemory(_device->vk_device, _memory);
 		}
 

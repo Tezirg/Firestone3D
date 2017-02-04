@@ -26,12 +26,13 @@ namespace f3d {
 			const glm::mat4&				getTransformation() const;
 			void							setTransformation(const glm::mat4& val);
 
-			glm::mat3&						getRotationMatrix();
-			const glm::mat3&				getRotationMatrix() const;
-			const glm::quat&				getRotationQuaternion() const;
-			glm::quat&						getRotationQuaternion();
+			glm::mat3						getRotationMatrix();
+			const glm::mat3					getRotationMatrix() const;
+			const glm::quat					getRotationQuaternion() const;
+			glm::quat						getRotationQuaternion();
 			void							rotate(const glm::mat3& val);
 			void							rotate(const glm::quat& val);
+			void							rotate(float degree, const glm::vec3& axis);
 
 			glm::vec3						getTranslation() const;
 			void							translate(const glm::vec3& val);

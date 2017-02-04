@@ -96,32 +96,49 @@ namespace f3d {
 
 			void									FlatProgram::initVkLayout() {
 				VkResult							r;
-				VkDescriptorSetLayoutBinding		layout_bindings;
+				VkDescriptorSetLayoutBinding		layout_bindings[2];
 				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
 
-				std::memset(&layout_bindings, 0, sizeof(VkDescriptorSetLayoutBinding));
-				layout_bindings.binding = 0;
-				layout_bindings.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				layout_bindings.descriptorCount = 1;
-				layout_bindings.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings.pImmutableSamplers = NULL;
+				//layout (set = 0, binding = 0) uniform camera;
+				std::memset(&layout_bindings[0], 0, sizeof(VkDescriptorSetLayoutBinding));
+				layout_bindings[0].binding = 0;
+				layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				layout_bindings[0].descriptorCount = 1;
+				layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				layout_bindings[0].pImmutableSamplers = NULL;
 
+				//layout (set = 1, binding = 0) uniform model;
+				layout_bindings[1].binding = 0;
+				layout_bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				layout_bindings[1].descriptorCount = 1;
+				layout_bindings[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				layout_bindings[1].pImmutableSamplers = NULL;
 
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
 				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info.bindingCount = 1;
-				desc_layout_info.pBindings = &layout_bindings;
+				desc_layout_info.pBindings = &layout_bindings[0];
 
-				vk_desc_layout = new VkDescriptorSetLayout;
-				r = vkCreateDescriptorSetLayout(vk_device,& desc_layout_info, NULL, vk_desc_layout);
+				vk_desc_layout = new VkDescriptorSetLayout[2];
+				r = vkCreateDescriptorSetLayout(vk_device,& desc_layout_info, NULL, &vk_desc_layout[0]);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[0] failed");
+				
+				// /*
+				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info.bindingCount = 1;
+				desc_layout_info.pBindings = &layout_bindings[1];
 
+
+				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[1]);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[1] failed");
+				// */
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 				pipe_layout_info.pNext = NULL;
-				pipe_layout_info.setLayoutCount = 1;
+				pipe_layout_info.setLayoutCount = 2;
 				pipe_layout_info.pSetLayouts = vk_desc_layout;
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create pipeline layout failed");

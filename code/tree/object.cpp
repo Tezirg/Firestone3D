@@ -18,5 +18,16 @@ namespace f3d {
 			_root = r;
 		}
 
+		void			Object::translate(const glm::vec3& translation) {
+			_root->transformation().translate(translation);
+		}
+
+		void			Object::scale(const glm::vec3& scaling) {
+			_root->transformation().scale(scaling);
+		}
+
+		void			Object::rotate(const float degrees, const glm::vec3& axis) {
+			_root->transformation().rotate(degrees, axis);
+		}
 	}
 }

@@ -19,6 +19,10 @@ namespace f3d {
 			Node*			getRoot();
 			void			setRoot(Node *);
 
+			void			translate(const glm::vec3& translation);
+			void			scale(const glm::vec3& scaling);
+			void			rotate(const float degrees, const glm::vec3& axis);
+
 		protected:
 			f3d::tree::Node*					_root;
 			//std::list<f3d::tree::Material>	_mats;

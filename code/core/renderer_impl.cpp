@@ -54,12 +54,14 @@ namespace f3d {
 
 			win->swapBuffers();
 
-			((f3d::tree::CameraImpl *)scene->getCamera().get())->updateAttribute();
+			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
+			test->updateCameraDescriptorSet(scene->getCamera());
+			_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
+
+			//((f3d::tree::CameraImpl *)scene->getCamera().get())->updateAttribute();
+
 			r = vkDeviceWaitIdle(_device->vk_device);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for cemara update");
-			//f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
-			//test->updateCameraDescriptorSet(scene->getCamera());
-			//_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
 			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			semaphoreInfo.pNext = 0;

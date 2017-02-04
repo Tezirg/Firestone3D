@@ -4,6 +4,8 @@
 #define _F3D_SIMPLE_RENDERPASS_H
 
 #include <memory>
+#include <iostream>
+#include <stack>
 
 #include "f3d.h"
 #include "core/window.h"
@@ -46,6 +48,8 @@ namespace f3d {
 				VkImageView		depth_vk_view; //!< Vulkan view type from image
 				VkDeviceMemory	depth_vk_memory; //!< Allocated memory on GPU
 				VkFormat		depth_vk_format; //!< Depth buffer format
+
+				std::stack<glm::mat4>								_matrix;
 
 			};
 		}

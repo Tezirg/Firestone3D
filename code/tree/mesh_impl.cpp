@@ -5,12 +5,80 @@ namespace f3d {
 		MeshImpl::MeshImpl(std::shared_ptr<f3d::core::PhysicalDevice>& phys, 
 							std::shared_ptr<f3d::core::Device>& device) :
 			_phys(phys), _device(device) {
+
+			createAttribute(_uniform_mem, sizeof(float) * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, _uniform_buf);
+
+
+			VkResult							r;
+			VkDescriptorPoolCreateInfo			poolinfo;
+			VkDescriptorPoolSize				poolsize;
+			VkDescriptorSetLayoutBinding		uniforminfo;
+			VkDescriptorSetLayoutCreateInfo		layoutinfo;
+			VkDescriptorSetAllocateInfo			setinfo;
+
+			std::memset(&poolsize, 0, sizeof(VkDescriptorPoolSize));
+			poolsize.descriptorCount = 1;
+			poolsize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+
+			std::memset(&poolinfo, 0, sizeof(VkDescriptorPoolCreateInfo));
+			poolinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			poolinfo.maxSets = 1;
+			poolinfo.poolSizeCount = 1;
+			poolinfo.pPoolSizes = &poolsize;
+			r = vkCreateDescriptorPool(device->vk_device, &poolinfo, NULL, &_uniform_pool);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Mesh descriptor pool allocate fail");
+
+
+			std::memset(&uniforminfo, 0, sizeof(VkDescriptorSetLayoutBinding));
+			uniforminfo.binding = 0;
+			uniforminfo.descriptorCount = 1;
+			uniforminfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			uniforminfo.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			std::memset(&layoutinfo, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+			layoutinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			layoutinfo.bindingCount = 1;
+			layoutinfo.pBindings = &uniforminfo;
+			r = vkCreateDescriptorSetLayout(_device->vk_device, &layoutinfo, NULL, &_uniform_layout);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Create emsh desc set layout failed");
+
+			std::memset(&setinfo, 0, sizeof(VkDescriptorSetAllocateInfo));
+			setinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			setinfo.descriptorPool = _uniform_pool;
+			setinfo.descriptorSetCount = 1;
+			setinfo.pSetLayouts = &_uniform_layout;
+			r = vkAllocateDescriptorSets(_device->vk_device, &setinfo, &_uniform_set);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Mesh uniform descriptor set allocate fail");
+
+			VkDescriptorBufferInfo	bufinfo;
+			bufinfo.buffer = _uniform_buf;
+			bufinfo.offset = 0;
+			bufinfo.range = VK_WHOLE_SIZE;
+
+			VkWriteDescriptorSet	desc_write;
+			std::memset(&desc_write, 0, sizeof(VkWriteDescriptorSet));
+			desc_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			desc_write.descriptorCount = 1;
+			desc_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			desc_write.dstSet = _uniform_set;
+			desc_write.dstBinding = 0;
+			desc_write.pBufferInfo = &bufinfo;
+			vkUpdateDescriptorSets(_device->vk_device, 1, &desc_write, 0, NULL);
+
 		}
 
 
 		MeshImpl::~MeshImpl() {
 		}
 		
+		VkDescriptorSet			MeshImpl::getUniform() {
+			return _uniform_set;
+		}
+
+		bool					MeshImpl::updateUniform(glm::mat4& model) {
+			return updateAttribute(glm::value_ptr(model), _uniform_mem, sizeof(float) * 16);
+		}
+
 		VkBuffer				MeshImpl::getVertexBuffer() { return _vertex_buf;  }
 		VkBuffer				MeshImpl::getNormalBuffer() { return _normal_buf;  }
 		VkBuffer				MeshImpl::getIndexBuffer() { return _index_buf; }

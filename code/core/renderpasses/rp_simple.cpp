@@ -11,6 +11,7 @@ namespace f3d {
 				_color_format(VK_FORMAT_B8G8R8A8_UNORM),
 				_prog(new f3d::core::prog::FlatProgram(device->vk_device)) {
 
+
 				WindowImpl *w = dynamic_cast<WindowImpl *>(window.get());
 
 				_color_format = w->vk_format;
@@ -25,7 +26,7 @@ namespace f3d {
 
 				initRenderPass();
 				_prog->initVkPipeline(vk_renderpass, 0);
-				
+
 				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
 				initFramebuffers();
@@ -185,9 +186,13 @@ namespace f3d {
 					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
 					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
 
+					//Push world identity transform
+					_matrix.push(glm::mat4());
 					for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it) {
 						cmdDrawObject(cmd, (*it)->getRoot());
 					}
+					//Removes identity tranform: stack should be empty
+					_matrix.pop();
 				}
 
 				vkCmdEndRenderPass(cmd);
@@ -213,10 +218,17 @@ namespace f3d {
 			void			SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, f3d::tree::Node* obj) {
 				if (obj == nullptr)
 					return;
+
+				//Compute Local transform
+				_matrix.push(_matrix.top() * obj->transformation().getTransformation());
+
 				for (auto it = obj->getMeshes().begin(); it != obj->getMeshes().end(); ++it)
 					cmdDrawMesh(cmd, *(*it));
 				for (auto it = obj->getChildren().begin(); it != obj->getChildren().end(); ++it)
 					cmdDrawObject(cmd, *it);
+
+				//Remove local transforms
+				_matrix.pop();
 			}
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
@@ -229,7 +241,10 @@ namespace f3d {
 				vertex_offsets[0] = 0;
 				vertex_offsets[1] = 0;
 				
-				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, &_prog->world_set, 0, VK_NULL_HANDLE);
+				m.updateUniform(_matrix.top());
+				VkDescriptorSet sets[2] = { _prog->world_set , m.getUniform() };
+
+				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 2, sets, 0, VK_NULL_HANDLE);
 				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
 				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);

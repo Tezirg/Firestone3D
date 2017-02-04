@@ -30,30 +30,39 @@ namespace f3d {
 			_quat = glm::quat_cast(val);
 		}
 
-		glm::mat3&						Transform::getRotationMatrix() {
+		glm::mat3						Transform::getRotationMatrix() {
 			return glm::mat3_cast(_quat);
 		}
-		const glm::mat3&				Transform::getRotationMatrix() const {
+		const glm::mat3					Transform::getRotationMatrix() const {
 			return glm::mat3_cast(_quat);
 		}
-		const glm::quat&				Transform::getRotationQuaternion() const {
+		const glm::quat					Transform::getRotationQuaternion() const {
 			return _quat;
 		}
-		glm::quat&						Transform::getRotationQuaternion() {
+		glm::quat						Transform::getRotationQuaternion() {
 			return _quat;
 		}
 		void							Transform::rotate(const glm::mat3& val) {
 			glm::quat tmp = glm::quat_cast(val);
 			_quat *= tmp;
+			_mat4 = _mat4 * glm::mat4_cast(_quat);
 		}
 		void							Transform::rotate(const glm::quat& val) {
 			_quat *= val;
+			_mat4 = _mat4 * glm::mat4_cast(_quat);
+		}
+		void							Transform::rotate(float angle, const glm::vec3& axis) {
+			_quat *= glm::angleAxis(angle, axis);
+			_mat4 = _mat4 * glm::mat4_cast(glm::angleAxis(angle, axis));
 		}
 
+		glm::vec3						Transform::getTranslation() const {
+			return _mat4[3];
+		}
 		void							Transform::translate(const glm::vec3& val) {
 			glm::mat4					translate;
 
-			glm::translate(_mat4, val);
+			_mat4 = glm::translate(_mat4, val);
 		}
 
 		glm::vec3						Transform::getScale() const {
@@ -67,7 +76,7 @@ namespace f3d {
 		}
 
 		void							Transform::scale(const glm::vec3& val) {
-			glm::scale(_mat4, val);
+			_mat4 = glm::scale(_mat4, val);
 		}
 
 	}
