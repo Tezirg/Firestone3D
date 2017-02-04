@@ -8,7 +8,7 @@ namespace f3d {
 			applyPreset(F3D_CAMERA_PRESET_DEFAULT);
 			setName(std::string("DefaultCamera"));
 			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
-			lookAt(glm::vec3(0.0f, 50.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f,  0.0f));
+			lookAt(glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f,  0.0f));
 			createAttribute();
 		}
 
@@ -52,8 +52,9 @@ namespace f3d {
 			angle = fmod(angle, 360.0f);
 
 			glm::mat4 model;
+			model = glm::translate(model, glm::vec3(0.0f, -100.0f, 0.0f));
 			model = glm::rotate(model, (float)angle, glm::vec3(0.0, 1.0, 0.0));
-			model = glm::scale(model, glm::vec3(2.0f));
+			model = glm::scale(model, glm::vec3(1000.0f));
 
 			glm::mat4 mvp = _VP * model;
 			std::memcpy(pData, glm::value_ptr(mvp), 16 * sizeof(float));

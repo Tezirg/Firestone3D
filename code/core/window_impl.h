@@ -6,7 +6,7 @@
 #include <memory>
 #include <cstdint>
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
 #include "f3d.h"
 #include "utils/vulkan.h"

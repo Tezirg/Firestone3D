@@ -4,7 +4,7 @@
 #define _F3D_FIRESTONE_IMPL_H
 
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
+#include <glfw/glfw3.h>
 
 #include "f3d.h"
 #include "physical_device.h"

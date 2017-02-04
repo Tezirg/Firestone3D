@@ -33,6 +33,7 @@ if (WIN32)
 		NAMES glfw3
 		PATHS
 			$ENV{PROGRAMFILES}/lib
+			${GLFW_ROOT_DIR}/lib
 			${GLFW_ROOT_DIR}/src/Debug
 			${GLFW_ROOT_DIR}/src/Release
 			${GLFW_ROOT_DIR}/src)
