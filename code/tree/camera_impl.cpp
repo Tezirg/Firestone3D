@@ -5,10 +5,10 @@ namespace f3d {
 		CameraImpl::CameraImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device > device) 
 			: _physical(phys), _device(device), _ai_camera(new aiCamera) 
 		{
-			//applyPreset(F3D_CAMERA_PRESET_DEFAULT);
+			applyPreset(F3D_CAMERA_PRESET_DEFAULT);
 			setName(std::string("DefaultCamera"));
-			setPerspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
-			lookAt(glm::vec3(0.0f, 20.0f, 150.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f,  0.0f));
+			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
+			lookAt(glm::vec3(0.0f, 50.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f,  0.0f));
 			createAttribute();
 		}
 
@@ -53,7 +53,7 @@ namespace f3d {
 
 			glm::mat4 model;
 			model = glm::rotate(model, (float)angle, glm::vec3(0.0, 1.0, 0.0));
-			model = glm::scale(model, glm::vec3(10.0f));
+			model = glm::scale(model, glm::vec3(2.0f));
 
 			glm::mat4 mvp = _VP * model;
 			std::memcpy(pData, glm::value_ptr(mvp), 16 * sizeof(float));

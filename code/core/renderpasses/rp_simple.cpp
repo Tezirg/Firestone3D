@@ -182,13 +182,12 @@ namespace f3d {
 				{
 					_prog->bind(cmd);
 
-					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, & _prog->world_set, 0, VK_NULL_HANDLE);
-
 					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
 					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
 
-					for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it)
+					for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it) {
 						cmdDrawObject(cmd, (*it)->getRoot());
+					}
 				}
 
 				vkCmdEndRenderPass(cmd);
@@ -229,6 +228,8 @@ namespace f3d {
 				vertex_bufs[1] = m.getNormalBuffer();
 				vertex_offsets[0] = 0;
 				vertex_offsets[1] = 0;
+				
+				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 1, &_prog->world_set, 0, VK_NULL_HANDLE);
 				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
 				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);

@@ -78,7 +78,6 @@ namespace f3d {
 				}
 			}
 			else { //Only one object
-				std::cout << "Coucou hibou" << std::endl;
 				f3d::tree::Object	*o = new f3d::tree::Object();
 				recurs_aiNodeToF3d(ai_scene, ai_scene->mRootNode, o->getRoot());
 				addObject(o);
