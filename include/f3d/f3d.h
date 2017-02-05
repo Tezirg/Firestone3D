@@ -44,6 +44,9 @@ namespace f3d {
 	namespace utils {
 		class Timer;
 		class Transform;
+		class KeyInput;
+		class MouseInput;
+		class JoystickInput;
 	}
 }
 
@@ -60,6 +63,7 @@ namespace f3d {
 #include "tree/mesh.h"
 #include "utils/timer.h"
 #include "utils/transform.h"
+#include "utils/inputs.h"
 #include "utils/logging.h"
 
 #endif

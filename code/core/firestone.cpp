@@ -22,12 +22,15 @@ namespace f3d {
 	}
 }
 
-static void			defaultInputCallback(f3d::Firestone& f3d, void *arg) {
+static void			defaultKeyInputCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void * arg) {
+	
 	(void)arg;
-	return;
+	if (keyEvent.keycode == 256 && keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS)
+		f3d.stop();
 }
 
 static void			defaultResizeCallback(f3d::Firestone& f3d, int w, int h, void *arg) {
+
 	(void)arg;
 	f3d.settings->windowWidth = w;
 	f3d.settings->windowHeight = h;
@@ -37,11 +40,14 @@ static void			defaultResizeCallback(f3d::Firestone& f3d, int w, int h, void *arg
 namespace f3d {
 	Firestone::Firestone() : settings(nullptr), window(nullptr), renderer(nullptr) {
 		_run = false;
-		_start = nullptr; _start_arg = false;
-		_end = nullptr; _end_arg = false;
-		_input = defaultInputCallback; _input_arg = false;
-		_draw = nullptr; _draw_arg = false;
-		_resize = defaultResizeCallback; _resize_arg = false;
+		_start = nullptr; _start_arg = nullptr;
+		_end = nullptr; _end_arg = nullptr;
+		_draw = nullptr; _draw_arg = nullptr;
+		_resize = defaultResizeCallback; _resize_arg = nullptr;
+
+		_key_input = defaultKeyInputCallback; _key_input_arg = nullptr;
+		_joystick_input = nullptr; _joystick_input_arg = nullptr;
+		_mouse_input = nullptr; _mouse_input_arg = nullptr;
 	}
 
 	Firestone::~Firestone() {
@@ -67,9 +73,18 @@ namespace f3d {
 		_draw_arg = arg;
 	}
 
-	void	Firestone::inputCallback(f3d_input_handle_t handle, void *arg) {
-		_input = handle;
-		_input_arg = arg;
+	void	Firestone::keybordEventsCallback(f3d_keyboard_input_handle_t handle, void *arg) {
+		_key_input = handle;
+		_key_input_arg = arg;
+	}
 
+	void	Firestone::mouseEventsCallback(f3d_mouse_input_handle_t handle, void *arg) {
+		_mouse_input = handle;
+		_mouse_input_arg = arg;
+	}
+
+	void	Firestone::joystickEventsCallback(f3d_joystick_input_handle_t handle, void *arg) {
+		_joystick_input = handle;
+		_joystick_input_arg = arg;
 	}
 }
