@@ -82,10 +82,12 @@ SOURCE_GROUP( impl\\tree FILES ${f3d_tree_src} ${f3d_tree_headers} )
  
  
 SET ( f3d_utils_sdk
+		utils/inputs.cpp
 		utils/timer.cpp
 		utils/transform.cpp	
 ) 
 SET ( f3d_utils_sdk_headers
+	${F3D_HEADER_PATH}/utils/inputs.h
 	${F3D_HEADER_PATH}/utils/timer.h
 	${F3D_HEADER_PATH}/utils/transform.h
 )

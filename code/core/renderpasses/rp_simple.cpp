@@ -248,7 +248,7 @@ namespace f3d {
 				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
 				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
-				std::cout << "Drawn: " << m.numIndices() << std::endl;
+				//std::cout << "Drawn: " << m.numIndices() << std::endl;
 			}
 
 			void		SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {

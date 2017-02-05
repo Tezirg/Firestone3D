@@ -11,6 +11,7 @@
 #include "device.h"
 #include "window_impl.h"
 #include "renderer_impl.h"
+#include "utils/inputs.h"
 
 namespace f3d {
 	class FirestoneImpl : public Firestone {
@@ -20,6 +21,7 @@ namespace f3d {
 
 		bool	execute();
 		bool	applySettings();
+		bool	stop();
 	private:
 		void	initVkInstance();
 
@@ -29,6 +31,8 @@ namespace f3d {
 		std::shared_ptr<f3d::core::PhysicalDevice>	gpu;
 		std::shared_ptr<f3d::core::Device>			device;
 		std::shared_ptr<f3d::utils::Timer>			timer;
+		std::unique_ptr<f3d::utils::KeyInput>		keyEvent;
+		std::unique_ptr<f3d::utils::MouseInput>		mouseEvent;
 	};
 }
 
