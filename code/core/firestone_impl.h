@@ -33,6 +33,8 @@ namespace f3d {
 		std::shared_ptr<f3d::utils::Timer>			timer;
 		std::unique_ptr<f3d::utils::KeyInput>		keyEvent;
 		std::unique_ptr<f3d::utils::MouseInput>		mouseEvent;
+		std::unique_ptr<f3d::utils::Timer>			joystickTimer;
+		std::unique_ptr<f3d::utils::JoystickInput>	joystickEvent;
 	};
 }
 
