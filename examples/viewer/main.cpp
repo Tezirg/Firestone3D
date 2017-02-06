@@ -31,6 +31,16 @@ void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, voi
 	std::cout << mouseEvent << std::endl;
 }
 
+void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg) {
+	(void)arg;
+	if (joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_CONNECTED ||
+		joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_DISCONNECTED)
+		std::cout << joystickEvent << std::endl;
+	if (joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_BUTTON &&
+		joystickEvent.buttonState == joystickEvent.F3D_JOYSTICK_BUTTON_PRESS)
+		std::cout << joystickEvent << std::endl;
+}
+
 int main(int ac, char **av) {
 	if (ac != 2) {
 		F3D_ERROR("No file to load");
@@ -44,6 +54,7 @@ int main(int ac, char **av) {
 	engine->drawCallback(updateScene, NULL);
 	engine->keybordEventsCallback(keyCallback, NULL);
 	engine->mouseEventsCallback(mouseCallback, NULL);
+	engine->joystickEventsCallback(joystickCallback, NULL);
 	engine->settings->applicationName.assign("Sample viewer");
 	engine->settings->fpsCap = 60;
 	engine->settings->windowWidth = 1280;
