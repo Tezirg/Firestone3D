@@ -45,6 +45,8 @@ namespace f3d {
 		class Object;
 		class Node;
 		class Mesh;
+		class Material;
+		class Texture;
 	}
 	namespace utils {
 		class Timer;
@@ -66,6 +68,8 @@ namespace f3d {
 #include "tree/light.h"
 #include "tree/node.h"
 #include "tree/mesh.h"
+#include "tree/material.h"
+#include "tree/texture.h"
 #include "utils/timer.h"
 #include "utils/transform.h"
 #include "utils/inputs.h"

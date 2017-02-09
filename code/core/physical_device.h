@@ -37,6 +37,7 @@ namespace f3d {
 
 			VkPhysicalDevice					vk_physical_device; //!< In use Vulkan native device
 			VkPhysicalDeviceProperties			vk_physical_device_props; //!< In use vulkan device properties 
+			VkPhysicalDeviceFeatures			vk_physical_device_features; //!< Storage for enabled hardware features
 			VkPhysicalDeviceMemoryProperties	vk_physical_device_mem_props;//!< Memory properties of in use hardware 
 		private:
 			VkInstance							_vk_instance;
@@ -44,6 +45,7 @@ namespace f3d {
 			VkPhysicalDevice					*_devices; //!< Array of _device_count vulkan devices native type
 			VkPhysicalDeviceProperties			*_props; //!< Properties for each devices
 			VkPhysicalDeviceMemoryProperties	*_mem_props; //! < memory properties for each device
+			VkPhysicalDeviceFeatures			*_features; //!< Hardware features for each physical device
 		};
 	}
 }

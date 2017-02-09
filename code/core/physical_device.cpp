@@ -15,8 +15,10 @@ namespace f3d {
 
 			_props = new VkPhysicalDeviceProperties[_device_count];
 			_mem_props = new VkPhysicalDeviceMemoryProperties[_device_count];
+			_features = new VkPhysicalDeviceFeatures[_device_count];
 			for (uint32_t i = 0; i < _device_count; i++) {
 				vkGetPhysicalDeviceProperties(_devices[i], &(_props[i]));
+				vkGetPhysicalDeviceFeatures(_devices[i], &(_features[i]));
 				vkGetPhysicalDeviceMemoryProperties(_devices[i], &_mem_props[i]);
 			}
 
@@ -24,6 +26,7 @@ namespace f3d {
 			vk_physical_device = _devices[0];
 			vk_physical_device_props = _props[0];
 			vk_physical_device_mem_props = _mem_props[0];
+			vk_physical_device_features = _features[0];
 		}
 		PhysicalDevice::~PhysicalDevice() {}
 

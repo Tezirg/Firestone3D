@@ -55,6 +55,8 @@ SET ( f3d_tree_sdk
 	tree/camera.cpp
 	tree/light.cpp
 	tree/node.cpp
+	tree/material.cpp
+	tree/texture.cpp
 )
 SET ( f3d_tree_sdk_headers
 	${F3D_HEADER_PATH}/tree/scene.h
@@ -63,6 +65,8 @@ SET ( f3d_tree_sdk_headers
 	${F3D_HEADER_PATH}/tree/light.h
 	${F3D_HEADER_PATH}/tree/camera.h
 	${F3D_HEADER_PATH}/tree/node.h
+	${F3D_HEADER_PATH}/tree/material.h
+	${F3D_HEADER_PATH}/tree/texture.h
 )
 SOURCE_GROUP ( sdk\\tree FILES ${f3d_tree_sdk} ${f3d_tree_sdk_headers} ) 
 
@@ -71,12 +75,14 @@ SET ( f3d_tree_src
 	tree/mesh_impl.cpp
 	tree/light_impl.cpp
 	tree/camera_impl.cpp
+	tree/texture_impl.cpp
 )
 SET ( f3d_tree_headers
 	${F3D_PRIVATE_HEADER_PATH}/tree/scene_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/camera_impl.h
+	${F3D_PRIVATE_HEADER_PATH}/tree/texture_impl.h
 )
 SOURCE_GROUP( impl\\tree FILES ${f3d_tree_src} ${f3d_tree_headers} )
  
