@@ -5,7 +5,7 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
 		(*it)->translate(glm::vec3(0.0f, -100.0f, 0.0f));
-		(*it)->scale(glm::vec3(1000.0f));
+		(*it)->scale(glm::vec3(1.0f));
 	}
 }
 

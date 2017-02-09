@@ -45,6 +45,7 @@ INCLUDE_DIRECTORIES( "${CMAKE_BINARY_DIR}/include/" )
 INCLUDE_DIRECTORIES( include/ )
 INCLUDE_DIRECTORIES( include/f3d/ )
 INCLUDE_DIRECTORIES( include/glm/ )
+INCLUDE_DIRECTORIES( include/gli/ )
 
 #Subprojects
 ADD_SUBDIRECTORY( code/ )
