@@ -23,6 +23,18 @@ namespace f3d {
 			return _lights;
 		}
 
+		std::list< f3d::tree::Material *>&				Scene::getMaterials() {
+			return _materials;
+		}
+
+		f3d::tree::Material*							Scene::getMaterialByName(const std::string& name) {
+			for (auto it = _materials.begin(); it != _materials.end(); ++it) {
+				if ((*it)->getName() == name)
+					return *it;
+			}
+			return  nullptr;
+		}
+
 		void											Scene::addObject(f3d::tree::Object* obj) {
 			_objects.push_back(obj);
 		}
@@ -36,6 +48,16 @@ namespace f3d {
 		}
 		void											Scene::removeLight(f3d::tree::Light* light) {
 			_lights.remove(light);
+			_dirty = true;
+		}
+
+		void											Scene::addMaterial(f3d::tree::Material* material) {
+			_materials.push_back(material);
+			_dirty = true;
+		}
+
+		void											Scene::removeMaterial(f3d::tree::Material* material) {
+			_materials.remove(material);
 			_dirty = true;
 		}
 

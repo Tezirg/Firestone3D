@@ -32,15 +32,23 @@ namespace f3d {
 			_colors[type] = in;
 		}
 
-		const std::list<f3d::tree::Texture>& Material::getTextures(void) const {
+		void					Material::addTexture(f3d::tree::Texture *texture) {
+			_textures.push_back(texture);
+			std::cout << "Texture added: " << texture->getWidth() << ';' << texture->getHeight() << std::endl;
+		}
+		void					Material::removeTexture(f3d::tree::Texture *texture) {
+			_textures.remove(texture);
+		}
+
+		const std::list<f3d::tree::Texture *>& Material::getTextures(void) const {
 			return _textures;
 		}
 
-		float					Material::getShineness(void) const {
+		float					Material::getShininess(void) const {
 			return _shininess;
 		}
 
-		void					Material::setShineness(const float value) {
+		void					Material::setShininess(const float value) {
 			_shininess = value;
 		}
 

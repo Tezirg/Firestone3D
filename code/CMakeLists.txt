@@ -28,7 +28,7 @@ SET ( f3d_core_src
 	core/renderer_impl.cpp
 	core/renderpasses/rp_simple.cpp
 	core/programs/prog_flat.cpp
-		
+	core/programs/prog_textured.cpp		
 	core/programs/program.cpp
 	core/renderpasses/render_pass.cpp
 )
@@ -43,6 +43,7 @@ SET ( f3d_core_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/depth.h
 	${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_textured.h
 	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
 )
 
@@ -101,10 +102,12 @@ SOURCE_GROUP ( sdk\\utils FILES ${f3d_utils_sdk} ${f3d_utils_sdk_headers} )
 
 SET ( f3d_utils_src
 	utils/vulkan.cpp
+	utils/lodepng.cpp
 )
 SET ( f3d_utils_headers
 	${F3D_PRIVATE_HEADER_PATH}/utils/vulkan.h
-) 
+	${F3D_PRIVATE_HEADER_PATH}/utils/lodepng.h
+	) 
 SOURCE_GROUP( impl\\utils FILES ${f3d_utils_src} ${f3d_utils_headers} )
 
 SET( f3d_src

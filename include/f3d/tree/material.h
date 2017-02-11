@@ -36,14 +36,17 @@ namespace f3d {
 			void					setname(const std::string& value);
 			bool					getColor(const eColorType type, glm::vec3& out) const;
 			void					setColor(const eColorType type, glm::vec3& in);
-			float					getShineness(void) const;
-			void					setShineness(const float value);
-			const std::list<f3d::tree::Texture>& getTextures(void) const;
+			float					getShininess(void) const;
+			void					setShininess(const float value);
+
+			void					addTexture(f3d::tree::Texture *texture);
+			void					removeTexture(f3d::tree::Texture *texture);
+			const std::list<f3d::tree::Texture *>& getTextures(void) const;
 		protected:
 			std::string							_name;
 			float								_shininess;
 			std::map<eColorType, glm::vec3>		_colors;
-			std::list<f3d::tree::Texture>		_textures;
+			std::list<f3d::tree::Texture *>		_textures;
 
 		};
 	}// tree::

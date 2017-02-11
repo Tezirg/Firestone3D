@@ -28,6 +28,9 @@
 
 //Images dependency
 #include <gli/gli.hpp>
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include "version.h"
 

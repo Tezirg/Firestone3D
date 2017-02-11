@@ -1,7 +1,15 @@
 #include <f3d/f3d.h>
 
 void		loadScene(f3d::Firestone& f3d, void * arg) {
-	f3d.scene->loadFromFile((char *)arg);
+	std::string path((char *)arg);
+	std::string file((char *)arg);
+
+	path = path.substr(0, path.find_last_of("/\\") + 1);
+	file = file.substr(file.find_last_of("/\\") + 1);
+
+	std::cout << path << std::endl;
+	std::cout << file << std::endl;
+	f3d.scene->loadFromFile(path, file);
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
 		(*it)->translate(glm::vec3(0.0f, -100.0f, 0.0f));

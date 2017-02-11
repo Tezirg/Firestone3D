@@ -20,6 +20,8 @@ namespace f3d {
 			std::shared_ptr<f3d::tree::Camera>&				getCamera();
 			std::list< f3d::tree::Object * >&				getObjects();
 			std::list< f3d::tree::Light * >&				getLights();
+			std::list< f3d::tree::Material *>&				getMaterials();
+			f3d::tree::Material*							getMaterialByName(const std::string& name);
 
 			void											addObject(f3d::tree::Object* mesh);
 			void											removeObject(f3d::tree::Object* mesh);
@@ -27,12 +29,16 @@ namespace f3d {
 			void											addLight(f3d::tree::Light* light);
 			void											removeLight(f3d::tree::Light* light);
 
-			virtual void									loadFromFile(const std::string& path) = 0;
+			void											addMaterial(f3d::tree::Material* material);
+			void											removeMaterial(f3d::tree::Material* material);
+
+			virtual void									loadFromFile(const std::string& path, const std::string& file) = 0;
 		protected:
 			bool											_dirty;
 			std::shared_ptr< f3d::tree::Camera >			_camera;
 			std::list< f3d::tree::Object * >				_objects;
 			std::list< f3d::tree::Light * >					_lights;
+			std::list< f3d::tree::Material * >				_materials;
 		};
 	}
 }

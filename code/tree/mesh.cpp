@@ -18,6 +18,14 @@ namespace f3d {
 			_name.assign(val);
 		}
 
+		std::string		Mesh::getMaterialName() const {
+			return _material_name;
+		}
+
+		void			Mesh::setMaterialName(const std::string val) {
+			_material_name.assign(val);
+		}
+
 		uint32_t		Mesh::numVertices() const {
 			return _vertices_count;
 		}

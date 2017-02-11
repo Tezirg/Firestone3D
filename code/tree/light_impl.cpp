@@ -7,9 +7,9 @@ namespace f3d {
 			setAttenuationConstant(1.0);
 			setAttenuationLinear(0.0);
 			setAttenuationQuadratic(0.0);
-			setColorAmbient(aiColor3D(1.0f));
-			setColorDiffuse(aiColor3D(1.0f));
-			setColorSpecular(aiColor3D(1.0f));
+			setColorAmbient(glm::vec3(1.0f));
+			setColorDiffuse(glm::vec3(1.0f));
+			setColorSpecular(glm::vec3(1.0f));
 			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
 			setName(std::string("DefaultLight"));
 			setType(F3D_LIGHT_DIRECTIONAL);
@@ -32,11 +32,11 @@ namespace f3d {
 		float					LightImpl::getAttenuationQuadratic() const { return _ai_light->mAttenuationQuadratic; }
 		void					LightImpl::setAttenuationQuadratic(float val) { _ai_light->mAttenuationQuadratic = val; }
 		glm::vec3				LightImpl::getColorAmbient() const { return glm::vec3(_ai_light->mColorAmbient.r, _ai_light->mColorAmbient.g, _ai_light->mColorAmbient.b); }
-		void					LightImpl::setColorAmbient(const aiColor3D& val) { _ai_light->mColorAmbient = val;  }
+		void					LightImpl::setColorAmbient(const glm::vec3& val) { _ai_light->mColorAmbient.r = val.x; _ai_light->mColorAmbient.g = val.y; _ai_light->mColorAmbient.b = val.z; }
 		glm::vec3				LightImpl::getColorDiffuse() const { return glm::vec3(_ai_light->mColorDiffuse.r, _ai_light->mColorDiffuse.g, _ai_light->mColorDiffuse.b); }
-		void					LightImpl::setColorDiffuse(const aiColor3D& val) { _ai_light->mColorDiffuse = val; }
+		void					LightImpl::setColorDiffuse(const glm::vec3& val) { _ai_light->mColorDiffuse.r = val.x; _ai_light->mColorDiffuse.g = val.y; _ai_light->mColorDiffuse.b = val.z; }
 		glm::vec3				LightImpl::getColorSpecular() const { return glm::vec3(_ai_light->mColorSpecular.r, _ai_light->mColorSpecular.g, _ai_light->mColorSpecular.b); }
-		void					LightImpl::setColorSpecular(const aiColor3D& val) { _ai_light->mColorSpecular = val; }
+		void					LightImpl::setColorSpecular(const glm::vec3& val) { _ai_light->mColorSpecular.r = val.x; _ai_light->mColorSpecular.g = val.y; _ai_light->mColorSpecular.b = val.z; }
 		glm::vec3				LightImpl::getDirection() const { return glm::vec3(_ai_light->mDirection.x, _ai_light->mDirection.y, _ai_light->mDirection.z); }
 		void					LightImpl::setDirection(const glm::vec3& val) { 
 			_ai_light->mDirection.x = val.x;

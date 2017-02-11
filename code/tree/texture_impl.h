@@ -18,7 +18,7 @@ namespace f3d {
 				bool			initializeLinearTiling(uint32_t width, uint32_t height, void *data, VkFormat format);
 			private:
 				void			createImage(VkFormat format);
-				void			initMemory(void *data, uint32_t size);
+				void			initMemory(void *data, VkMemoryRequirements& memReqs);
 				void			createSampler(void);
 				void			createView(VkFormat format);
 				void			destroy(void);

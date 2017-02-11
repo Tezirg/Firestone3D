@@ -46,6 +46,7 @@ INCLUDE_DIRECTORIES( include/ )
 INCLUDE_DIRECTORIES( include/f3d/ )
 INCLUDE_DIRECTORIES( include/glm/ )
 INCLUDE_DIRECTORIES( include/gli/ )
+INCLUDE_DIRECTORIES( include/stb/ )
 
 #Subprojects
 ADD_SUBDIRECTORY( code/ )

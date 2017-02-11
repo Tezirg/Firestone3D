@@ -25,7 +25,6 @@ namespace f3d {
 			virtual void		initVkLayout() = 0;
 			virtual void		initVkPipelineInfos();
 			virtual void		initVkDecriptorPool() = 0;
-
 		public:
 			VkDevice				vk_device; //Device to create from
 			VkPipeline				vk_pipeline; //!< Vulkan pipeline native type

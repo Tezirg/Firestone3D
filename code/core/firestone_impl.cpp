@@ -218,7 +218,7 @@ namespace f3d {
 				glfwPollEvents();
 				if (joystickTimer->ticks() >= joystick_interval) {
 					joystickTimer->restart();
-					for (int32_t i = 0; i < 2 /*GLFW_JOYSTICK_LAST*/; i++) //Hardcoded number of supported joysticks
+					for (int32_t i = 0; i < 2 /*GLFW_JOYSTICK_LAST*/; i++) //@todo: Change Hardcoded number of supported joysticks
 						joystick_update(i);
 				}
 			}

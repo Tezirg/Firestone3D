@@ -8,10 +8,6 @@
 #include <iostream>
 
 #include <glm/glm.hpp>
-#include <assimp/vector3.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/matrix3x3.h>
-#include <assimp/types.h>
 
 namespace f3d {
 	namespace tree {
@@ -42,11 +38,11 @@ namespace f3d {
 			virtual float					getAttenuationQuadratic() const = 0;
 			virtual void					setAttenuationQuadratic(float val) = 0;
 			virtual glm::vec3				getColorAmbient() const = 0;
-			virtual void					setColorAmbient(const aiColor3D& val) = 0;
+			virtual void					setColorAmbient(const glm::vec3& val) = 0;
 			virtual glm::vec3		 		getColorDiffuse() const = 0;
-			virtual void					setColorDiffuse(const aiColor3D& val) = 0;
+			virtual void					setColorDiffuse(const glm::vec3& val) = 0;
 			virtual glm::vec3		 		getColorSpecular() const = 0;
-			virtual void					setColorSpecular(const aiColor3D& val) = 0;
+			virtual void					setColorSpecular(const glm::vec3& val) = 0;
 			virtual glm::vec3				getDirection() const = 0;
 			virtual void					setDirection(const glm::vec3& val) = 0;
 			virtual std::string				getName() const = 0;

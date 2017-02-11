@@ -233,8 +233,8 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
-				VkBuffer		vertex_bufs[2];
-				VkDeviceSize	vertex_offsets[2];
+				VkBuffer				vertex_bufs[2];
+				VkDeviceSize			vertex_offsets[2];
 
 				vertex_bufs[0] = m.getVertexBuffer();
 				vertex_bufs[1] = m.getNormalBuffer();
@@ -251,7 +251,7 @@ namespace f3d {
 				//std::cout << "Drawn: " << m.numIndices() << std::endl;
 			}
 
-			void		SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {
+			void						SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {
 				f3d::tree::CameraImpl*	camera = dynamic_cast<f3d::tree::CameraImpl *>(cam.get());
 				VkWriteDescriptorSet	pWrites[1];
 				VkDescriptorBufferInfo	world_info;

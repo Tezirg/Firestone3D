@@ -20,6 +20,10 @@ namespace f3d {
 			std::string		getName() const;
 			void			setName(const std::string val);
 
+			std::string		getMaterialName() const;
+			void			setMaterialName(const std::string val);
+
+
 			uint32_t		numVertices() const;
 			void			addVertex(const float x, const float y, const float z);
 			void			addVertex(glm::vec3& v);
@@ -41,6 +45,7 @@ namespace f3d {
 		protected:
 			bool						_ready;
 			std::string					_name;
+			std::string					_material_name;
 			uint32_t					_vertices_count;
 			std::vector<float>			_vertices;
 			uint32_t					_normals_count;
