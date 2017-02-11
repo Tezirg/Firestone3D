@@ -25,6 +25,7 @@ namespace f3d {
 			VkBuffer				getVertexBuffer();
 			VkBuffer				getNormalBuffer();
 			VkBuffer				getIndexBuffer();
+			VkBuffer				getUvBuffer();
 
 			VkDescriptorSet			getUniform();
 			bool					updateUniform(glm::mat4& model);
@@ -52,6 +53,9 @@ namespace f3d {
 			
 			VkBuffer				_index_buf;
 			VkDeviceMemory			_index_mem;
+
+			VkBuffer				_uv_buf;
+			VkDeviceMemory			_uv_mem;
 		};
 	}
 }

@@ -65,14 +65,16 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating texture memory");
 			r = vkBindImageMemory(_device->vk_device, vk_image, vk_memory, 0);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Binding texture memory");
-
+			
+			// /*
 			for (uint32_t i = 0; i < total; i += step) {
-				VkDeviceSize mapsize = total < (i + step) ? step : (total - i);
+				VkDeviceSize mapsize = total > (i + step) ? step : (total - i);
 				r = vkMapMemory(_device->vk_device, vk_memory, i, mapsize, 0, &pData);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Mapping texture memory");
-				std::memcpy(pData, data, mapsize);
+				std::memcpy(pData, (char *)data + i, mapsize);
 				vkUnmapMemory(_device->vk_device, vk_memory);
 			}
+			// */
 		}
 		void							TextureImpl::createSampler() {
 			VkResult					r;
@@ -87,6 +89,7 @@ namespace f3d {
 			info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 			info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 			info.mipLodBias = 0.0f;
+			info.compareEnable = VK_FALSE;
 			info.compareOp = VK_COMPARE_OP_NEVER;
 			info.minLod = 0.0f;
 			info.maxLod = 0.0f;

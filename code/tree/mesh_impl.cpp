@@ -82,6 +82,7 @@ namespace f3d {
 		VkBuffer				MeshImpl::getVertexBuffer() { return _vertex_buf;  }
 		VkBuffer				MeshImpl::getNormalBuffer() { return _normal_buf;  }
 		VkBuffer				MeshImpl::getIndexBuffer() { return _index_buf; }
+		VkBuffer				MeshImpl::getUvBuffer() { return _uv_buf; }
 
 		bool			MeshImpl::makeRenderReady() {
 			createAttribute(_vertex_mem, _vertices.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _vertex_buf);
@@ -91,6 +92,10 @@ namespace f3d {
 			createAttribute(_normal_mem, _normals.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _normal_buf);
 			updateAttribute(_normals.data(), _normal_mem, _normals.size() * sizeof(float));
 			_normals.clear();
+
+			createAttribute(_uv_mem, _uvs.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _uv_buf);
+			updateAttribute(_uvs.data(), _uv_mem, _uvs.size() * sizeof(float));
+			_uvs.clear();
 
 			createAttribute(_index_mem, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, _index_buf);
 			updateAttribute(_indices.data(), _index_mem, _indices.size() * sizeof(uint32_t));

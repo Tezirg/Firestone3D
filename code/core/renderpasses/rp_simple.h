@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <stack>
+#include <list>
 
 #include "f3d.h"
 #include "core/window.h"
@@ -15,8 +16,10 @@
 #include "core/depth.h"
 #include "core/physical_device.h"
 #include "core/programs/prog_flat.h"
+#include "core/programs/prog_textured.h"
 #include "tree/camera_impl.h"
 #include "tree/mesh_impl.h"
+#include "tree/texture_impl.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
@@ -29,6 +32,7 @@ namespace f3d {
 
 				void		render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene);
 				void		updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam);
+				void		updateTextureDescriptorSet(f3d::tree::Texture* texure);
 			private:
 				void		initRenderPass();
 				void		initViews();
@@ -38,7 +42,8 @@ namespace f3d {
 			private:
 				std::unique_ptr<f3d::core::Depth>					_depth;
 				VkFormat											_color_format;
-				std::unique_ptr<f3d::core::prog::FlatProgram>		_prog;
+				std::unique_ptr<f3d::core::prog::FlatProgram>		_flat_prog;
+				std::unique_ptr<f3d::core::prog::TexturedProgram>	_texture_prog;
 				VkClearValue										_clear[2]; //!< Color & depth clear values
 				VkAttachmentDescription								_attachments[2]; //!< Color & Depth description
 				VkAttachmentReference								_color_reference; //!< Color attachement details
@@ -49,7 +54,7 @@ namespace f3d {
 				VkDeviceMemory	depth_vk_memory; //!< Allocated memory on GPU
 				VkFormat		depth_vk_format; //!< Depth buffer format
 
-				std::stack<glm::mat4>								_matrix;
+				std::stack<glm::mat4>								_matrix; //!< World transformation matrix stack. Used to reproduce glPushMatrix & glPopMatrix
 
 			};
 		}

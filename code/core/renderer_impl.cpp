@@ -39,6 +39,11 @@ namespace f3d {
 
 			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
 			test->updateCameraDescriptorSet(scene->getCamera());
+			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
+				if ((*it)->getTextures().empty() == false) {
+					test->updateTextureDescriptorSet((*it)->getTextures().front());
+				}
+			}
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
 				_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
@@ -56,6 +61,11 @@ namespace f3d {
 
 			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
 			test->updateCameraDescriptorSet(scene->getCamera());
+			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
+				if ((*it)->getTextures().empty() == false) {
+					test->updateTextureDescriptorSet((*it)->getTextures().front());
+				}
+			}
 			_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
 			//((f3d::tree::CameraImpl *)scene->getCamera().get())->updateAttribute();

@@ -8,8 +8,8 @@
 #include "core/programs/program.h"
 
 
-const static char flat_vert_spv[] = "texture.vert.spv";
-const static char flat_frag_spv[] = "texture.frag.spv";
+const static char texture_vert_spv[] = "texture.vert.spv";
+const static char texture_frag_spv[] = "texture.frag.spv";
 
 namespace f3d {
 	namespace core {
@@ -42,9 +42,11 @@ namespace f3d {
 			public:
 				VkDescriptorSet					world_set;
 				VkDescriptorSet					model_set;
+				VkDescriptorSet					sampler_set;
+
 			private:
-				VkVertexInputAttributeDescription		_vi_attr[2]; //!< pipeline has 2 inputs
-				VkVertexInputBindingDescription			_vi_bind[2]; //!< pipeline has one binding per input (total 2)
+				VkVertexInputAttributeDescription		_vi_attr[3]; //!< pipeline has 3 inputs
+				VkVertexInputBindingDescription			_vi_bind[3]; //!< pipeline has one binding per attribute (total 3)
 			};
 		}
 	}

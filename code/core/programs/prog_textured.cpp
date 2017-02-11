@@ -23,14 +23,14 @@ namespace f3d {
 
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
 
-				F3D_ASSERT(createSpvShader(flat_vert_spv, &vert_shader) != false, "Flat program vertex shader");
+				F3D_ASSERT(createSpvShader(texture_vert_spv, &vert_shader) != false, "Flat program vertex shader");
 
 				shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 				shaderStages[0].module = vert_shader;
 				shaderStages[0].pName = "main";
 
-				F3D_ASSERT(createSpvShader(flat_frag_spv, &frag_shader) != false, "Flat program fragment shader");
+				F3D_ASSERT(createSpvShader(texture_frag_spv, &frag_shader) != false, "Flat program fragment shader");
 
 				shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -65,7 +65,7 @@ namespace f3d {
 			void				TexturedProgram::initVkPipelineInfos() {
 				Program::initVkPipelineInfos();
 
-				//layout (location = 0) in vec4 position
+				//layout (location = 0) in vec4 inPosition
 				std::memset(&_vi_bind, 0, sizeof(_vi_bind));
 				_vi_bind[0].binding = 0;
 				_vi_bind[0].stride = sizeof(float) * 4;
@@ -76,7 +76,7 @@ namespace f3d {
 				_vi_attr[0].location = 0;
 				_vi_attr[0].offset = 0;
 
-				//layout (location = 1) in vec4 normal
+				//layout (location = 1) in vec4 inNormal
 				_vi_bind[1].binding = 1;
 				_vi_bind[1].stride = sizeof(float) * 4;
 				_vi_bind[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -85,18 +85,27 @@ namespace f3d {
 				_vi_attr[1].location = 1;
 				_vi_attr[1].offset = 0;
 
+				//layout(location = 2) in vec2 inUv;
+				_vi_bind[2].binding = 2;
+				_vi_bind[2].stride = sizeof(float) * 2;
+				_vi_bind[2].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+				_vi_attr[2].format = VkFormat::VK_FORMAT_R32G32_SFLOAT;
+				_vi_attr[2].binding = 2;
+				_vi_attr[2].location = 2;
+				_vi_attr[2].offset = 0;
+
 				//Setup vkGraphicsPipelineCreateInfos.vertexInputStateCreateInfos struct
 				std::memset(&_vi, 0, sizeof(_vi));
 				_vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-				_vi.vertexAttributeDescriptionCount = 2;
+				_vi.vertexAttributeDescriptionCount = 3;
 				_vi.pVertexAttributeDescriptions = _vi_attr;
-				_vi.vertexBindingDescriptionCount = 2;
+				_vi.vertexBindingDescriptionCount = 3;
 				_vi.pVertexBindingDescriptions = _vi_bind;
 			}
 
 			void									TexturedProgram::initVkLayout() {
 				VkResult							r;
-				VkDescriptorSetLayoutBinding		layout_bindings[2];
+				VkDescriptorSetLayoutBinding		layout_bindings[3];
 				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
@@ -116,29 +125,40 @@ namespace f3d {
 				layout_bindings[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 				layout_bindings[1].pImmutableSamplers = NULL;
 
+				//layout (set = 2, binding = 0) uniform sampler2D samplerColor;
+				layout_bindings[2].binding = 0;
+				layout_bindings[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				layout_bindings[2].descriptorCount = 1;
+				layout_bindings[2].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+				layout_bindings[2].pImmutableSamplers = NULL;
+
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
 				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info.bindingCount = 1;
 				desc_layout_info.pBindings = &layout_bindings[0];
-
-				vk_desc_layout = new VkDescriptorSetLayout[2];
+				vk_desc_layout = new VkDescriptorSetLayout[3];
 				r = vkCreateDescriptorSetLayout(vk_device,& desc_layout_info, NULL, &vk_desc_layout[0]);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Create descriptor set layout[0] failed");
 				
-				// /*
+
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
 				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info.bindingCount = 1;
 				desc_layout_info.pBindings = &layout_bindings[1];
-
-
 				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[1]);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Create descriptor set layout[1] failed");
-				// */
+
+				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info.bindingCount = 1;
+				desc_layout_info.pBindings = &layout_bindings[2];
+				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[2]);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Create descriptor set layout[2] failed");
+
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 				pipe_layout_info.pNext = NULL;
-				pipe_layout_info.setLayoutCount = 2;
+				pipe_layout_info.setLayoutCount = 3;
 				pipe_layout_info.pSetLayouts = vk_desc_layout;
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Create pipeline layout failed");
@@ -151,11 +171,13 @@ namespace f3d {
 
 				pool_types[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pool_types[0].descriptorCount = 1;
+				pool_types[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				pool_types[1].descriptorCount = 1;
 
 				std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
 				pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-				pool_info.poolSizeCount = 1;
-				pool_info.maxSets = 1;
+				pool_info.poolSizeCount = 2;
+				pool_info.maxSets = 2;
 				pool_info.pPoolSizes = pool_types;
 				r = vkCreateDescriptorPool(vk_device, &pool_info, NULL, &vk_desc_pool);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Descriptor pool creation failed");
@@ -171,7 +193,15 @@ namespace f3d {
 				desc_set_alloc.descriptorSetCount = 1;
 				desc_set_alloc.pSetLayouts = &(vk_desc_layout[0]);
 				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &world_set);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocation failed");
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set 0 allocation failed");
+
+				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
+				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				desc_set_alloc.descriptorPool = vk_desc_pool;
+				desc_set_alloc.descriptorSetCount = 1;
+				desc_set_alloc.pSetLayouts = &(vk_desc_layout[2]);
+				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &sampler_set);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set 2 allocation failed");
 			}
 		}
 	}

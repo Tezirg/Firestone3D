@@ -12,8 +12,8 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->loadFromFile(path, file);
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
-		(*it)->translate(glm::vec3(0.0f, -100.0f, 0.0f));
-		(*it)->scale(glm::vec3(1.0f));
+		(*it)->translate(glm::vec3(0.0f, 0.0f, 0.0f));
+		(*it)->scale(glm::vec3(3.0f));
 	}
 }
 
@@ -21,7 +21,7 @@ void		updateScene(f3d::Firestone& f3d, void * arg) {
 	(void)arg;
 	const glm::vec3	rotationAxis(0.0, 1.0, 0.0);
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it)
-		(*it)->rotate(0.1f, rotationAxis);
+		(*it)->rotate(0.01f, rotationAxis);
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {

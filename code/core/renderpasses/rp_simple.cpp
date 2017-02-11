@@ -9,7 +9,8 @@ namespace f3d {
 											   std::shared_ptr<f3d::core::Window>& window):
 				RenderPass::RenderPass(F3D_RENDERPASS_SIMPLE, device, physical, window), 
 				_color_format(VK_FORMAT_B8G8R8A8_UNORM),
-				_prog(new f3d::core::prog::FlatProgram(device->vk_device)) {
+				_flat_prog(new f3d::core::prog::FlatProgram(device->vk_device)),
+				_texture_prog(new f3d::core::prog::TexturedProgram(device->vk_device)) {
 
 
 				WindowImpl *w = dynamic_cast<WindowImpl *>(window.get());
@@ -25,7 +26,8 @@ namespace f3d {
 				_clear[1].depthStencil.stencil = 0;
 
 				initRenderPass();
-				_prog->initVkPipeline(vk_renderpass, 0);
+				_flat_prog->initVkPipeline(vk_renderpass, 0);
+				_texture_prog->initVkPipeline(vk_renderpass, 0);
 
 				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
@@ -181,7 +183,6 @@ namespace f3d {
 					vkCmdBeginRenderPass(cmd, &rp_begin_info, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE);
 				
 				{
-					_prog->bind(cmd);
 
 					vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
 					vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
@@ -233,41 +234,89 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
-				VkBuffer				vertex_bufs[2];
-				VkDeviceSize			vertex_offsets[2];
+				VkBuffer				vertex_bufs[3];
+				VkDeviceSize			vertex_offsets[3];
 
-				vertex_bufs[0] = m.getVertexBuffer();
-				vertex_bufs[1] = m.getNormalBuffer();
-				vertex_offsets[0] = 0;
-				vertex_offsets[1] = 0;
-				
-				m.updateUniform(_matrix.top());
-				VkDescriptorSet sets[2] = { _prog->world_set , m.getUniform() };
+				if (mesh.numUV() == 0) {
 
-				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _prog->vk_pipeline_layout, 0, 2, sets, 0, VK_NULL_HANDLE);
-				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
-				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
+					vertex_bufs[0] = m.getVertexBuffer();
+					vertex_bufs[1] = m.getNormalBuffer();
+					vertex_offsets[0] = 0;
+					vertex_offsets[1] = 0;
+
+					m.updateUniform(_matrix.top());
+					VkDescriptorSet sets[2] = { _flat_prog->world_set , m.getUniform() };
+
+					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _flat_prog->vk_pipeline_layout, 0, 2, sets, 0, VK_NULL_HANDLE);
+
+					_flat_prog->bind(cmd);
+
+					vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
+					vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+					vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
+				}
+				else {
+					vertex_bufs[0] = m.getVertexBuffer();
+					vertex_bufs[1] = m.getNormalBuffer();
+					vertex_bufs[2] = m.getUvBuffer();
+					vertex_offsets[0] = 0;
+					vertex_offsets[1] = 0;
+					vertex_offsets[2] = 0;
+
+					m.updateUniform(_matrix.top());
+					VkDescriptorSet sets[3] = { _texture_prog->world_set , m.getUniform(),  _texture_prog->sampler_set };
+					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _texture_prog->vk_pipeline_layout, 0, 3, sets, 0, VK_NULL_HANDLE);
+
+					_texture_prog->bind(cmd);
+
+					vkCmdBindVertexBuffers(cmd, 0, 3, vertex_bufs, vertex_offsets);
+					vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+					vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
+				}
 				//std::cout << "Drawn: " << m.numIndices() << std::endl;
 			}
 
 			void						SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {
 				f3d::tree::CameraImpl*	camera = dynamic_cast<f3d::tree::CameraImpl *>(cam.get());
-				VkWriteDescriptorSet	pWrites[1];
+				VkWriteDescriptorSet	pWrites[2];
 				VkDescriptorBufferInfo	world_info;
 
 				camera->updateAttribute();
-				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet));
+				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet) * 2);
 				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				pWrites[0].dstSet = _prog->world_set;
+				pWrites[0].dstSet = _flat_prog->world_set;
 				pWrites[0].descriptorCount = 1;
 				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				pWrites[0].pBufferInfo = &world_info;
+				pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				pWrites[1].dstSet = _texture_prog->world_set;
+				pWrites[1].descriptorCount = 1;
+				pWrites[1].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				pWrites[1].pBufferInfo = &world_info;
 				world_info.offset = 0;
 				world_info.range = 16 * sizeof(float);
 				world_info.buffer = camera->_buffer;
 
-				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, NULL);
+				vkUpdateDescriptorSets(device->vk_device, 2, pWrites, 0, nullptr);
+			}
+
+			void							SimpleRenderPass::updateTextureDescriptorSet(f3d::tree::Texture* texture) {
+				f3d::tree::TextureImpl *   text = dynamic_cast<f3d::tree::TextureImpl *>(texture);
+
+				VkWriteDescriptorSet	pWrites[1];
+				VkDescriptorImageInfo	sampler_info;
+
+				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet));
+				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				pWrites[0].dstSet = _texture_prog->sampler_set;
+				pWrites[0].descriptorCount = 1;
+				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				pWrites[0].pImageInfo = &sampler_info;
+				sampler_info.imageView = text->vk_view;
+				sampler_info.imageLayout = text->vk_image_layout;
+				sampler_info.sampler = text->vk_sampler;
+
+				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, nullptr);
 			}
 		}
 	}

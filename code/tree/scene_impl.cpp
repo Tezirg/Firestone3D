@@ -28,10 +28,13 @@ namespace f3d {
 					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
 					if (aimesh->mNormals != NULL)
 						fmesh->addNormal(glm::vec3(aimesh->mNormals[v].x, aimesh->mNormals[v].y, aimesh->mNormals[v].z));
+					if (aimesh->HasTextureCoords(0))
+						fmesh->addUV(aimesh->mTextureCoords[0][v].x, aimesh->mTextureCoords[0][v].y);
 				}
 				for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
 					fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
 				}
+
 
 				fmesh->makeRenderReady();
 				f3d_node->addMesh(fmesh);
