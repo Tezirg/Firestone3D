@@ -28,8 +28,9 @@ namespace f3d {
 					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
 					if (aimesh->mNormals != NULL)
 						fmesh->addNormal(glm::vec3(aimesh->mNormals[v].x, aimesh->mNormals[v].y, aimesh->mNormals[v].z));
-					if (aimesh->HasTextureCoords(0))
+					if (aimesh->HasTextureCoords(0)) {
 						fmesh->addUV(aimesh->mTextureCoords[0][v].x, aimesh->mTextureCoords[0][v].y);
+					}
 				}
 				for (uint32_t f = 0; f < aimesh->mNumFaces; f++) {
 					fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
@@ -64,7 +65,7 @@ namespace f3d {
 
 			Assimp::Importer		importer;
 			const aiScene*			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |   \
-																					aiProcess_SplitLargeMeshes | aiProcess_SortByPType | aiProcess_OptimizeMeshes);
+																					aiProcess_SplitLargeMeshes | aiProcess_SortByPType | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
 			
 			if (ai_scene == 0x0)
 				F3D_FATAL_ERROR(importer.GetErrorString());
@@ -225,13 +226,13 @@ namespace f3d {
 				}
 
 				texture = new f3d::tree::TextureImpl(gli_texture2d[0].extent().x, gli_texture2d[0].extent().y, gli_texture2d.levels(), type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(gli_texture2d[0].extent().x, gli_texture2d[0].extent().y, gli_texture2d[0].data(), VK_FORMAT_R8G8B8A8_SNORM);
+				texture->initializeLinearTiling(gli_texture2d[0].extent().x, gli_texture2d[0].extent().y, gli_texture2d[0].data(), gli_texture2d[0].size(), VK_FORMAT_R8G8B8A8_SNORM);
 			}
 			else if (textureExtension == "jpg" || textureExtension == "jpeg" || textureExtension == "tga" || textureExtension == "bmp" || textureExtension == "gif") {
 				int x, y, n;
 				unsigned char *data = stbi_load(texturePath.c_str(), &x, &y, &n, STBI_rgb_alpha);
 				texture = new f3d::tree::TextureImpl(x, y, 0, type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(x, y, data, VK_FORMAT_R8G8B8A8_UNORM);
+				texture->initializeLinearTiling(x, y, data, x * y * 4, VK_FORMAT_R8G8B8A8_UNORM);
 				stbi_image_free(data);
 			}
 			else if (textureExtension == "png") {
@@ -243,7 +244,7 @@ namespace f3d {
 				//if there's an error, display it
 				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 				texture = new f3d::tree::TextureImpl(width, height, 0, type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(width, height, image.data(), VK_FORMAT_R8G8B8A8_UNORM);
+				texture->initializeLinearTiling(width, height, image.data(), image.size(), VK_FORMAT_R8G8B8A8_UNORM);
 			}
 			else {
 				return nullptr;

@@ -13,13 +13,13 @@ namespace f3d {
 			destroy();
 		}
 
-		bool						TextureImpl::initializeLinearTiling(uint32_t width, uint32_t height, void *data, VkFormat format) {
+		bool						TextureImpl::initializeLinearTiling(uint32_t width, uint32_t height, void *data, uint32_t size, VkFormat format) {
 			VkMemoryRequirements	memReqs;
 
 			vk_image_layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			createImage(format);
 			vkGetImageMemoryRequirements(_device->vk_device, vk_image, &memReqs);
-			initMemory(data, memReqs);
+			initMemory(data, size, memReqs);
 			_device->initImageLayout(vk_image, VK_IMAGE_LAYOUT_PREINITIALIZED, vk_image_layout, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			createSampler();
 			createView(format);
@@ -50,12 +50,12 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Create texture image");
 		}
 
-		void						TextureImpl::initMemory(void *data, VkMemoryRequirements& memReqs) {
+		void						TextureImpl::initMemory(void *data, uint32_t size, VkMemoryRequirements& memReqs) {
 			VkMemoryAllocateInfo	info;
 			VkResult				r;
 			void					*pData;
 			const uint32_t			step = 1024 * 1024 * 4;
-			const uint32_t			total = _width * _height * 4;
+			const uint32_t			total = size;
 
 			std::memset(&info, 0, sizeof(VkMemoryAllocateInfo));
 			info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -66,7 +66,33 @@ namespace f3d {
 			r = vkBindImageMemory(_device->vk_device, vk_image, vk_memory, 0);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Binding texture memory");
 			
+			/*
+			VkSubresourceLayout imageLayout;
+			VkImageSubresource subresource = {};
+			vkGetImageSubresourceLayout(_device->vk_device, vk_image, &subresource, &imageLayout);
+
+			vkMapMemory(_device->vk_device, vk_memory, 0, size, 0, &pData);
+			if (imageLayout.rowPitch == _width * 4) {
+				memcpy(pData, data, (size_t)size);
+			}
+			else {
+				uint8_t* dataBytes = reinterpret_cast<uint8_t*>(pData);
+
+				for (int y = 0; y < _height; y++) {
+					memcpy(&dataBytes[y * imageLayout.rowPitch], &((char *)data)[y * _width * 4], _width * 4);
+				}
+			}
+			vkUnmapMemory(_device->vk_device, vk_memory);
+			*/
+
 			// /*
+			r = vkMapMemory(_device->vk_device, vk_memory, 0, total, 0, &pData);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Mapping texture memory");
+			std::memcpy(pData, (char *)data, total);
+			vkUnmapMemory(_device->vk_device, vk_memory);
+			// */
+
+			 /*
 			for (uint32_t i = 0; i < total; i += step) {
 				VkDeviceSize mapsize = total > (i + step) ? step : (total - i);
 				r = vkMapMemory(_device->vk_device, vk_memory, i, mapsize, 0, &pData);

@@ -15,10 +15,10 @@ namespace f3d {
 				TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode,
 							std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device);
 				~TextureImpl();
-				bool			initializeLinearTiling(uint32_t width, uint32_t height, void *data, VkFormat format);
+				bool			initializeLinearTiling(uint32_t width, uint32_t height, void *data, uint32_t size, VkFormat format);
 			private:
 				void			createImage(VkFormat format);
-				void			initMemory(void *data, VkMemoryRequirements& memReqs);
+				void			initMemory(void *data, uint32_t size, VkMemoryRequirements& memReqs);
 				void			createSampler(void);
 				void			createView(VkFormat format);
 				void			destroy(void);

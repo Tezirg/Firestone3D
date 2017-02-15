@@ -85,7 +85,7 @@ namespace f3d {
 		void			Mesh::addUV(float u, float v) {
 			_uv_count += 1;
 			_uvs.push_back(u);
-			_uvs.push_back(v);
+			_uvs.push_back(1.0 - v);
 		}
 
 		bool			Mesh::isRenderReady() const {

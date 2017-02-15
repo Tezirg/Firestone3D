@@ -44,6 +44,20 @@ namespace f3d {
 			_VP = _perspective * _view;
 		}
 
+		void						Camera::setPerspective2(float horizontalFOV, float aspect, float nearPlane, float farPlane) {
+			_fov = horizontalFOV;
+			_aspect = 1.0f / aspect; //Inverting aspect ratio (w/h becomes h/w)
+			_near = nearPlane;
+			_far = farPlane;
+			_perspective = glm::perspective(_fov, _aspect, _near, _far);
+			
+			//Swaping scale on w and h
+			float tmp = _perspective[0][0];
+			_perspective[0][0] = _perspective[1][1];
+			_perspective[1][1] = tmp;
+
+			_VP = _perspective * _view;
+		}
 
 		glm::mat4&					Camera::getViewPerspective() {
 			return _VP;
@@ -52,8 +66,8 @@ namespace f3d {
 			return _VP;
 		}
 
-		void				Camera::applyPreset(eCameraPresetType preset) {
-			float			fov = 0.0;
+		void						Camera::applyPreset(eCameraPresetType preset) {
+			float					fov = 0.0f;
 
 			setAspect(g_f3dCameraPresets[preset].sensor_width / g_f3dCameraPresets[preset].sensor_height);
 			fov = 2.0f * (atanf(g_f3dCameraPresets[preset].sensor_width / (2.0f * g_f3dCameraPresets[preset].focal_len)));

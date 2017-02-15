@@ -55,7 +55,10 @@ namespace f3d {
 			glm::mat4&					getPerspective();
 			const glm::mat4&			getPerspective() const;
 			void						setPerspective(const glm::mat4& perspective);
-			void						setPerspective(float fov, float aspect, float nearPlane, float farPlane);
+			void						setPerspective(float verticalFOV, float aspect, float nearPlane, float farPlane);
+
+			//Perpective with Horizontal field of view
+			void						setPerspective2(float horizontalFOV, float aspect, float nearPlane, float farPlane);
 
 			glm::mat4&					getViewPerspective();
 			const glm::mat4&			getViewPerspective() const;

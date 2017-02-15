@@ -12,9 +12,11 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->loadFromFile(path, file);
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
-		(*it)->translate(glm::vec3(0.0f, 0.0f, 0.0f));
+		//(*it)->rotate(90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		//(*it)->translate(glm::vec3(0.0f, 0.0f, 0.0f));
 		(*it)->scale(glm::vec3(3.0f));
 	}
+	f3d.scene->getCamera().get()->setPerspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
 }
 
 void		updateScene(f3d::Firestone& f3d, void * arg) {
@@ -22,6 +24,7 @@ void		updateScene(f3d::Firestone& f3d, void * arg) {
 	const glm::vec3	rotationAxis(0.0, 1.0, 0.0);
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it)
 		(*it)->rotate(0.01f, rotationAxis);
+
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
@@ -54,7 +57,6 @@ int main(int ac, char **av) {
 		F3D_ERROR("No file to load");
 		return 1;
 	}
-
 
 	f3d::Firestone	*engine = f3d::getF3D();
 

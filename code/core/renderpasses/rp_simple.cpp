@@ -313,7 +313,7 @@ namespace f3d {
 				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 				pWrites[0].pImageInfo = &sampler_info;
 				sampler_info.imageView = text->vk_view;
-				sampler_info.imageLayout = text->vk_image_layout;
+				sampler_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;// text->vk_image_layout;
 				sampler_info.sampler = text->vk_sampler;
 
 				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, nullptr);
