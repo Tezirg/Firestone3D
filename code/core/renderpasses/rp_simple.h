@@ -8,7 +8,7 @@
 #include <stack>
 #include <list>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "core/window.h"
 #include "core/window_impl.h"
 #include "render_pass.h"
@@ -25,7 +25,7 @@
 namespace f3d {
 	namespace core {
 		namespace renderpass {
-			class SimpleRenderPass : public RenderPass {
+			class F3D_API SimpleRenderPass : public RenderPass {
 			public:
 				SimpleRenderPass(std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Window>& window);
 				~SimpleRenderPass();

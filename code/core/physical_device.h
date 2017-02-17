@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <vulkan/vulkan.h>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
@@ -17,7 +17,7 @@ namespace f3d {
 		* @brief Wrapper of the vulkan GPU description
 		* it describes the used hardware and its memory layout
 		*/
-		class PhysicalDevice
+		class F3D_API PhysicalDevice
 		{
 		public:
 			/*!

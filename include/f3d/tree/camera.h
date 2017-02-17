@@ -3,7 +3,7 @@
 #ifndef __F3D_CAMERA_H
 #define __F3D_CAMERA_H
 
-#include "f3d.h"
+#include "core/plateform.h"
 
 namespace f3d {
 	namespace tree {
@@ -22,7 +22,7 @@ namespace f3d {
 			F3D_CAMERA_PRESET_RANGE_SIZE = (F3D_CAMERA_PRESET_GALAXYS4 - F3D_CAMERA_PRESET_DEFAULT + 1),
 			F3D_CAMERA_PRESET_MAX_ENUM = 0x7FFFFFFF
 		};
-		struct CameraPreset {
+		struct F3D_API CameraPreset {
 			eCameraPresetType	type;
 			float				sensor_width; //mm
 			float				sensor_height; //mm
@@ -31,7 +31,7 @@ namespace f3d {
 			bool				operator==(eCameraPresetType oth_type) { return type == oth_type; }
 			bool				operator==(CameraPreset& oth) { return type == oth.type; }
 		};
-		static struct CameraPreset g_f3dCameraPresets[] = {
+		static struct F3D_API CameraPreset g_f3dCameraPresets[] = {
 			{ F3D_CAMERA_PRESET_DEFAULT, 32.0f, 18.0f, 22.9f },
 			{ F3D_CAMERA_PRESET_IPHONE4, 4.54f, 3.42f, 3.85f },
 			{ F3D_CAMERA_PRESET_IPHONE4S, 4.54f, 3.42f, 4.28f },
@@ -42,7 +42,7 @@ namespace f3d {
 			{ F3D_CAMERA_PRESET_GALAXYS4, 4.80f, 3.60f, 4.20f }
 		};
 
-		class Camera {
+		class F3D_API Camera {
 		public:
 			Camera();
 			virtual ~Camera();

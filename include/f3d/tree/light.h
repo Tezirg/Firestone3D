@@ -9,10 +9,12 @@
 
 #include <glm/glm.hpp>
 
+#include "core/plateform.h"
+
 namespace f3d {
 	namespace tree {
-		class Light {
-		public:
+		class F3D_API Light {
+		 public:
 			Light();
 			virtual ~Light();
 

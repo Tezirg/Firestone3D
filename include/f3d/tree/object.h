@@ -7,11 +7,12 @@
 #include <memory>
 #include <cstdint>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "tree/node.h"
 
 namespace f3d {
 	namespace tree {
-		class Object {
+		class F3D_API Object {
 		public:
 			Object();
 			~Object();

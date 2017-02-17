@@ -7,13 +7,13 @@
 #include <fstream>
 #include <map>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
 	namespace core {
 
-		class Program {
+		class F3D_API Program {
 		public:
 			Program(VkDevice device);
 			virtual ~Program();

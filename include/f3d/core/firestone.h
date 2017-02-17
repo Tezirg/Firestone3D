@@ -8,13 +8,18 @@
 #include <thread>
 #include <chrono> 
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "core/settings.h"
+#include "core/window.h"
+#include "tree/scene.h"
+#include "core/renderer.h"
+#include "utils/inputs.h"
 
 namespace f3d {
 
-	class			Firestone;
-	Firestone		*getF3D();
-	bool			releaseF3D();
+	class			F3D_API Firestone;
+	Firestone		F3D_API *getF3D();
+	bool			F3D_API releaseF3D();
 
 
 	// Engine events
@@ -31,7 +36,7 @@ namespace f3d {
 	typedef void(*f3d_joystick_input_handle_t)(Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *userArgument);
 
 
-	class Firestone {
+	class F3D_API Firestone {
 	public:
 		Firestone();
 		virtual ~Firestone();

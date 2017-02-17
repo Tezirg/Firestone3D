@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <iostream>
 
+#include "core/plateform.h"
+
 namespace f3d {
 	namespace core {
-		class Window;
-
-		class Settings {
+		class F3D_API Settings {
 			public:
 				Settings();
 				~Settings();

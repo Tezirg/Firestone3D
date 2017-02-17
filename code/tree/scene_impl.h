@@ -15,7 +15,8 @@
 #include <gli/gli.hpp>
 #include <gli/texture2d.hpp>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "tree/scene.h"
 #include "tree/camera_impl.h"
 #include "tree/light_impl.h"
 #include "tree/mesh_impl.h"
@@ -28,7 +29,7 @@
 
 namespace f3d {
 	namespace tree {
-		class SceneImpl : public Scene {
+		class F3D_API SceneImpl : public Scene {
 		public:
 			SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device);
 			~SceneImpl();

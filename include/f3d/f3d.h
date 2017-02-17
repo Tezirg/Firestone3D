@@ -3,60 +3,32 @@
 #ifndef __F3D_H
 #define __F3D_H
 
-#if defined(F3D_EXPORT_DYNAMIC)
-#define F3D_API __declspec(dllexport)
-#elif defined(F3D_IMPORT_DYNAMIC)
-#define F3D_API __declspec(dllimport)
-#else
-#define F3D_API
-#endif
-
-#if (defined(F3D_EXPORT_DYNAMIC) || defined(F3D_EXPORT_STATIC))
-#define F3D_EXPORTS
-#endif
-
-#include <memory>
-#include <cstdint>
-
-//Linear algebra dependency
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-
-//Images dependency
-#include <gli/gli.hpp>
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-
 #include "version.h"
+#include "core/plateform.h"
 
 namespace f3d {
 	namespace core {
-		class Firestone;
-		class Settings;
-		class Window;
-		class Renderer;
+		class F3D_API Firestone;
+		class F3D_API Settings;
+		class F3D_API Window;
+		class F3D_API Renderer;
 	}
 	namespace tree {
-		class Scene;
-		class Camera;
-		class Light;
-		class Object;
-		class Node;
-		class Mesh;
-		class Material;
-		class Texture;
+		class F3D_API Scene;
+		class F3D_API Camera;
+		class F3D_API Light;
+		class F3D_API Object;
+		class F3D_API Node;
+		class F3D_API Mesh;
+		class F3D_API Material;
+		class F3D_API Texture;
 	}
 	namespace utils {
-		class Timer;
-		class Transform;
-		class KeyInput;
-		class MouseInput;
-		class JoystickInput;
+		class F3D_API Timer;
+		class F3D_API Transform;
+		class F3D_API KeyInput;
+		class F3D_API MouseInput;
+		class F3D_API JoystickInput;
 	}
 }
 

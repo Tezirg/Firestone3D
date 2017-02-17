@@ -8,14 +8,15 @@
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 #include "core/device.h"
+#include "tree/mesh.h"
 
 namespace f3d {
 	namespace tree {
-		class MeshImpl : public Mesh {
+		class F3D_API MeshImpl : public Mesh {
 		public:
 			MeshImpl(std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device);
 			~MeshImpl();

@@ -6,14 +6,11 @@
 #include <memory>
 #include <cstdint>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
+#include "core/plateform.h"
 
 namespace f3d {
 	namespace utils {
-		class Transform {
+		class F3D_API Transform {
 		public:
 			Transform();
 			~Transform();

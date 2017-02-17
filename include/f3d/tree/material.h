@@ -10,11 +10,12 @@
 #include <list>
 #include <glm/glm.hpp>
 
+#include "core/plateform.h"
 #include "tree/texture.h"
 
 namespace f3d {
 	namespace tree {
-		class Material {
+		class F3D_API Material {
 		public:
 			enum eColorType {
 				F3D_COLOR_UNDEFINED = 0,

@@ -6,15 +6,18 @@
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 
-#include "f3d.h"
-#include "physical_device.h"
-#include "device.h"
-#include "window_impl.h"
-#include "renderer_impl.h"
+#include "core/firestone.h"
+#include "core/plateform.h"
+#include "core/physical_device.h"
+#include "core/device.h"
+#include "core/window_impl.h"
+#include "core/renderer_impl.h"
 #include "utils/inputs.h"
+#include "utils/timer.h"
+#include "version.h"
 
 namespace f3d {
-	class FirestoneImpl : public Firestone {
+	class F3D_API FirestoneImpl : public Firestone {
 	public:
 		FirestoneImpl();
 		~FirestoneImpl();

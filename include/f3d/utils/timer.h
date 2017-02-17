@@ -8,11 +8,11 @@
 #include <iostream>
 #include <ostream>
 
-#include "f3d.h"
+#include "core/plateform.h"
 
 namespace f3d {
 	namespace utils {
-		class Timer {
+		class F3D_API Timer {
 		public:
 			Timer();
 			~Timer();

@@ -9,11 +9,12 @@
 
 #include <assimp/light.h>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "tree\/light.h"
 
 namespace f3d {
 	namespace tree {
-		class LightImpl : public Light {
+		class F3D_API LightImpl : public Light {
 		public:
 			LightImpl();
 			LightImpl(aiLight *);

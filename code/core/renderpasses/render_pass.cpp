@@ -25,7 +25,7 @@ namespace f3d {
 		RenderPass::~RenderPass() {
 		}
 
-		eRenderPassType		RenderPass::getType() const {
+		RenderPass::eRenderPassType		RenderPass::getType() const {
 			return _type;
 		}
 

@@ -3,7 +3,7 @@
 #ifndef _F3D_FLAT_PROG_H
 #define _F3D_FLAT_PROG_H
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 #include "core/programs/program.h"
 
@@ -14,7 +14,7 @@ const static char flat_frag_spv[] = "flat.frag.spv";
 namespace f3d {
 	namespace core {
 		namespace prog {
-			class FlatProgram : public f3d::core::Program {
+			class F3D_API FlatProgram : public f3d::core::Program {
 			public:
 				FlatProgram(VkDevice device);
 				~FlatProgram();

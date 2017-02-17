@@ -6,11 +6,13 @@
 #include <iostream>
 #include <memory>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "core/settings.h"
+#include "tree/scene.h"
 
 namespace f3d {
 	namespace core {
-		class Renderer {
+		class F3D_API Renderer {
 		public:
 			Renderer();
 			virtual ~Renderer();

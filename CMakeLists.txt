@@ -14,8 +14,31 @@ SET( F3D_VERSION_TWEAK 0 )
 SET( F3D_VERSION ${F3D_VERSION_MAJOR}.${F3D_VERSION_MINOR}.${F3D_VERSION_PATCH}.${F3D_VERSION_TWEAK} )
 SET( F3D_SOVERSION ${F3D_VERSION_MAJOR} )
 
+if ( MSVC )
+	if( MSVC70 OR MSVC71 )
+		SET(MSVC_PREFIX "vc70")
+	elseif( MSVC80 )
+		SET(MSVC_PREFIX "vc80")
+	elseif( MSVC90 )
+		SET(MSVC_PREFIX "vc90")
+	elseif( MSVC10 )
+		SET(MSVC_PREFIX "vc100")
+	elseif( MSVC11 )
+		SET(MSVC_PREFIX "vc110")
+	elseif( MSVC12 )
+		SET(MSVC_PREFIX "vc120")
+	elseif( MSVC14 )
+		SET(MSVC_PREFIX "vc140")
+	else()
+		SET(MSVC_PREFIX "vc150")
+	endif()
+	SET ( F3D_LIB_NAME f3d-${F3D_VERSION}-${MSVC_PREFIX} )
+else()
+	SET ( F3D_LIB_NAME f3d-${F3D_VERSION} )
+endif ()
+
 configure_file ("${CMAKE_SOURCE_DIR}/include/f3d/version.h.in"
-				"${CMAKE_BINARY_DIR}/include/version.h")
+				"${CMAKE_SOURCE_DIR}/include/f3d/version.h")
 				
 #Install targets
 SET( F3D_LIB_INSTALL_DIR "${CMAKE_BINARY_DIR}/lib" CACHE PATH

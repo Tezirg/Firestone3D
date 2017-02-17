@@ -3,7 +3,7 @@
 #ifndef _F3D_TEXTURED_PROG_H
 #define _F3D_TEXTURED_PROG_H
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 #include "core/programs/program.h"
 
@@ -14,7 +14,7 @@ const static char texture_frag_spv[] = "texture.frag.spv";
 namespace f3d {
 	namespace core {
 		namespace prog {
-			class TexturedProgram : public f3d::core::Program {
+			class F3D_API TexturedProgram : public f3d::core::Program {
 			public:
 				TexturedProgram(VkDevice device);
 				~TexturedProgram();

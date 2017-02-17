@@ -9,8 +9,9 @@
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 
+#include "core/plateform.h"
 #include "utils/vulkan.h"
-#include "physical_device.h"
+#include "core/physical_device.h"
 
 namespace f3d {
 	namespace core {
@@ -19,7 +20,7 @@ namespace f3d {
 		* @brief A device is associated with a physical device (GPU) and a Vulkan context
 		* The universe is allocated and submited throught the vulkan device native type
 		*/
-		class Device
+		class F3D_API Device
 		{
 		public:
 			/*!

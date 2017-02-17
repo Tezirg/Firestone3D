@@ -1,8 +1,8 @@
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 
-#include "firestone_impl.h"
 #include "core/firestone.h"
+#include "core/firestone_impl.h"
 
 static std::unique_ptr<f3d::Firestone>	g_f3d = nullptr;
 

@@ -6,11 +6,12 @@
 #include <memory>
 #include <cstdint>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "core/settings.h"
 
 namespace f3d {
 	namespace core {
-		class Window {
+		class F3D_API Window {
 		public:
 			Window();
 			virtual ~Window();

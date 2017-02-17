@@ -10,7 +10,7 @@ namespace f3d {
 			settings = sets;
 
 			initCommandBuffers();
-			_renders.insert(std::make_pair(F3D_RENDERPASS_SIMPLE, std::unique_ptr<RenderPass>(new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window))));
+			_renders.insert(std::make_pair(f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
 		}
 
 		RendererImpl::~RendererImpl() {
@@ -37,7 +37,7 @@ namespace f3d {
 		void				RendererImpl::computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene) {
 			WindowImpl		*win = dynamic_cast<WindowImpl *>(_window.get());
 
-			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
+			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]);
 			test->updateCameraDescriptorSet(scene->getCamera());
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
 				if ((*it)->getTextures().empty() == false) {
@@ -46,7 +46,7 @@ namespace f3d {
 			}
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
-				_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
+				_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
 			}
 			win->vk_present_frame = 0;
 		}
@@ -59,14 +59,14 @@ namespace f3d {
 
 			win->swapBuffers();
 
-			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[F3D_RENDERPASS_SIMPLE].get());
+			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]);
 			test->updateCameraDescriptorSet(scene->getCamera());
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
 				if ((*it)->getTextures().empty() == false) {
 					test->updateTextureDescriptorSet((*it)->getTextures().front());
 				}
 			}
-			_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
+			_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
 			//((f3d::tree::CameraImpl *)scene->getCamera().get())->updateAttribute();
 

@@ -7,11 +7,11 @@
 #include <ostream>
 #include <cstdint>
 
-#include "f3d.h"
+#include "core/plateform.h"
 
 namespace f3d {
 	namespace utils {
-		class KeyInput {
+		class F3D_API KeyInput {
 		public:
 			enum eKeyState {
 				F3D_KEY_STATE_UNDEFINED = 0,
@@ -44,9 +44,9 @@ namespace f3d {
 			eKeyState			state;
 			keyModiferFlags		mods;
 		};
-		std::ostream&		operator<<(std::ostream& os, const KeyInput& keyEvent);
+		F3D_API std::ostream&	operator<<(std::ostream& os, const KeyInput& keyEvent);
 
-		class MouseInput {
+		class F3D_API MouseInput {
 		public:
 			enum eMouseInputType {
 				F3D_MOUSE_INPUT_UNDEFINED = 0,
@@ -85,9 +85,9 @@ namespace f3d {
 			double				xoffset;
 			double				yoffset;
 		};
-		std::ostream&		operator<<(std::ostream& os, const MouseInput& mouseEvent);
+		F3D_API std::ostream&	operator<<(std::ostream& os, const MouseInput& mouseEvent);
 
-		class JoystickInput {
+		class F3D_API JoystickInput {
 		public:
 			enum eJoystickInputType {
 				F3D_JOYSTICK_INPUT_UNDEFINED = 0,
@@ -122,7 +122,7 @@ namespace f3d {
 			eJoystickButtonState	buttonState;
 			float					axisState;
 		};
-		std::ostream&		operator<<(std::ostream& os, const JoystickInput& joystickEvent);
+		F3D_API std::ostream&		operator<<(std::ostream& os, const JoystickInput& joystickEvent);
 
 	} // utils::
 } //f3d::

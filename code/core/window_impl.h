@@ -8,13 +8,16 @@
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 #include "core/device.h"
+#include "core/window.h"
+#include "core/physical_device.h"
+#include "core/settings.h"
 
 namespace f3d {
 	namespace core {
-		class WindowImpl : public Window {
+		class F3D_API WindowImpl : public Window {
 		//Implements Window interface
 		public:
 			WindowImpl(VkInstance instance, VkPhysicalDevice physical, std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::Settings>& settingsPtr);

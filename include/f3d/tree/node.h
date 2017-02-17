@@ -8,12 +8,13 @@
 #include <cstdint>
 #include <memory>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "tree/mesh.h"
 #include "utils/transform.h"
 
 namespace f3d {
 	namespace tree {
-		class Node {
+		class F3D_API Node {
 		public:
 			Node();
 			~Node();

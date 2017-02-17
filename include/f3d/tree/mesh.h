@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <vector>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/transform.h"
 
 namespace f3d {
 	namespace tree {
-		class Mesh {
+		class F3D_API Mesh {
 		public:
 			Mesh();
 			~Mesh();

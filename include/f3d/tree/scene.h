@@ -8,11 +8,17 @@
 #include <vector>
 #include <list>
 
-#include "f3d.h"
+#include "core/plateform.h"
+#include "tree/camera.h"
+#include "tree/object.h"
+#include "tree/material.h"
+#include "tree/node.h"
+#include "tree/light.h"
+#include "tree/mesh.h"
 
 namespace f3d {
 	namespace tree {
-		class Scene {
+		class F3D_API Scene {
 		public:
 			Scene();
 			virtual ~Scene();

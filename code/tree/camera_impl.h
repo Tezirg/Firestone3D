@@ -7,15 +7,16 @@
 #include <cstdint>
 #include <assimp/camera.h>
 
-#include "f3d.h"
+#include "core/plateform.h"
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 #include "core/device.h"
+#include "tree/camera.h"
 
 namespace f3d {
 	namespace tree {
 		
-		class CameraImpl final : public Camera {
+		class F3D_API CameraImpl final : public Camera {
 		public:
 			CameraImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device > device);
 			~CameraImpl();

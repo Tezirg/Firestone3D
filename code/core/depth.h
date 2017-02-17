@@ -9,11 +9,10 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 
-#include "f3d.h"
-#include "utils/vulkan.h"
-
+#include "core/plateform.h"
 #include "core/physical_device.h"
 #include "core/device.h"
+#include "utils/vulkan.h"
 
 namespace f3d {
 	namespace core {
@@ -21,7 +20,7 @@ namespace f3d {
 		 * @class Depth
 		 * @brief represents a Z-buffer for use with a framebuffer
 		 */
-		class Depth
+		class F3D_API Depth
 		{
 		public:
 			/*!

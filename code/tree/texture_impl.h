@@ -5,12 +5,13 @@
 
 #include <vulkan/vulkan.h>
 
+#include "core/plateform.h"
 #include "core/device.h"
 #include "tree/texture.h"
 
 namespace f3d {
 	namespace tree {
-		class TextureImpl : public f3d::tree::Texture {
+		class F3D_API TextureImpl : public f3d::tree::Texture {
 			public:
 				TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode,
 							std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device);

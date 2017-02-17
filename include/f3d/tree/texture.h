@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <iostream>
 
+#include "core/plateform.h"
+
 namespace f3d {
 	namespace tree {
-		class Texture {
+		class F3D_API Texture {
 		public:
 			enum eTextureType {
 				F3D_TEXTURE_UNDEFINED = 0,
