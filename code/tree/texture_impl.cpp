@@ -85,14 +85,14 @@ namespace f3d {
 			vkUnmapMemory(_device->vk_device, vk_memory);
 			*/
 
-			// /*
+			 /*
 			r = vkMapMemory(_device->vk_device, vk_memory, 0, total, 0, &pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Mapping texture memory");
 			std::memcpy(pData, (char *)data, total);
 			vkUnmapMemory(_device->vk_device, vk_memory);
 			// */
 
-			 /*
+			 // /*
 			for (uint32_t i = 0; i < total; i += step) {
 				VkDeviceSize mapsize = total > (i + step) ? step : (total - i);
 				r = vkMapMemory(_device->vk_device, vk_memory, i, mapsize, 0, &pData);

@@ -140,13 +140,25 @@ namespace f3d {
 
 		bool					MeshImpl::updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size) {
 			VkResult			r;
-			char				*pData;
+			void				*pData;
+			const uint32_t		step = 1024 * 1024 * 4;
 
+			// /*
+			for (uint32_t i = 0; i < size; i += step) {
+				VkDeviceSize mapsize = size >(i + step) ? step : (size - i);
+				r = vkMapMemory(_device->vk_device, mem, i, mapsize, 0, &pData);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
+				std::memcpy(pData, (char *)data + i, mapsize);
+				vkUnmapMemory(_device->vk_device, mem);
+			}
+			// */
+
+			/*
 			r = vkMapMemory(_device->vk_device, mem, 0, size, 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
-
 			std::memcpy(pData, data, size);
 			vkUnmapMemory(_device->vk_device, mem);
+			// */
 			return true;
 		}
 	}
