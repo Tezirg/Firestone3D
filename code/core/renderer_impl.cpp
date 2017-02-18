@@ -34,16 +34,19 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating swapchain command buffers failed");
 		}
 
-		void				RendererImpl::computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene) {
-			WindowImpl		*win = dynamic_cast<WindowImpl *>(_window.get());
+		void							RendererImpl::computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene) {
+			WindowImpl *				win = dynamic_cast<WindowImpl *>(_window.get());
+			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
+			f3d::tree::TextureImpl *	texture = nullptr;
 
-			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]);
-			test->updateCameraDescriptorSet(scene->getCamera());
+			cam->updateDescriptorSet();
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
 				if ((*it)->getTextures().empty() == false) {
-					test->updateTextureDescriptorSet((*it)->getTextures().front());
+					texture = dynamic_cast<f3d::tree::TextureImpl *>((*it)->getTextures().front());
+					texture->updateDescriptorSet();
 				}
 			}
+
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
 				_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
@@ -51,27 +54,25 @@ namespace f3d {
 			win->vk_present_frame = 0;
 		}
 
-		void						RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
-			VkResult				r;
-			WindowImpl				*win = dynamic_cast<WindowImpl *>(_window.get());
+		void							RendererImpl::render(std::shared_ptr<f3d::tree::Scene> scene) {
+			VkResult					r;
+			WindowImpl *				win = dynamic_cast<WindowImpl *>(_window.get());
+			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
+			f3d::tree::TextureImpl *	texture = nullptr;
+
 			VkSemaphoreCreateInfo	semaphoreInfo;
 			uint32_t				fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
 			win->swapBuffers();
-
-			f3d::core::renderpass::SimpleRenderPass* test = dynamic_cast<f3d::core::renderpass::SimpleRenderPass *>(_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]);
-			test->updateCameraDescriptorSet(scene->getCamera());
+			cam->updateAttribute();
+			cam->updateDescriptorSet();
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
 				if ((*it)->getTextures().empty() == false) {
-					test->updateTextureDescriptorSet((*it)->getTextures().front());
+					texture = dynamic_cast<f3d::tree::TextureImpl *>((*it)->getTextures().front());
+					texture->updateDescriptorSet();
 				}
 			}
 			_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
-
-			//((f3d::tree::CameraImpl *)scene->getCamera().get())->updateAttribute();
-
-			r = vkDeviceWaitIdle(_device->vk_device);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for cemara update");
 
 			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			semaphoreInfo.pNext = 0;
@@ -125,6 +126,9 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for queue presentation fails");
 
 			vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
+
+			r = vkDeviceWaitIdle(_device->vk_device);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
 		}
 
 	}

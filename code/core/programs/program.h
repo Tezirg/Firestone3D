@@ -18,20 +18,18 @@ namespace f3d {
 			Program(VkDevice device);
 			virtual ~Program();
 
-			void				bind(VkCommandBuffer& cmd);
+			void									bind(VkCommandBuffer& cmd);
 		protected:
-			bool				createSpvShader(const std::string& filename, VkShaderModule *shader);
+			bool									createSpvShader(const std::string& filename, VkShaderModule *shader);
 
-			virtual void		initVkLayout() = 0;
-			virtual void		initVkPipelineInfos();
-			virtual void		initVkDecriptorPool() = 0;
+			virtual void							initVkLayout() = 0;
+			virtual void							initVkPipelineInfos();
 		public:
-			VkDevice				vk_device; //Device to create from
-			VkPipeline				vk_pipeline; //!< Vulkan pipeline native type
-			VkPipelineLayout		vk_pipeline_layout;
-			VkPipelineCache			vk_pipeline_cache;
-			VkDescriptorSetLayout	*vk_desc_layout;
-			VkDescriptorPool		vk_desc_pool;
+			VkDevice								vk_device; //Device to create from
+			VkPipeline								vk_pipeline; //!< Vulkan pipeline native type
+			VkPipelineLayout						vk_pipeline_layout;//!< Piepline object
+			VkPipelineCache							vk_pipeline_cache; //!< Binary pipeline object
+			VkDescriptorSetLayout					*vk_desc_layout; //! Descriptor sets layouts
 		protected:
 			VkPipelineVertexInputStateCreateInfo	_vi;
 			VkPipelineInputAssemblyStateCreateInfo	_ia;

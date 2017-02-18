@@ -40,7 +40,7 @@ namespace f3d {
 			layoutinfo.bindingCount = 1;
 			layoutinfo.pBindings = &uniforminfo;
 			r = vkCreateDescriptorSetLayout(_device->vk_device, &layoutinfo, NULL, &_uniform_layout);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Create emsh desc set layout failed");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Create mesh desc set layout failed");
 
 			std::memset(&setinfo, 0, sizeof(VkDescriptorSetAllocateInfo));
 			setinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -69,13 +69,16 @@ namespace f3d {
 
 
 		MeshImpl::~MeshImpl() {
+			vkFreeDescriptorSets(_device->vk_device, _uniform_pool, 1, &_uniform_set);
+			vkDestroyDescriptorPool(_device->vk_device, _uniform_pool, nullptr);
+			vkDestroyDescriptorSetLayout(_device->vk_device, _uniform_layout, nullptr);
 		}
 		
-		VkDescriptorSet			MeshImpl::getUniform() {
+		VkDescriptorSet			MeshImpl::getDescriptorSet() {
 			return _uniform_set;
 		}
 
-		bool					MeshImpl::updateUniform(glm::mat4& model) {
+		bool					MeshImpl::updateDescriptorSet(glm::mat4& model) {
 			return updateAttribute(glm::value_ptr(model), _uniform_mem, sizeof(float) * 16);
 		}
 
@@ -93,9 +96,11 @@ namespace f3d {
 			updateAttribute(_normals.data(), _normal_mem, _normals.size() * sizeof(float));
 			_normals.clear();
 
-			createAttribute(_uv_mem, _uvs.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _uv_buf);
-			updateAttribute(_uvs.data(), _uv_mem, _uvs.size() * sizeof(float));
-			_uvs.clear();
+			if (_uvs.empty() == false) {
+				createAttribute(_uv_mem, _uvs.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _uv_buf);
+				updateAttribute(_uvs.data(), _uv_mem, _uvs.size() * sizeof(float));
+				_uvs.clear();
+			}
 
 			createAttribute(_index_mem, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, _index_buf);
 			updateAttribute(_indices.data(), _index_mem, _indices.size() * sizeof(uint32_t));

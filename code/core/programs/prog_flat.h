@@ -19,29 +19,14 @@ namespace f3d {
 				FlatProgram(VkDevice device);
 				~FlatProgram();
 
-				void						initVkPipeline(VkRenderPass& renderpass, uint32_t subpass);
+				void									initVkPipeline(VkRenderPass& renderpass, uint32_t subpass);
+				virtual void							initVkPipelineInfos();
 
-				virtual void				initVkPipelineInfos();
 				/*!
 				* @func createVklayout
 				* @brief Create the program layout for the unique uniform attribute
 				*/
-				virtual void				initVkLayout();
-
-				/*!
-				* @func createVkDescriptorPool
-				* @brief Create a descriptor pool to allocate the uniform buffer
-				*/
-				virtual void				initVkDecriptorPool();
-
-				/*!
-				* @func createVkDescriptorSets
-				* @brief Create this program descriptor sets
-				*/
-				virtual void				initVkDescriptorSets();
-			public:
-				VkDescriptorSet					world_set;
-				VkDescriptorSet					model_set;
+				virtual void							initVkLayout();
 			private:
 				VkVertexInputAttributeDescription		_vi_attr[2]; //!< pipeline has 2 inputs
 				VkVertexInputBindingDescription			_vi_bind[2]; //!< pipeline has one binding per input (total 2)

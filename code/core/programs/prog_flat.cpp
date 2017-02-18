@@ -18,8 +18,6 @@ namespace f3d {
 
 				initVkLayout();
 				initVkPipelineInfos();
-				initVkDecriptorPool();
-				initVkDescriptorSets();
 
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
 
@@ -142,36 +140,6 @@ namespace f3d {
 				pipe_layout_info.pSetLayouts = vk_desc_layout;
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create pipeline layout failed");
-			}
-
-			void							FlatProgram::initVkDecriptorPool() {
-				VkResult					r;
-				VkDescriptorPoolSize		pool_types[2];
-				VkDescriptorPoolCreateInfo	pool_info;
-
-				pool_types[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				pool_types[0].descriptorCount = 1;
-
-				std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
-				pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-				pool_info.poolSizeCount = 1;
-				pool_info.maxSets = 1;
-				pool_info.pPoolSizes = pool_types;
-				r = vkCreateDescriptorPool(vk_device, &pool_info, NULL, &vk_desc_pool);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Descriptor pool creation failed");
-			}
-
-			void								FlatProgram::initVkDescriptorSets() {
-				VkResult						r;
-				VkDescriptorSetAllocateInfo		desc_set_alloc;
-
-				std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
-				desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-				desc_set_alloc.descriptorPool = vk_desc_pool;
-				desc_set_alloc.descriptorSetCount = 1;
-				desc_set_alloc.pSetLayouts = &(vk_desc_layout[0]);
-				r = vkAllocateDescriptorSets(vk_device, &desc_set_alloc, &world_set);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set allocation failed");
 			}
 		}
 	}

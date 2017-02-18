@@ -23,13 +23,20 @@ namespace f3d {
 
 			void				updateAttribute();
 			void				createAttribute();
+			VkDescriptorSet		getDescriptorSet();
+			void				updateDescriptorSet();
 		public:
-			VkBuffer						_buffer;
-			VkDeviceMemory					_memory;
+			VkBuffer									_buffer;
+			VkDeviceMemory								_memory;
+
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
 			std::shared_ptr<aiCamera>					_ai_camera;
+			
+			VkDescriptorSetLayout						_desc_layout;
+			VkDescriptorPool							_desc_pool;
+			VkDescriptorSet								_descriptor;
 		};
 	}
 }

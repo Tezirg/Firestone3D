@@ -27,23 +27,6 @@ namespace f3d {
 				* @brief Create the program layout for the unique uniform attribute
 				*/
 				virtual void				initVkLayout();
-
-				/*!
-				* @func createVkDescriptorPool
-				* @brief Create a descriptor pool to allocate the uniform buffer
-				*/
-				virtual void				initVkDecriptorPool();
-
-				/*!
-				* @func createVkDescriptorSets
-				* @brief Create this program descriptor sets
-				*/
-				virtual void				initVkDescriptorSets();
-			public:
-				VkDescriptorSet					world_set;
-				VkDescriptorSet					model_set;
-				VkDescriptorSet					sampler_set;
-
 			private:
 				VkVertexInputAttributeDescription		_vi_attr[3]; //!< pipeline has 3 inputs
 				VkVertexInputBindingDescription			_vi_bind[3]; //!< pipeline has one binding per attribute (total 3)

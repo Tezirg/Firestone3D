@@ -218,6 +218,8 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Queue wait for image layout init fails");
 
 			vkFreeCommandBuffers(vk_device, getCommandPool(queue_family), 1, &cmd);
+
+			vkDeviceWaitIdle(vk_device);
 			return true;
 		}
 

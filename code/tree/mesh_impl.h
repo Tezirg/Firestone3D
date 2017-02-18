@@ -28,8 +28,8 @@ namespace f3d {
 			VkBuffer				getIndexBuffer();
 			VkBuffer				getUvBuffer();
 
-			VkDescriptorSet			getUniform();
-			bool					updateUniform(glm::mat4& model);
+			VkDescriptorSet			getDescriptorSet();
+			bool					updateDescriptorSet(glm::mat4& model);
 		private:
 			bool					createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer);
 			bool					updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size);

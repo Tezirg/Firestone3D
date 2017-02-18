@@ -190,7 +190,7 @@ namespace f3d {
 					//Push world identity transform
 					_matrix.push(glm::mat4());
 					for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it) {
-						cmdDrawObject(cmd, (*it)->getRoot());
+						cmdDrawObject(cmd, scene, (*it)->getRoot());
 					}
 					//Removes identity tranform: stack should be empty
 					_matrix.pop();
@@ -216,7 +216,7 @@ namespace f3d {
 				vkEndCommandBuffer(cmd);
 			}
 			
-			void			SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, f3d::tree::Node* obj) {
+			void			SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj) {
 				if (obj == nullptr)
 					return;
 
@@ -224,16 +224,19 @@ namespace f3d {
 				_matrix.push(_matrix.top() * obj->transformation().getTransformation());
 
 				for (auto it = obj->getMeshes().begin(); it != obj->getMeshes().end(); ++it)
-					cmdDrawMesh(cmd, *(*it));
+					cmdDrawMesh(cmd, scene, *(*it));
 				for (auto it = obj->getChildren().begin(); it != obj->getChildren().end(); ++it)
-					cmdDrawObject(cmd, *it);
+					cmdDrawObject(cmd, scene, *it);
 
 				//Remove local transforms
 				_matrix.pop();
 			}
 
-			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
+			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) {
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
+				f3d::tree::TextureImpl*	texture = nullptr;
+
 				VkBuffer				vertex_bufs[3];
 				VkDeviceSize			vertex_offsets[3];
 
@@ -244,10 +247,10 @@ namespace f3d {
 					vertex_offsets[0] = 0;
 					vertex_offsets[1] = 0;
 
-					m.updateUniform(_matrix.top());
-					VkDescriptorSet sets[2] = { _flat_prog->world_set , m.getUniform() };
+					m.updateDescriptorSet(_matrix.top());
+					VkDescriptorSet sets[2] = { cam.getDescriptorSet() , m.getDescriptorSet() };
 
-					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _flat_prog->vk_pipeline_layout, 0, 2, sets, 0, VK_NULL_HANDLE);
+					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _flat_prog->vk_pipeline_layout, 0, 2, sets, 0, nullptr);
 
 					_flat_prog->bind(cmd);
 
@@ -263,9 +266,11 @@ namespace f3d {
 					vertex_offsets[1] = 0;
 					vertex_offsets[2] = 0;
 
-					m.updateUniform(_matrix.top());
-					VkDescriptorSet sets[3] = { _texture_prog->world_set , m.getUniform(),  _texture_prog->sampler_set };
-					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _texture_prog->vk_pipeline_layout, 0, 3, sets, 0, VK_NULL_HANDLE);
+					m.updateDescriptorSet(_matrix.top());
+					texture = dynamic_cast<f3d::tree::TextureImpl *>(scene->getMaterialByName(m.getMaterialName())->getTextures().front());
+
+					VkDescriptorSet sets[3] = { cam.getDescriptorSet() , m.getDescriptorSet(),  texture->getDescriptorSet() };
+					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _texture_prog->vk_pipeline_layout, 0, 3, sets, 0, nullptr);
 
 					_texture_prog->bind(cmd);
 
@@ -273,50 +278,6 @@ namespace f3d {
 					vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 					vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
 				}
-				//std::cout << "Drawn: " << m.numIndices() << std::endl;
-			}
-
-			void						SimpleRenderPass::updateCameraDescriptorSet(std::shared_ptr<f3d::tree::Camera> cam) {
-				f3d::tree::CameraImpl*	camera = dynamic_cast<f3d::tree::CameraImpl *>(cam.get());
-				VkWriteDescriptorSet	pWrites[2];
-				VkDescriptorBufferInfo	world_info;
-
-				camera->updateAttribute();
-				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet) * 2);
-				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				pWrites[0].dstSet = _flat_prog->world_set;
-				pWrites[0].descriptorCount = 1;
-				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				pWrites[0].pBufferInfo = &world_info;
-				pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				pWrites[1].dstSet = _texture_prog->world_set;
-				pWrites[1].descriptorCount = 1;
-				pWrites[1].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				pWrites[1].pBufferInfo = &world_info;
-				world_info.offset = 0;
-				world_info.range = 16 * sizeof(float);
-				world_info.buffer = camera->_buffer;
-
-				vkUpdateDescriptorSets(device->vk_device, 2, pWrites, 0, nullptr);
-			}
-
-			void							SimpleRenderPass::updateTextureDescriptorSet(f3d::tree::Texture* texture) {
-				f3d::tree::TextureImpl *   text = dynamic_cast<f3d::tree::TextureImpl *>(texture);
-
-				VkWriteDescriptorSet	pWrites[1];
-				VkDescriptorImageInfo	sampler_info;
-
-				std::memset(pWrites, 0, sizeof(VkWriteDescriptorSet));
-				pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				pWrites[0].dstSet = _texture_prog->sampler_set;
-				pWrites[0].descriptorCount = 1;
-				pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				pWrites[0].pImageInfo = &sampler_info;
-				sampler_info.imageView = text->vk_view;
-				sampler_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;// text->vk_image_layout;
-				sampler_info.sampler = text->vk_sampler;
-
-				vkUpdateDescriptorSets(device->vk_device, 1, pWrites, 0, nullptr);
 			}
 		}
 	}
