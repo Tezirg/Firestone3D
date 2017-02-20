@@ -14,9 +14,10 @@ namespace f3d {
 			vkDestroyDescriptorPool(_device->vk_device, vk_desc_pool, nullptr);
 			vkDestroyDescriptorSetLayout(_device->vk_device, vk_desc_layout, nullptr);
 
+			vkDestroySampler(_device->vk_device, vk_sampler, nullptr);
 			vkDestroyImageView(_device->vk_device, vk_view, nullptr);
 			vkDestroyImage(_device->vk_device, vk_image, nullptr);
-			vkDestroySampler(_device->vk_device, vk_sampler, nullptr);
+
 			vkFreeMemory(_device->vk_device, vk_memory, nullptr);
 		}
 
@@ -62,6 +63,7 @@ namespace f3d {
 			pool_types.descriptorCount = 1;
 			std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
 			pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 			pool_info.poolSizeCount = 1;
 			pool_info.maxSets = 1;
 			pool_info.pPoolSizes = &pool_types;
@@ -221,7 +223,7 @@ namespace f3d {
 			pWrites.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			pWrites.pImageInfo = &sampler_info;
 			sampler_info.imageView = vk_view;
-			sampler_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+			sampler_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			sampler_info.sampler = vk_sampler;
 			vkUpdateDescriptorSets(_device->vk_device, 1, &pWrites, 0, 0);
 		}

@@ -40,6 +40,7 @@ namespace f3d {
 			pool_types.descriptorCount = 1;
 			std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
 			pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 			pool_info.poolSizeCount = 1;
 			pool_info.maxSets = 1;
 			pool_info.pPoolSizes = &pool_types;
@@ -62,8 +63,8 @@ namespace f3d {
 			vkFreeDescriptorSets(_device->vk_device, _desc_pool, 1, &_descriptor);
 			vkDestroyDescriptorPool(_device->vk_device, _desc_pool, nullptr);
 			vkDestroyDescriptorSetLayout(_device->vk_device, _desc_layout, nullptr);
-			vkFreeMemory(_device->vk_device, _memory, nullptr);
 			vkDestroyBuffer(_device->vk_device, _buffer, nullptr);
+			vkFreeMemory(_device->vk_device, _memory, nullptr);
 		}
 
 		void						CameraImpl::createAttribute() {

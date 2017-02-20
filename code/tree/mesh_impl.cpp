@@ -23,6 +23,7 @@ namespace f3d {
 
 			std::memset(&poolinfo, 0, sizeof(VkDescriptorPoolCreateInfo));
 			poolinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			poolinfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 			poolinfo.maxSets = 1;
 			poolinfo.poolSizeCount = 1;
 			poolinfo.pPoolSizes = &poolsize;
