@@ -8,6 +8,7 @@ namespace f3d {
 								   std::shared_ptr<f3d::core::Window> &win) 
 			: _device(device), _physical(phys), _window(win) {
 			settings = sets;
+			vk_render_semaphore = 0;
 
 			initCommandBuffers();
 			_renders.insert(std::make_pair(f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
@@ -63,7 +64,10 @@ namespace f3d {
 			VkSemaphoreCreateInfo	semaphoreInfo;
 			uint32_t				fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
+			std::cout << "Pre swap" << std::endl;
 			win->swapBuffers();
+			std::cout << "Post swap" << std::endl;
+
 			cam->updateAttribute();
 			cam->updateDescriptorSet();
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
@@ -74,14 +78,18 @@ namespace f3d {
 			}
 			_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
+
+			if (vk_render_semaphore != 0) {
+				vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
+				vk_render_semaphore = 0;
+			}
 			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			semaphoreInfo.pNext = 0;
 			semaphoreInfo.flags = 0;
 			r = vkCreateSemaphore(_device->vk_device, &semaphoreInfo, NULL, &vk_render_semaphore);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Creating render semaphore fails");
 
-			r = vkDeviceWaitIdle(_device->vk_device);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
+			std::cout << "Pre render cmd submit" << std::endl;
 
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 			VkSubmitInfo submit_info;
@@ -96,6 +104,8 @@ namespace f3d {
 			submit_info.pSignalSemaphores = &vk_render_semaphore;
 			r = vkQueueSubmit(_device->getQueue(fam_idx, 0), 1, &submit_info, VK_NULL_HANDLE);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Submit to Queue");
+
+			std::cout << "Post render cmd submit" << std::endl;
 		}
 
 		void					RendererImpl::display() {
@@ -105,6 +115,7 @@ namespace f3d {
 			VkPresentInfoKHR	present;
 			WindowImpl			*win;
 
+			std::cout << "Pre display" << std::endl;
 
 			win = dynamic_cast<WindowImpl *>(_window.get());
 			fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface); 
@@ -125,10 +136,10 @@ namespace f3d {
 			r = vkQueueWaitIdle(_device->getQueue(fam_idx, 0));
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait for queue presentation fails");
 
-			vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
-
 			r = vkDeviceWaitIdle(_device->vk_device);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
+
+			std::cout << "Post display" << std::endl;
 		}
 
 	}

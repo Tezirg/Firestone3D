@@ -219,7 +219,9 @@ namespace f3d {
 
 			vkFreeCommandBuffers(vk_device, getCommandPool(queue_family), 1, &cmd);
 
-			vkDeviceWaitIdle(vk_device);
+			r = vkDeviceWaitIdle(vk_device);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device idle after image layout fails");
+
 			return true;
 		}
 

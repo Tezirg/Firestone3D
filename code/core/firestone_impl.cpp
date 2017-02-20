@@ -225,8 +225,10 @@ namespace f3d {
 
 			//Rendering and timer
 			if (timer->ticks() >= frame_interval) {
+
 				renderer->render(scene);
 				renderer->display();
+
 				timer->restart();
 				if (_draw != nullptr) {
 					_draw(*this, _draw_arg);

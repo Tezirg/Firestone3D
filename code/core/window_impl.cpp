@@ -71,9 +71,6 @@ namespace f3d {
 			std::memset(&semaphore_infos, 0, sizeof(VkSemaphoreCreateInfo));
 			semaphore_infos.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-			r = vkDeviceWaitIdle(vk_device);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device IDLE");
-
 			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_presentation_semaphore);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Presentation semaphore creation failed");
 
@@ -83,6 +80,8 @@ namespace f3d {
 
 			bool il = _device->initImageLayout(vk_images[vk_present_frame], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			F3D_ASSERT(il, "Init back image buffer layout");
+
+			vkDeviceWaitIdle(_device->vk_device);
 		}
 
 
