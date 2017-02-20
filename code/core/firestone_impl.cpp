@@ -241,7 +241,12 @@ namespace f3d {
 			_end(*this, _end_arg);
 		}
 
+		scene.reset();
+		renderer.reset();
 		window.reset();
+		device.reset();
+		gpu.reset();
+
 		glfwTerminate();
 		
 		return true;

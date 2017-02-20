@@ -18,7 +18,7 @@ namespace f3d {
 		}
 
 		Device::~Device() {
-
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		uint32_t							Device::getQueueFamilyIndex(bool present, VkQueueFlags flags, VkSurfaceKHR surface) {
@@ -211,6 +211,74 @@ namespace f3d {
 			submit_info.pCommandBuffers = &cmd;
 			submit_info.signalSemaphoreCount = 0;
 			submit_info.pSignalSemaphores = NULL;
+			r = vkQueueSubmit(getQueue(queue_family, 0), 1, &submit_info, nullFence);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Submit queue for image layout init fails");
+
+			r = vkQueueWaitIdle(getQueue(queue_family, 0));
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Queue wait for image layout init fails");
+
+			vkFreeCommandBuffers(vk_device, getCommandPool(queue_family), 1, &cmd);
+
+			r = vkDeviceWaitIdle(vk_device);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device idle after image layout fails");
+
+			std::cout << "Old: " << old_image_layout  << " New: " << new_image_layout<< std::endl;
+
+			return true;
+		}
+
+		bool								Device::initImageLayout(VkImage image,
+																	VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+																	VkAccessFlags srcAccessMask, VkAccessFlags destAccessMask, 
+																	VkImageAspectFlags aspectMask, 
+																	uint32_t waitSemaphoreCount, VkSemaphore* pWaitSemaphore, VkPipelineStageFlags* pWaitDstStageFlags,
+																	uint32_t signalSemaphoreCount, VkSemaphore* pSignalSemaphore) {
+			VkResult						r;
+			VkCommandBuffer					cmd;
+			VkCommandBufferAllocateInfo		cmd_info;
+			VkCommandBufferInheritanceInfo	cmd_buf_hinfo;
+			VkCommandBufferBeginInfo		cmd_buf_info;
+			VkFence							nullFence = VK_NULL_HANDLE;
+			VkSubmitInfo					submit_info;
+			uint32_t						queue_family;
+
+			queue_family = getQueueFamilyIndex(false, VK_QUEUE_GRAPHICS_BIT);
+			cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+			cmd_info.pNext = NULL;
+			cmd_info.commandPool = getCommandPool(queue_family);
+			cmd_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+			cmd_info.commandBufferCount = 1;
+
+			r = vkAllocateCommandBuffers(vk_device, &cmd_info, &cmd);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Allocating Image layout command buffer fails");
+
+			cmd_buf_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+			cmd_buf_hinfo.pNext = NULL;
+			cmd_buf_hinfo.renderPass = VK_NULL_HANDLE;
+			cmd_buf_hinfo.subpass = 0;
+			cmd_buf_hinfo.framebuffer = VK_NULL_HANDLE;
+			cmd_buf_hinfo.occlusionQueryEnable = VK_FALSE;
+			cmd_buf_hinfo.queryFlags = 0;
+			cmd_buf_hinfo.pipelineStatistics = 0;
+
+			cmd_buf_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			cmd_buf_info.pNext = NULL;
+			cmd_buf_info.flags = 0;
+			cmd_buf_info.pInheritanceInfo = &cmd_buf_hinfo;
+			vkBeginCommandBuffer(cmd, &cmd_buf_info);
+
+			setImageLayout(cmd, image, old_image_layout, new_image_layout, srcAccessMask, destAccessMask, aspectMask);
+			vkEndCommandBuffer(cmd);
+
+			submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submit_info.pNext = NULL;
+			submit_info.waitSemaphoreCount = waitSemaphoreCount;
+			submit_info.pWaitSemaphores = pWaitSemaphore;
+			submit_info.pWaitDstStageMask = pWaitDstStageFlags;
+			submit_info.commandBufferCount = 1;
+			submit_info.pCommandBuffers = &cmd;
+			submit_info.signalSemaphoreCount = signalSemaphoreCount;
+			submit_info.pSignalSemaphores = pSignalSemaphore;
 			r = vkQueueSubmit(getQueue(queue_family, 0), 1, &submit_info, nullFence);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Submit queue for image layout init fails");
 

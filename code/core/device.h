@@ -82,6 +82,18 @@ namespace f3d {
 				VkAccessFlags srcAccessMask, VkAccessFlags destAccessMask, VkImageAspectFlags aspectMask);
 
 			/*!
+			* @func initImageLayout
+			* @brief Changes a image layout by issuing a command to the first graphics queue available
+			* @param[in] image The target
+			* @param[in] old_image_layout Vulkan params
+			* @return true on success
+			*/
+			bool			initImageLayout(VkImage image, VkImageLayout old_image_layout, VkImageLayout new_image_layout,
+				VkAccessFlags srcAccessMask, VkAccessFlags destAccessMask, VkImageAspectFlags aspectMask, 
+				uint32_t waitSemaphoreCount, VkSemaphore * pWaitSemaphore, VkPipelineStageFlags* pWaitDstStageFlags,
+				uint32_t singalSemaphoreCount, VkSemaphore* pSignalSemaphore);
+
+			/*!
 			* @func setImageLayout
 			* @brief Register a change in the image layout
 			* @param[in] cmd the command buffer used for registering

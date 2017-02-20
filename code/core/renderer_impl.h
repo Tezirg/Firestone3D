@@ -36,7 +36,8 @@ namespace f3d {
 
 		public:
 			VkCommandBuffer													*vk_commands;
-			VkSemaphore														vk_render_semaphore;
+			uint32_t														vk_command_count;
+			VkCommandPool													vk_command_pool;
 		private:
 			std::shared_ptr<f3d::core::Device>								_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>						_physical;

@@ -35,6 +35,7 @@ namespace f3d {
 			}
 			
 			SimpleRenderPass::~SimpleRenderPass() {
+				std::cout << "Destructor: " << __FILE__ << std::endl;
 			}
 
 			void						SimpleRenderPass::initFramebuffers() {
@@ -103,7 +104,7 @@ namespace f3d {
 				_attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 				_attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 				_attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-				_attachments[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				_attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 				_attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 				_attachments[1].format = VK_FORMAT_D16_UNORM;
 				_attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
@@ -146,28 +147,46 @@ namespace f3d {
 			}
 
 			void		SimpleRenderPass::render(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene) {
-				{
-					VkCommandBufferInheritanceInfo		cmd_hinfo;
-					VkCommandBufferBeginInfo			cmd_info;
-					VkResult							r;
+				WindowImpl				*win = dynamic_cast<WindowImpl *>(window.get());
 
-					std::memset(&cmd_hinfo, 0, sizeof(VkCommandBufferInheritanceInfo));
-					cmd_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
-					cmd_hinfo.renderPass = VK_NULL_HANDLE;
-					cmd_hinfo.subpass = 0;
-					cmd_hinfo.framebuffer = VK_NULL_HANDLE;
-					cmd_hinfo.occlusionQueryEnable = VK_FALSE;
-					cmd_hinfo.queryFlags = 0;
-					cmd_hinfo.pipelineStatistics = 0;
+				VkCommandBufferInheritanceInfo		cmd_hinfo;
+				VkCommandBufferBeginInfo			cmd_info;
+				VkResult							r;
 
-					std::memset(&cmd_info, 0, sizeof(VkCommandBufferBeginInfo));
-					cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-					cmd_info.pInheritanceInfo = &cmd_hinfo;
-					r = vkBeginCommandBuffer(cmd, &cmd_info);
-					F3D_ASSERT_VK(r, VK_SUCCESS, "Begin command buffer failed");
-				}
+				std::memset(&cmd_hinfo, 0, sizeof(VkCommandBufferInheritanceInfo));
+				cmd_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+				cmd_hinfo.renderPass = VK_NULL_HANDLE;
+				cmd_hinfo.subpass = 0;
+				cmd_hinfo.framebuffer = VK_NULL_HANDLE;
+				cmd_hinfo.occlusionQueryEnable = VK_FALSE;
+				cmd_hinfo.queryFlags = 0;
+				cmd_hinfo.pipelineStatistics = 0;
+
+				std::memset(&cmd_info, 0, sizeof(VkCommandBufferBeginInfo));
+				cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+				cmd_info.pInheritanceInfo = &cmd_hinfo;
+				r = vkBeginCommandBuffer(cmd, &cmd_info);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Begin command buffer failed");
+
 				
-					WindowImpl				*win = dynamic_cast<WindowImpl *>(window.get());
+				/*
+				VkImageMemoryBarrier	preRenderBarrier;
+				std::memset(&preRenderBarrier, 0, sizeof(preRenderBarrier));
+				preRenderBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				preRenderBarrier.srcAccessMask = 0;
+				preRenderBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+				preRenderBarrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+				preRenderBarrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				preRenderBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				preRenderBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				preRenderBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+				preRenderBarrier.image = win->vk_images[win->vk_present_frame];
+				vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+					VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, NULL, 0,
+					NULL, 1, &preRenderBarrier);
+				// */
+
+
 					VkRenderPassBeginInfo	rp_begin_info;
 
 					std::memset(&rp_begin_info, 0, sizeof(VkRenderPassBeginInfo));
@@ -197,12 +216,12 @@ namespace f3d {
 				}
 
 				vkCmdEndRenderPass(cmd);
-
+				// /*
 				VkImageMemoryBarrier	prePresentBarrier;
 				std::memset(&prePresentBarrier, 0, sizeof(prePresentBarrier));
 				prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				prePresentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-				prePresentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+				prePresentBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
 				prePresentBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 				prePresentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 				prePresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -210,9 +229,9 @@ namespace f3d {
 				prePresentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 				prePresentBarrier.image = win->vk_images[win->vk_present_frame];
 				vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-					VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0,
+					VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_DEPENDENCY_BY_REGION_BIT, 0, NULL, 0,
 					NULL, 1, &prePresentBarrier);
-
+				// */
 				vkEndCommandBuffer(cmd);
 			}
 			

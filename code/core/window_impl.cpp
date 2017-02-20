@@ -18,20 +18,40 @@ namespace f3d {
 			vk_present_frame = 0;
 			vk_images = nullptr;
 			vk_image_count = 0;
-			vk_presentation_semaphore = 0;
+
+			VkSemaphoreCreateInfo			semaphore_infos;
+			VkResult						r;
+			std::memset(&semaphore_infos, 0, sizeof(VkSemaphoreCreateInfo));
+			semaphore_infos.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_present_semaphore);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Presentation semaphore creation failed");
+			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_render_semaphore);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Render semaphore creation failed");
+
 
 			_window = glfwCreateWindow(_settings->windowWidth, _settings->windowHeight, _settings->applicationName.c_str(), NULL, NULL);
 			applySettings();
 		}
 
 		WindowImpl::~WindowImpl() {
+			std::cout << "Destructor: " << __FILE__ << std::endl;
+
 			if (vk_swapchain != 0)
-				vkDestroySwapchainKHR(vk_device, vk_swapchain, NULL);
+				vkDestroySwapchainKHR(vk_device, vk_swapchain, nullptr);
 			if (vk_surface != 0)
-				vkDestroySurfaceKHR(vk_instance, vk_surface, NULL);
+				vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
+
+			if (vk_render_semaphore != 0) {
+				vkDestroySemaphore(_device->vk_device, vk_present_semaphore, nullptr);
+			}
+			if (vk_present_semaphore != 0) {
+				vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
+			}
 
 			if (_window != nullptr && _window != NULL)
 				glfwDestroyWindow(_window);
+
+			std::cout << "Destructor end: " << __FILE__ << std::endl;
 		}
 
 		void				WindowImpl::applySettings() {
@@ -62,26 +82,15 @@ namespace f3d {
 		void							WindowImpl::swapBuffers() {
 			VkResult					r;
 			VkFence						nullFence = VK_NULL_HANDLE;
-			VkSemaphoreCreateInfo		semaphore_infos;
-
-			if (vk_presentation_semaphore != 0) {
-				vkDestroySemaphore(_device->vk_device, vk_presentation_semaphore, NULL);
-				vk_presentation_semaphore = 0;
-			}
-			std::memset(&semaphore_infos, 0, sizeof(VkSemaphoreCreateInfo));
-			semaphore_infos.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_presentation_semaphore);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Presentation semaphore creation failed");
 
 			// Get the index of the next available swapchain image:
-			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_presentation_semaphore, nullFence, &vk_present_frame);
+			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_present_semaphore, nullFence, &vk_present_frame);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
 
-			bool il = _device->initImageLayout(vk_images[vk_present_frame], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
-			F3D_ASSERT(il, "Init back image buffer layout");
-
-			vkDeviceWaitIdle(_device->vk_device);
+			_device->initImageLayout(vk_images[vk_present_frame], 
+									 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+									 VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, 
+									 VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 
 
@@ -94,7 +103,7 @@ namespace f3d {
 				VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
 				F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
 			}
-			F3D_ASSERT(_device->getQueueFamilyIndex(true, 0, vk_surface) != UINT32_MAX, "Did not find a queue supporting presentation");
+			F3D_ASSERT(_device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, vk_surface) != UINT32_MAX, "Did not find a queue supporting presentation & graphics");
 		}
 
 		void			WindowImpl::initFormatAndColor() {
@@ -215,9 +224,12 @@ namespace f3d {
 			r = f3d::utils::fpGetSwapchainImagesKHR(vk_device, vk_swapchain, &vk_image_count, vk_images);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain Images failed");
 
+			
 			for (uint32_t i = 0; i < vk_image_count; i++) {
-				_device->initImageLayout(vk_images[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+				_device->initImageLayout(vk_images[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 
+										 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
+			
 		}
 
 	}

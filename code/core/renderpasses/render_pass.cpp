@@ -23,6 +23,7 @@ namespace f3d {
 		}
 
 		RenderPass::~RenderPass() {
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		RenderPass::eRenderPassType		RenderPass::getType() const {
