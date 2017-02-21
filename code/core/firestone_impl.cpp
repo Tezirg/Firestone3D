@@ -132,6 +132,9 @@ static void					size_callback(GLFWwindow *window, int width, int height) {
 	f3d::Firestone*			f3d = f3d::getF3D();
 	f3d::FirestoneImpl*		f3d_impl = dynamic_cast<f3d::FirestoneImpl*>(f3d);
 	
+	f3d_impl->settings->windowHeight = height;
+	f3d_impl->settings->windowWidth = width;
+
 	f3d_impl->applySettings();
 	// Call resize callback if defined
 	if (f3d->_resize != nullptr) {

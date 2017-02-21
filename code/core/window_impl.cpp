@@ -104,7 +104,9 @@ namespace f3d {
 
 		void			WindowImpl::initSurface() {
 			if (vk_surface != 0) {
+				f3d::utils::fpDestroySwapchainKHR(vk_device, vk_swapchain, nullptr);
 				vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
+				vk_swapchain = 0;
 				vk_surface = 0;
 			}
 			
@@ -216,6 +218,7 @@ namespace f3d {
 
 			r = f3d::utils::fpCreateSwapchainKHR(vk_device, &swap_info, NULL, &vk_swapchain);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Create swap chain failed");
+
 		}
 
 		void				WindowImpl::initImages() {

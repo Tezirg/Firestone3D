@@ -110,7 +110,7 @@ namespace f3d {
 
 
 				//layout (set = 0, binding = 0) uniform camera;
-				std::memset(&layout_bindings[0], 0, sizeof(VkDescriptorSetLayoutBinding));
+				std::memset(&layout_bindings, 0, 3 * sizeof(VkDescriptorSetLayoutBinding));
 				layout_bindings[0].binding = 0;
 				layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				layout_bindings[0].descriptorCount = 1;

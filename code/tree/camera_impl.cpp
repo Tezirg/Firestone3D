@@ -10,7 +10,6 @@ namespace f3d {
 			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
 			lookAt(glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			createAttribute();
-			updateAttribute();
 
 			VkResult							r;
 			VkDescriptorSetLayoutBinding		layout_bindings;
@@ -56,7 +55,8 @@ namespace f3d {
 			r = vkAllocateDescriptorSets(device->vk_device, &desc_set_alloc, &_descriptor);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Descriptor set allocation failed");
 
-			// updateDescriptorSet();
+			updateAttribute();
+			updateDescriptorSet();
 		}
 
 		CameraImpl::~CameraImpl() {

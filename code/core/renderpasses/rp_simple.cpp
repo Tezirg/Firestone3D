@@ -166,7 +166,7 @@ namespace f3d {
 				std::memset(&cmd_info, 0, sizeof(VkCommandBufferBeginInfo));
 				cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 				cmd_info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-				cmd_info.pInheritanceInfo = &cmd_hinfo;
+				cmd_info.pInheritanceInfo = nullptr;// &cmd_hinfo;
 				r = vkBeginCommandBuffer(cmd, &cmd_info);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Begin command buffer failed");
 
