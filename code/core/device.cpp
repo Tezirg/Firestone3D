@@ -222,7 +222,7 @@ namespace f3d {
 			r = vkDeviceWaitIdle(vk_device);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait device idle after image layout fails");
 
-			std::cout << "Old: " << old_image_layout  << " New: " << new_image_layout<< std::endl;
+			//std::cout << "Old layout: " << old_image_layout  << " New layout: " << new_image_layout<< std::endl;
 
 			return true;
 		}

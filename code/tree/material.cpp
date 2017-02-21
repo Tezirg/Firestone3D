@@ -34,7 +34,6 @@ namespace f3d {
 
 		void					Material::addTexture(f3d::tree::Texture *texture) {
 			_textures.push_back(texture);
-			std::cout << "Texture added: " << texture->getWidth() << ';' << texture->getHeight() << std::endl;
 		}
 		void					Material::removeTexture(f3d::tree::Texture *texture) {
 			_textures.remove(texture);

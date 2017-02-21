@@ -219,15 +219,12 @@ namespace f3d {
 			address_mode = (mapmode[0] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode;
 
 			
-			std::cout << aiPath.C_Str() << std::endl;
 			std::string texturePath(path);
 			std::string	textureExtension(aiPath.C_Str());
 			texturePath.append(aiPath.C_Str());
 
 			textureExtension = textureExtension.substr(textureExtension.find_last_of(".") + 1);
 
-			std::cout << texturePath << std::endl;
-			std::cout << textureExtension << std::endl;
 			if (textureExtension == "dds" || textureExtension == "ktx") {
 
 				gli::texture	gli_texture = gli::load(texturePath);

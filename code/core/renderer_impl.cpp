@@ -100,14 +100,8 @@ namespace f3d {
 				scene_impl->recursive_uniformUpdate((*it)->getRoot());
 			cam->updateAttribute();
 
-			std::cout << "Pre swap" << std::endl;
 			win->swapBuffers();
-			std::cout << "Post swap" << std::endl;
 
-
-			cam->updateAttribute();
-
-			std::cout << "Pre render cmd submit" << std::endl;
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			VkSubmitInfo submit_info;
 			submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -121,8 +115,6 @@ namespace f3d {
 			submit_info.pSignalSemaphores = & win->vk_render_semaphore;
 			r = vkQueueSubmit(_device->getQueue(fam_idx, 0), 1, &submit_info, nullptr);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Submit to Queue");
-
-			std::cout << "Post render cmd submit" << std::endl;
 		}
 
 		void					RendererImpl::display() {
@@ -130,8 +122,6 @@ namespace f3d {
 			uint32_t			fam_idx;
 			VkPresentInfoKHR	present;
 			WindowImpl			*win;
-
-			std::cout << "Pre display" << std::endl;
 
 			win = dynamic_cast<WindowImpl *>(_window.get());
 			fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
@@ -148,12 +138,8 @@ namespace f3d {
 			r = f3d::utils::fpQueuePresentKHR(_device->getQueue(fam_idx, 0), &present);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Queue presentation fails");
 
-			// /*
 			r = vkQueueWaitIdle(_device->getQueue(fam_idx, 0));
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Wait presentation");
-			//  */
-
-			std::cout << "Post display" << std::endl;
 		}
 
 	}
