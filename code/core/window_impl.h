@@ -50,7 +50,8 @@ namespace f3d {
 			uint32_t								vk_image_count; //Swapchain image count
 			VkImage*								vk_images; //Swapchain images
 			uint32_t								vk_present_frame;//Index of the next presentable in the swapchain
-			VkSemaphore								vk_present_semaphore; //Semaphore signaled after presentation completes
+			VkSemaphore								vk_acquire_semaphore; //Semaphore signaled after presentation completes
+			VkSemaphore								vk_swap_semaphore; //Semaphore signaled after swap is successfull
 			VkSemaphore								vk_render_semaphore; //Semaphore signaled after rendering is complete
 
 		private:

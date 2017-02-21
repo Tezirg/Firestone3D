@@ -56,7 +56,7 @@ namespace f3d {
 			r = vkAllocateDescriptorSets(device->vk_device, &desc_set_alloc, &_descriptor);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Descriptor set allocation failed");
 
-			updateDescriptorSet();
+			// updateDescriptorSet();
 		}
 
 		CameraImpl::~CameraImpl() {
@@ -65,6 +65,7 @@ namespace f3d {
 			vkDestroyDescriptorSetLayout(_device->vk_device, _desc_layout, nullptr);
 			vkDestroyBuffer(_device->vk_device, _buffer, nullptr);
 			vkFreeMemory(_device->vk_device, _memory, nullptr);
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		void						CameraImpl::createAttribute() {
@@ -83,7 +84,7 @@ namespace f3d {
 			vkGetBufferMemoryRequirements(_device->vk_device, _buffer, &mem_reqs);
 			std::memset(&mem_info, 0, sizeof(VkMemoryAllocateInfo));
 			mem_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			mem_info.memoryTypeIndex = _physical->getMemoryIndex(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+			mem_info.memoryTypeIndex = _physical->getMemoryIndex(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			mem_info.allocationSize = mem_reqs.size;
 			r = vkAllocateMemory(_device->vk_device, &mem_info, NULL, &_memory);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Buffer mem allocation failed");
@@ -119,7 +120,7 @@ namespace f3d {
 			pWrites.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			pWrites.pBufferInfo = &buffer_info;
 			buffer_info.offset = 0;
-			buffer_info.range = 16 * sizeof(float);
+			buffer_info.range = VK_WHOLE_SIZE;
 			buffer_info.buffer = _buffer;
 			vkUpdateDescriptorSets(_device->vk_device, 1, &pWrites, 0, nullptr);
 		}

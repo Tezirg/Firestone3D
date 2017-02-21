@@ -8,7 +8,7 @@ namespace f3d {
 		}
 
 		SceneImpl::~SceneImpl() {
-
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		void				SceneImpl::recurs_aiNodeToF3d(const aiScene* scene, aiNode *ainode, f3d::tree::Node* f3d_node) {

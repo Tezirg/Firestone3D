@@ -6,6 +6,7 @@ namespace f3d {
 		}
 
 		Program::~Program() {
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		void				Program::bind(VkCommandBuffer& cmd) {

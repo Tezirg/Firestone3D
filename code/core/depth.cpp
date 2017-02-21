@@ -35,7 +35,7 @@ namespace f3d {
 			image_info.arrayLayers = 1;
 			image_info.samples = VK_SAMPLE_COUNT_1_BIT;
 			image_info.tiling = VK_IMAGE_TILING_OPTIMAL;
-			image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			image_info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 			image_info.flags = 0;
 
 			std::memset(&view_info, 0, sizeof(VkImageViewCreateInfo));
@@ -59,7 +59,7 @@ namespace f3d {
 			mem_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			mem_info.pNext = NULL;
 			mem_info.allocationSize = mem_reqs.size;
-			mem_info.memoryTypeIndex = _phys->getMemoryIndex(mem_reqs.memoryTypeBits, 0);
+			mem_info.memoryTypeIndex = _phys->getMemoryIndex(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			F3D_ASSERT(mem_info.memoryTypeIndex != -1, "Cant find depth memory type");
 
 			r = vkAllocateMemory(_device->vk_device, &mem_info, NULL, &vk_memory);

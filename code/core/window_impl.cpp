@@ -23,8 +23,10 @@ namespace f3d {
 			VkResult						r;
 			std::memset(&semaphore_infos, 0, sizeof(VkSemaphoreCreateInfo));
 			semaphore_infos.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_present_semaphore);
+			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_acquire_semaphore);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Presentation semaphore creation failed");
+			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_swap_semaphore);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Swap semaphore creation failed");
 			r = vkCreateSemaphore(_device->vk_device, &semaphore_infos, NULL, &vk_render_semaphore);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Render semaphore creation failed");
 
@@ -41,12 +43,9 @@ namespace f3d {
 			if (vk_surface != 0)
 				vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
 
-			if (vk_render_semaphore != 0) {
-				vkDestroySemaphore(_device->vk_device, vk_present_semaphore, nullptr);
-			}
-			if (vk_present_semaphore != 0) {
-				vkDestroySemaphore(_device->vk_device, vk_render_semaphore, NULL);
-			}
+			vkDestroySemaphore(_device->vk_device, vk_render_semaphore, nullptr);
+			vkDestroySemaphore(_device->vk_device, vk_acquire_semaphore, nullptr);
+			vkDestroySemaphore(_device->vk_device, vk_swap_semaphore, nullptr);
 
 			if (_window != nullptr && _window != NULL)
 				glfwDestroyWindow(_window);
@@ -58,7 +57,7 @@ namespace f3d {
 			int				x = 10, y = 10;
 			GLFWmonitor*	updateWindowMonitor = NULL;
 
-			glfwGetWindowPos(_window,&x, &y);
+			glfwGetWindowPos(_window, &x, &y);
 
 			if (_settings->fullScreen == true) {
 				updateWindowMonitor = _monitor;
@@ -84,13 +83,18 @@ namespace f3d {
 			VkFence						nullFence = VK_NULL_HANDLE;
 
 			// Get the index of the next available swapchain image:
-			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_present_semaphore, nullFence, &vk_present_frame);
+			r = f3d::utils::fpAcquireNextImageKHR(vk_device, vk_swapchain, UINT64_MAX, vk_acquire_semaphore, nullFence, &vk_present_frame);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
 
+			// /*
+			VkPipelineStageFlags stageFlags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 			_device->initImageLayout(vk_images[vk_present_frame], 
 									 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-									 VK_ACCESS_COLOR_ATTACHMENT_READ_BIT, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, 
-									 VK_IMAGE_ASPECT_COLOR_BIT);
+									 VK_ACCESS_HOST_READ_BIT, VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+									 VK_IMAGE_ASPECT_COLOR_BIT, 1, &vk_acquire_semaphore, &stageFlags, 1, &vk_swap_semaphore);
+
+			vkDeviceWaitIdle(vk_device);
+			// */
 		}
 
 
@@ -99,10 +103,14 @@ namespace f3d {
 		}
 
 		void			WindowImpl::initSurface() {
-			if (vk_surface == 0) {
-				VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
-				F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
+			if (vk_surface != 0) {
+				vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
+				vk_surface = 0;
 			}
+			
+			VkResult res = glfwCreateWindowSurface(vk_instance, _window, 0, &vk_surface);
+			F3D_ASSERT_VK(res, VK_SUCCESS, "Surface KHR creation");
+
 			F3D_ASSERT(_device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, vk_surface) != UINT32_MAX, "Did not find a queue supporting presentation & graphics");
 		}
 
@@ -213,8 +221,9 @@ namespace f3d {
 		void				WindowImpl::initImages() {
 			VkResult		r;
 
-			if (vk_images != nullptr)
-				delete [] vk_images;
+			if (vk_images != nullptr) {				
+				delete[] vk_images;
+			}
 
 			r = f3d::utils::fpGetSwapchainImagesKHR(vk_device, vk_swapchain, &vk_image_count, NULL);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Get swap chain image count failed");
@@ -227,7 +236,7 @@ namespace f3d {
 			
 			for (uint32_t i = 0; i < vk_image_count; i++) {
 				_device->initImageLayout(vk_images[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 
-										 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+										 0, VK_ACCESS_HOST_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 			
 		}

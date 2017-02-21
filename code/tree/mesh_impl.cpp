@@ -73,6 +73,7 @@ namespace f3d {
 			vkFreeDescriptorSets(_device->vk_device, _uniform_pool, 1, &_uniform_set);
 			vkDestroyDescriptorPool(_device->vk_device, _uniform_pool, nullptr);
 			vkDestroyDescriptorSetLayout(_device->vk_device, _uniform_layout, nullptr);
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 		
 		VkDescriptorSet			MeshImpl::getDescriptorSet() {

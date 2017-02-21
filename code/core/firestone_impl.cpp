@@ -130,7 +130,9 @@ static void										joystick_update(int joy) {
 
 static void					size_callback(GLFWwindow *window, int width, int height) {
 	f3d::Firestone*			f3d = f3d::getF3D();
-
+	f3d::FirestoneImpl*		f3d_impl = dynamic_cast<f3d::FirestoneImpl*>(f3d);
+	
+	f3d_impl->applySettings();
 	// Call resize callback if defined
 	if (f3d->_resize != nullptr) {
 		f3d->_resize(*f3d, width, height, f3d->_resize_arg);
@@ -146,6 +148,7 @@ namespace f3d {
 	}
 
 	FirestoneImpl::~FirestoneImpl() {
+		std::cout << "Destructor: " << __FILE__ << std::endl;
 	}
 
 	void	FirestoneImpl::initVkInstance()
@@ -241,6 +244,8 @@ namespace f3d {
 			_end(*this, _end_arg);
 		}
 
+		vkDeviceWaitIdle(device->vk_device);
+
 		scene.reset();
 		renderer.reset();
 		window.reset();
@@ -253,8 +258,11 @@ namespace f3d {
 	}
 
 	bool	FirestoneImpl::applySettings() {
-		if (window != nullptr)
+		if (window != nullptr) {
 			window->applySettings();
+			f3d::core::RendererImpl		*render = dynamic_cast<f3d::core::RendererImpl*>(renderer.get());
+			render->reset();
+		}
 		return false;
 	}
 

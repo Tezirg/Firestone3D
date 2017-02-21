@@ -7,6 +7,7 @@ namespace f3d {
 			}
 
 			FlatProgram::~FlatProgram() {
+				std::cout << "Destructor: " << __FILE__ << std::endl;
 			}
 
 			void									FlatProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) {

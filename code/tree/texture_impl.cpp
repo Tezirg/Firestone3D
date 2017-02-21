@@ -19,6 +19,7 @@ namespace f3d {
 			vkDestroyImage(_device->vk_device, vk_image, nullptr);
 
 			vkFreeMemory(_device->vk_device, vk_memory, nullptr);
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		bool								TextureImpl::initializeLinearTiling(uint32_t width, uint32_t height, void *data, uint32_t size, VkFormat format) {

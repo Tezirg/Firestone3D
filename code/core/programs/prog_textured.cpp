@@ -7,6 +7,7 @@ namespace f3d {
 			}
 
 			TexturedProgram::~TexturedProgram() {
+				std::cout << "Destructor: " << __FILE__ << std::endl;
 			}
 
 			void									TexturedProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) {

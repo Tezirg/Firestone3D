@@ -27,6 +27,7 @@ namespace f3d {
 						 std::shared_ptr<f3d::core::Window>& window);
 			~RendererImpl();
 
+			void	reset();
 			void	render(std::shared_ptr<f3d::tree::Scene> scene);
 			void	display();
 			void	computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene);
@@ -38,6 +39,7 @@ namespace f3d {
 			VkCommandBuffer													*vk_commands;
 			uint32_t														vk_command_count;
 			VkCommandPool													vk_command_pool;
+			bool															valid_commands;
 		private:
 			std::shared_ptr<f3d::core::Device>								_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>						_physical;
