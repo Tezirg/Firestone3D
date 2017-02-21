@@ -6,6 +6,7 @@
 #include <memory>
 #include <cstdint>
 #include <vector>
+#include <stack>
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include <assimp/light.h>
@@ -35,11 +36,13 @@ namespace f3d {
 			~SceneImpl();
 
 			void						loadFromFile(const std::string& path, const std::string& file);
+			void						recursive_uniformUpdate(f3d::tree::Node* f3d_node);
 		private:
 			void						recurs_aiNodeToF3d(const aiScene* scene, aiNode *ainode, f3d::tree::Node* f3d_node);
 			f3d::tree::Material*		_aiMaterialToF3D(const std::string& path, const aiMaterial* aiMat);
 			f3d::tree::TextureImpl*		_aiTextureToF3D(const std::string& path, const aiMaterial *aiMaterial, aiTextureType aiType, uint32_t aiIndex);
 		private:
+			std::stack<glm::mat4>						_matrix;
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
 		};

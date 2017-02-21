@@ -66,7 +66,6 @@ namespace f3d {
 			f3d::tree::TextureImpl *	texture = nullptr;
 
 
-			cam->updateAttribute();
 			cam->updateDescriptorSet();
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
 				if ((*it)->getTextures().empty() == false) {
@@ -87,6 +86,7 @@ namespace f3d {
 			VkResult					r;
 			WindowImpl *				win = dynamic_cast<WindowImpl *>(_window.get());
 			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
+			f3d::tree::SceneImpl *		scene_impl = dynamic_cast<f3d::tree::SceneImpl *>(scene.get());
 			f3d::tree::TextureImpl *	texture = nullptr;
 			uint32_t					fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
@@ -94,24 +94,18 @@ namespace f3d {
 			if (valid_commands == false) {
 				computeCommandBuffers(scene);
 			}
-			// /*
-			/*
-			cam->updateDescriptorSet();
-			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
-				if ((*it)->getTextures().empty() == false) {
-					texture = dynamic_cast<f3d::tree::TextureImpl *>((*it)->getTextures().front());
-					texture->updateDescriptorSet();
-				}
-			}
-			*/
 
-			// _renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[win->vk_present_frame], scene);
 
+			for (auto it = scene_impl->getObjects().begin(); it != scene_impl->getObjects().end(); ++it)
+				scene_impl->recursive_uniformUpdate((*it)->getRoot());
 			cam->updateAttribute();
 
 			std::cout << "Pre swap" << std::endl;
 			win->swapBuffers();
 			std::cout << "Post swap" << std::endl;
+
+
+			cam->updateAttribute();
 
 			std::cout << "Pre render cmd submit" << std::endl;
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;

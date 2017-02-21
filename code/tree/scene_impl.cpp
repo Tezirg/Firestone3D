@@ -5,10 +5,32 @@ namespace f3d {
 		SceneImpl::SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device) :
 			_physical(physical), _device(device) {
 			_camera.reset(new f3d::tree::CameraImpl(physical, device));
+			
+			_matrix.push(glm::mat4());
 		}
 
 		SceneImpl::~SceneImpl() {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
+		}
+
+		void				SceneImpl::recursive_uniformUpdate(f3d::tree::Node* f3d_node) {
+			glm::mat4		t = f3d_node->transformation().getTransformation();
+
+
+			t = t * _matrix.top();
+			//Push local transformationmatrix
+			_matrix.push(t);
+
+			for (auto it = f3d_node->getMeshes().begin(); it != f3d_node->getMeshes().end(); ++it) {
+				f3d::tree::MeshImpl* m = dynamic_cast<f3d::tree::MeshImpl*>(*it);
+				m->updateDescriptorSet(t);
+			}
+
+			for (auto it = f3d_node->getChildren().begin(); it != f3d_node->getChildren().end(); ++it)
+				recursive_uniformUpdate(*it);
+
+			//Removes current tranform: stack should end with only one identity matrix
+			_matrix.pop();
 		}
 
 		void				SceneImpl::recurs_aiNodeToF3d(const aiScene* scene, aiNode *ainode, f3d::tree::Node* f3d_node) {

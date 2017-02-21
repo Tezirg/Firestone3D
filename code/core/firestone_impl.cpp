@@ -263,6 +263,7 @@ namespace f3d {
 	bool	FirestoneImpl::applySettings() {
 		if (window != nullptr) {
 			window->applySettings();
+			vkDeviceWaitIdle(device->vk_device);
 			f3d::core::RendererImpl		*render = dynamic_cast<f3d::core::RendererImpl*>(renderer.get());
 			render->reset();
 		}

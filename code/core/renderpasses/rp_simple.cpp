@@ -185,17 +185,11 @@ namespace f3d {
 				vkCmdSetViewport(cmd, 0, 1, &vk_viewport);
 				vkCmdSetScissor(cmd, 0, 1, &vk_scissor);
 
-				//Push world identity transform
-				_matrix.push(glm::mat4());
 				for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it) {
 					cmdDrawObject(cmd, scene, (*it)->getRoot());
 				}
-				//Removes identity tranform: stack should be empty
-				_matrix.pop();
-				
 
 				vkCmdEndRenderPass(cmd);
-				// /*
 
 				std::memset(&prePresentBarrier, 0, sizeof(prePresentBarrier));
 				prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -218,16 +212,10 @@ namespace f3d {
 				if (obj == nullptr)
 					return;
 
-				//Compute Local transform
-				_matrix.push(_matrix.top() * obj->transformation().getTransformation());
-
 				for (auto it = obj->getMeshes().begin(); it != obj->getMeshes().end(); ++it)
 					cmdDrawMesh(cmd, scene, *(*it));
 				for (auto it = obj->getChildren().begin(); it != obj->getChildren().end(); ++it)
 					cmdDrawObject(cmd, scene, *it);
-
-				//Remove local transforms
-				_matrix.pop();
 			}
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) {
@@ -245,7 +233,6 @@ namespace f3d {
 					vertex_offsets[0] = 0;
 					vertex_offsets[1] = 0;
 
-					m.updateDescriptorSet(_matrix.top());
 					VkDescriptorSet sets[2] = { cam.getDescriptorSet() , m.getDescriptorSet() };
 
 					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _flat_prog->vk_pipeline_layout, 0, 2, sets, 0, nullptr);
@@ -264,7 +251,6 @@ namespace f3d {
 					vertex_offsets[1] = 0;
 					vertex_offsets[2] = 0;
 
-					m.updateDescriptorSet(_matrix.top());
 					texture = dynamic_cast<f3d::tree::TextureImpl *>(scene->getMaterialByName(m.getMaterialName())->getTextures().front());
 
 					VkDescriptorSet sets[3] = { cam.getDescriptorSet() , m.getDescriptorSet(),  texture->getDescriptorSet() };
