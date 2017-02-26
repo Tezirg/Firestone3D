@@ -1,4 +1,5 @@
 #include <f3d/f3d.h>
+#include <f3d/helpers/xbox_360.hpp>
 
 void		loadScene(f3d::Firestone& f3d, void * arg) {
 	std::string path((char *)arg);
@@ -16,21 +17,31 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 		//(*it)->translate(glm::vec3(0.0f, 0.0f, 0.0f));
 		(*it)->scale(glm::vec3(4.0f));
 	}
-	f3d.scene->getCamera().get()->setPerspective(45.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+	f3d.scene->getCamera()->setPerspective(156.5f, 1280.0f / 720.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 void		updateScene(f3d::Firestone& f3d, void * arg) {
-	(void)arg;
-	const glm::vec3	rotationAxis(0.0, 1.0, 0.0);
-	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it)
-		(*it)->rotate(0.01f, rotationAxis);
+	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
 
+	glm::vec3 pos = f3d.scene->getCamera()->getPosition();
+	pos[0] += joystick->axisState(joystick->AXIS_LS_X) * 2.25f;
+	pos[2] += joystick->axisState(joystick->AXIS_LS_Y) * 2.25f;
+	pos[1] += joystick->isButtonPressed(joystick->BUTTON_LS) ? 1.0 : 0.0;
+	pos[1] += joystick->isButtonPressed(joystick->BUTTON_RS) ? -1.0 : 0.0;
+	f3d.scene->getCamera()->setPosition(pos);
+	
+	const glm::vec3	rotationAxis(0.0, 1.0, 0.0);
+	float rotationAngle = joystick->axisState(joystick->AXIS_RS_X) / 3.0f;
+	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
+		(*it)->rotate(rotationAngle, rotationAxis);
+	}
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
 	(void)arg;
 
-	std::cout << keyEvent << std::endl;
+	//std::cout << keyEvent << std::endl;
 
 	if (keyEvent.keycode == 256 && keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS)
 		f3d.stop();
@@ -39,17 +50,13 @@ void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg
 
 void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg) {
 	(void)arg;
-	std::cout << mouseEvent << std::endl;
+	//std::cout << mouseEvent << std::endl;
 }
 
 void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg) {
-	(void)arg;
-	if (joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_CONNECTED ||
-		joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_DISCONNECTED)
-		std::cout << joystickEvent << std::endl;
-	if (joystickEvent.type == joystickEvent.F3D_JOYSTICK_INPUT_BUTTON &&
-		joystickEvent.buttonState == joystickEvent.F3D_JOYSTICK_BUTTON_PRESS)
-		std::cout << joystickEvent << std::endl;
+	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
+
+	joystick->update(joystickEvent);
 }
 
 int main(int ac, char **av) {
@@ -58,15 +65,16 @@ int main(int ac, char **av) {
 		return 1;
 	}
 
+	f3d::helpers::Xbox360Controller joystick;
 	f3d::Firestone	*engine = f3d::getF3D();
 
 	engine->startCallback(loadScene, av[1]);
-	engine->drawCallback(updateScene, NULL);
+	engine->drawCallback(updateScene, &joystick);
 	engine->keybordEventsCallback(keyCallback, NULL);
 	engine->mouseEventsCallback(mouseCallback, NULL);
-	engine->joystickEventsCallback(joystickCallback, NULL);
+	engine->joystickEventsCallback(joystickCallback, &joystick);
 	engine->settings->applicationName.assign("Sample viewer");
-	engine->settings->fpsCap = 60;
+	engine->settings->fpsCap = 45;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
 	engine->settings->fullScreen = false;

@@ -96,6 +96,8 @@ SET ( f3d_utils_sdk_headers
 	${F3D_HEADER_PATH}/utils/inputs.h
 	${F3D_HEADER_PATH}/utils/timer.h
 	${F3D_HEADER_PATH}/utils/transform.h
+	
+	${F3D_HEADER_PATH}/helpers/xbox_360.hpp
 )
 SOURCE_GROUP ( sdk\\utils FILES ${f3d_utils_sdk} ${f3d_utils_sdk_headers} )
 
