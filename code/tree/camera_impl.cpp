@@ -93,7 +93,7 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Bind memory to buffer fail");
 		}
 
-		void				CameraImpl::updateAttribute() {
+		void					CameraImpl::updateAttribute() {
 			VkResult			r;
 			char				*pData;
 

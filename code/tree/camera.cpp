@@ -126,5 +126,12 @@ namespace f3d {
 			_view[3][2] = val.z;
 			_VP = _perspective * _view;
 		}
+
+		void				Camera::rotate(const glm::vec3& angles) {
+			_view *= glm::rotate(angles.x, glm::vec3(1.0, 0.0, 0.0));
+			_view *= glm::rotate(angles.y, glm::vec3(0.0, 1.0, 0.0));
+			_view *= glm::rotate(angles.z, glm::vec3(0.0, 0.0, 1.0));
+			_VP = _view * _perspective;
+		}
 	}
 }

@@ -77,6 +77,7 @@ namespace f3d {
 			virtual void				setName(std::string& val);
 			virtual glm::vec3		 	getPosition() const;
 			virtual void				setPosition(const glm::vec3& val);
+			void						rotate(const glm::vec3& angles);
 		protected:
 			std::string					_name;
 
