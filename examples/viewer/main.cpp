@@ -19,12 +19,14 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
+static float distance = 400.0f;
+static glm::vec3 center;
+static float angleX = 0.0f, angleY = 0.0f;
+
+static glm::mat4 r;
+static glm::mat4 t;
+
 void		updateScene(f3d::Firestone& f3d, void * arg) {
-	static float distance = 400.0f;
-
-	static glm::vec3 center;
-	static float angleX = 0.0f, angleY = 0.0f;
-
 	/*
 		left sitck move regarding to forward vector
 		right sitck pan camera left / right
@@ -32,32 +34,55 @@ void		updateScene(f3d::Firestone& f3d, void * arg) {
 	*/
 
 	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
-
-	center[0] += joystick->axisState(joystick->AXIS_LS_X) * 2.25f;
-	center[2] += joystick->axisState(joystick->AXIS_LS_Y) * 2.25f;
-	center[1] += joystick->isButtonPressed(joystick->BUTTON_LS) ? 1.0f : 0.0f;
-	center[1] += joystick->isButtonPressed(joystick->BUTTON_RS) ? -1.0f : 0.0f;
 	
-	distance += ( - (joystick->axisState(joystick->AXIS_LT) + 1.0f) * 10.0f); // Zoom out on Left trigger
-	distance += (joystick->axisState(joystick->AXIS_RT) + 1.0f) * 10.0f; //Zoom in on right trigger
+	float z = 0.0f;
+	z += joystick->axisState(joystick->AXIS_LS_Y) * 2.0f;
+	float x = 0.0f;
+	x += joystick->axisState(joystick->AXIS_LS_X) * 2.0f;
 
-	glm::vec3 eye(0.0f, 0.0f, distance);
 
-	angleX += joystick->axisState(joystick->AXIS_RS_Y) / 10.0f;
-	angleY += joystick->axisState(joystick->AXIS_RS_X) / 10.0f;
+	float y = 0.0f;
+	y += (-(joystick->axisState(joystick->AXIS_LT) + 1.0f) * 2.0f); // Y up Left trigger
+	y += (joystick->axisState(joystick->AXIS_RT) + 1.0f) * 2.0f; //Y down on right trigger
 
-	eye = (glm::mat3(glm::rotate(angleX, glm::vec3(1.0, 0.0, 0.0))) * (eye - center)) + center;
-	eye = (glm::mat3(glm::rotate(angleY, glm::vec3(0.0, -1.0, 0.0))) * (eye - center)) + center;
+	float ay = 0.0f;
+	ay += joystick->axisState(joystick->AXIS_RS_X) / 12.0f;
 
-	f3d.scene->getCamera()->lookAt(eye, center, glm::vec3(0.0f, -1.0f, 0.0f));
+	angleY += ay;
+	r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
+	t = glm::translate(glm::mat4(), glm::vec3(x, y, z));
+	f3d.scene->getCamera()->setView(t * r * f3d.scene->getCamera()->getView());
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
 	(void)arg;
 
+	float z = 0.0f;
+	float ay = 0.0f;
+
 	if (keyEvent.keycode == 256 && keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS)
 		f3d.stop();
 
+	std::cout << keyEvent.keycode << std::endl;
+	if (keyEvent.keycode == 331 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Left arrow
+		ay += -0.1f;
+	if (keyEvent.keycode == 333 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Right arrow
+		ay += 0.1f;
+	if (keyEvent.keycode == 328 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Top arrow
+	{
+		angleX += 0.1f;
+		z = 5.0f;
+	}
+	if (keyEvent.keycode == 336 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Down arrow
+	{
+		angleX += -0.1f;
+		z = -5.0f;
+	}
+
+	angleY += ay;
+	r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
+	t = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, z));
+	f3d.scene->getCamera()->setView(t * r * f3d.scene->getCamera()->getView());
 }
 
 void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg) {
