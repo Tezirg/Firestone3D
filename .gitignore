@@ -6,3 +6,7 @@ assets/*
 */*~
 contrib/assimp*/*
 contrib/glfw*/*
+*.spv
+*/mars_data/*
+*/mars_data
+*/*/mars_data
