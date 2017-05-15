@@ -16,7 +16,7 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 		(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
 		(*it)->scale(glm::vec3(4.0f));
 	}
-	f3d.scene->getCamera()->setPerspective(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
