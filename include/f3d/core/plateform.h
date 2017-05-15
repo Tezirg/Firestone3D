@@ -40,9 +40,11 @@
 #endif
 
 #include <cstdint>
+#include <cstdio>
 #include <memory>
 #include <utility>
 #include <iostream>
+#include <string>
 
 //Linear algebra dependency
 #include <glm/glm.hpp>
@@ -54,11 +56,5 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-
-//Images dependency
-#include <gli/gli.hpp>
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 #endif //__F3D_PLATEFORM_H

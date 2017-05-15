@@ -3,8 +3,6 @@
 #ifndef _F3D_SCENE_IMPL_H
 #define _F3D_SCENE_IMPL_H
 
-#include <memory>
-#include <cstdint>
 #include <vector>
 #include <stack>
 #include <assimp/scene.h>
@@ -13,8 +11,7 @@
 #include <assimp/camera.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <gli/gli.hpp>
-#include <gli/texture2d.hpp>
+#include <Magick++.h> 
 
 #include "core/plateform.h"
 #include "tree/scene.h"
@@ -25,7 +22,6 @@
 #include "tree/texture_impl.h"
 #include "core/physical_device.h"
 #include "core/device.h"
-#include "utils/lodepng.h"
 
 
 namespace f3d {

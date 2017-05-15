@@ -103,11 +103,9 @@ SOURCE_GROUP ( sdk\\utils FILES ${f3d_utils_sdk} ${f3d_utils_sdk_headers} )
 
 SET ( f3d_utils_src
 	utils/vulkan.cpp
-	utils/lodepng.cpp
 )
 SET ( f3d_utils_headers
 	${F3D_PRIVATE_HEADER_PATH}/utils/vulkan.h
-	${F3D_PRIVATE_HEADER_PATH}/utils/lodepng.h
 	) 
 SOURCE_GROUP( impl\\utils FILES ${f3d_utils_src} ${f3d_utils_headers} )
 
@@ -152,8 +150,9 @@ TARGET_INCLUDE_DIRECTORIES ( firestone
 	PUBLIC ${VULKAN_INCLUDE_DIRS} 
 	PUBLIC ${ASSIMP_INCLUDE_DIRS} 
 	PUBLIC ${GLFW_INCLUDE_DIRS}
+	PUBLIC ${ImageMagick_INCLUDE_DIRS}
 )
-TARGET_LINK_LIBRARIES ( firestone ${ASSIMP_LIBRARIES} ${VULKAN_LIBRARIES} ${GLFW_LIBRARIES} )
+TARGET_LINK_LIBRARIES ( firestone ${ASSIMP_LIBRARIES} ${VULKAN_LIBRARIES} ${GLFW_LIBRARIES} ${ImageMagick_LIBRARIES})
 
 SET_TARGET_PROPERTIES( firestone PROPERTIES
 						VERSION ${F3D_VERSION}

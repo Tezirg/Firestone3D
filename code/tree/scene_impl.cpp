@@ -218,57 +218,32 @@ namespace f3d {
 			address_mode = (mapmode[0] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode;
 			address_mode = (mapmode[0] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode;
 
-			
-			std::string texturePath(path);
-			std::string	textureExtension(aiPath.C_Str());
-			texturePath.append(aiPath.C_Str());
+			std::string texture_path(path);
+			texture_path.append(aiPath.C_Str());
 
-			textureExtension = textureExtension.substr(textureExtension.find_last_of(".") + 1);
+			std::cout << "Loading texture at " << texture_path << std::endl;
 
-			if (textureExtension == "dds" || textureExtension == "ktx") {
+			try {
+				Magick::Image	magick_texture(texture_path);
+				magick_texture.magick("RGBA");
+				std::cout << "texture is " << magick_texture.size().width() << "x" << magick_texture.size().height() 
+						  << " format=" << magick_texture.format() 
+					<< " // " << magick_texture.magick()
+					<< std::endl;
 
-				gli::texture	gli_texture = gli::load(texturePath);
-				if (gli_texture.empty()) {
-					std::cout << "texture is empty" << std::endl;
-					return nullptr;
-				}
+				Magick::Blob	blob;
+				magick_texture.write(&blob);
+				uint32_t size = magick_texture.size().width() * magick_texture.size().height();
+				texture = new f3d::tree::TextureImpl(magick_texture.size().width(), magick_texture.size().height(), 1, type, address_mode, _physical, _device);
 
-				gli::texture2d gli_texture2d(gli_texture);
-				if (gli_texture2d.empty()) {
-					std::cout << "texture2D is empty" << std::endl;
-					return nullptr;
-				}
-
-				if (gli_texture2d[0].empty()) {
-					std::cout << "Image is empty" << std::endl;
-					return nullptr;
-				}
-
-				texture = new f3d::tree::TextureImpl(gli_texture2d[0].extent().x, gli_texture2d[0].extent().y, gli_texture2d.levels(), type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(gli_texture2d[0].extent().x, gli_texture2d[0].extent().y, gli_texture2d[0].data(), gli_texture2d[0].size(), VK_FORMAT_R8G8B8A8_SNORM);
+				texture->initializeLinearTiling(magick_texture.size().width(), magick_texture.size().height(), (void*)blob.data(), blob.length(), VK_FORMAT_R8G8B8A8_UNORM);
 			}
-			else if (textureExtension == "jpg" || textureExtension == "jpeg" || textureExtension == "tga" || textureExtension == "bmp" || textureExtension == "gif") {
-				int x, y, n;
-				unsigned char *data = stbi_load(texturePath.c_str(), &x, &y, &n, STBI_rgb_alpha);
-				texture = new f3d::tree::TextureImpl(x, y, 0, type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(x, y, data, x * y * 4, VK_FORMAT_R8G8B8A8_UNORM);
-				stbi_image_free(data);
-			}
-			else if (textureExtension == "png") {
-				std::vector<unsigned char> image; //the raw pixels
-				unsigned width, height;
-
-				//decode
-				unsigned error = lodepng::decode(image, width, height, texturePath.c_str());
-				//if there's an error, display it
-				if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-				texture = new f3d::tree::TextureImpl(width, height, 0, type, address_mode, _physical, _device);
-				texture->initializeLinearTiling(width, height, image.data(), image.size(), VK_FORMAT_R8G8B8A8_UNORM);
-			}
-			else {
+			catch (Magick::Exception &error_)
+			{
+				std::cerr << "Caught exception: " << error_.what() << std::endl;
 				return nullptr;
-			}
-			
+			}			
+
 			return texture;
 
 		}
