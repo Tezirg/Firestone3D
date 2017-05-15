@@ -13,9 +13,10 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->loadFromFile(path, file);
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
+		(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
 		(*it)->scale(glm::vec3(4.0f));
 	}
-	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->setPerspective(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
@@ -24,6 +25,7 @@ static glm::vec3 center;
 static float angleX = 0.0f, angleY = 0.0f;
 
 static glm::mat4 r;
+static glm::mat4 r2;
 static glm::mat4 t;
 
 void		updateScene(f3d::Firestone& f3d, void * arg) {
@@ -47,11 +49,13 @@ void		updateScene(f3d::Firestone& f3d, void * arg) {
 
 	float ay = 0.0f;
 	ay += joystick->axisState(joystick->AXIS_RS_X) / 12.0f;
+	float ax = 0.0f;
+	ax += joystick->axisState(joystick->AXIS_RS_Y) / 25.0f;
 
-	angleY += ay;
-	r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
+	r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));
+	r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
 	t = glm::translate(glm::mat4(), glm::vec3(x, y, z));
-	f3d.scene->getCamera()->setView(t * r * f3d.scene->getCamera()->getView());
+	f3d.scene->getCamera()->setView(t * r * r2 * f3d.scene->getCamera()->getView());
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
@@ -69,17 +73,10 @@ void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg
 	if (keyEvent.keycode == 333 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Right arrow
 		ay += 0.1f;
 	if (keyEvent.keycode == 328 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Top arrow
-	{
-		angleX += 0.1f;
 		z = 5.0f;
-	}
 	if (keyEvent.keycode == 336 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Down arrow
-	{
-		angleX += -0.1f;
 		z = -5.0f;
-	}
 
-	angleY += ay;
 	r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
 	t = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, z));
 	f3d.scene->getCamera()->setView(t * r * f3d.scene->getCamera()->getView());
