@@ -44,7 +44,7 @@ namespace f3d {
 				F3D_ADDRESS_MAX_ENUM = 0x7FFFFFFF
 			};
 
-			Texture(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode address_mode);
+			Texture(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode address_mode[3]);
 			virtual ~Texture();
 
 			uint32_t					getWidth() const;
@@ -63,7 +63,7 @@ namespace f3d {
 			uint32_t					_mip_levels;
 
 			eTextureType				_type;
-			eTextureAddressMode			_address_mode;
+			eTextureAddressMode			_address_mode[3];
 		};
 	}// tree::
 }// f3d::

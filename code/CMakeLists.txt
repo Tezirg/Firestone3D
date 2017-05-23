@@ -106,6 +106,7 @@ SET ( f3d_utils_src
 )
 SET ( f3d_utils_headers
 	${F3D_PRIVATE_HEADER_PATH}/utils/vulkan.h
+	${F3D_PRIVATE_HEADER_PATH}/utils/f3d_to_vk.h
 	) 
 SOURCE_GROUP( impl\\utils FILES ${f3d_utils_src} ${f3d_utils_headers} )
 

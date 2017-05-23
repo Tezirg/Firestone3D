@@ -193,11 +193,15 @@ namespace f3d {
 			unsigned int  							uvindex;
 			float  									blend;
 			aiTextureOp  							op;
-			aiTextureMapMode  						mapmode[3];
+			aiTextureMapMode  						mapmode[3] = { aiTextureMapMode_Wrap,aiTextureMapMode_Wrap,aiTextureMapMode_Wrap };
 
 			f3d::tree::TextureImpl*					texture = nullptr;
 			f3d::tree::Texture::eTextureType		type = f3d::tree::Texture::F3D_TEXTURE_UNDEFINED;
-			f3d::tree::Texture::eTextureAddressMode	address_mode = f3d::tree::Texture::F3D_ADDRESS_UNDEFINED;
+			f3d::tree::Texture::eTextureAddressMode	address_mode[3] = { 
+																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED,
+																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED, 
+																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED
+																	  };
 
 			aiRes = aiMaterial->GetTexture(aiType, aiIndex, &aiPath, &mapping, &uvindex, &blend, &op, mapmode);
 			if (aiRes != AI_SUCCESS)
@@ -213,10 +217,23 @@ namespace f3d {
 			type = (aiType == aiTextureType_DISPLACEMENT) ? f3d::tree::Texture::F3D_TEXTURE_DISPLACEMENT : type;
 			type = (aiType == aiTextureType_LIGHTMAP) ? f3d::tree::Texture::F3D_TEXTURE_LIGHTMAP : type;
 			type = (aiType == aiTextureType_REFLECTION) ? f3d::tree::Texture::F3D_TEXTURE_REFLECTION : type;
-			address_mode = (mapmode[0] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode;
-			address_mode = (mapmode[0] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode;
-			address_mode = (mapmode[0] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode;
-			address_mode = (mapmode[0] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode;
+			
+			
+			std::cout << mapmode[0] << "/" << mapmode[1] << "/" << mapmode[2] << std::endl;
+			address_mode[0] = (mapmode[0] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[0];
+			address_mode[0] = (mapmode[0] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[0];
+			address_mode[0] = (mapmode[0] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[0];
+			address_mode[0] = (mapmode[0] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[0];
+
+			address_mode[1] = (mapmode[1] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[1];
+			address_mode[1] = (mapmode[1] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[1];
+			address_mode[1] = (mapmode[1] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[1];
+			address_mode[1] = (mapmode[1] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[1];
+
+			address_mode[2] = (mapmode[2] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[2];
+			address_mode[2] = (mapmode[2] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[2];
+			address_mode[2] = (mapmode[2] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[2];
+			address_mode[2] = (mapmode[2] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[2];
 
 			std::string texture_path(path);
 			texture_path.append(aiPath.C_Str());

@@ -3,7 +3,7 @@
 namespace f3d {
 	namespace tree {
 
-		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode, 
+		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode[3], 
 			std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device) :
 			Texture::Texture(width, height, mip_levels, type, mode),
 			_physical(phys), _device(device) {
@@ -165,9 +165,9 @@ namespace f3d {
 			info.magFilter = VK_FILTER_LINEAR;
 			info.minFilter = VK_FILTER_LINEAR;
 			info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-			info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			F3D_TEXTURE_2_VULKAN(_address_mode[0], info.addressModeU);
+			F3D_TEXTURE_2_VULKAN(_address_mode[1], info.addressModeV);
+			F3D_TEXTURE_2_VULKAN(_address_mode[2], info.addressModeW);
 			info.mipLodBias = 0.0f;
 			info.compareEnable = VK_FALSE;
 			info.compareOp = VK_COMPARE_OP_NEVER;
