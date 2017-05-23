@@ -243,6 +243,7 @@ namespace f3d {
 			try {
 				Magick::Image	magick_texture(texture_path);
 				magick_texture.magick("RGBA");
+
 				std::cout << "texture is " << magick_texture.size().width() << "x" << magick_texture.size().height() 
 						  << " format=" << magick_texture.format() 
 					<< " // " << magick_texture.magick()
