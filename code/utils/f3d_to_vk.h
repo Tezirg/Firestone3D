@@ -27,7 +27,6 @@
 		default:																					\
 			target = VK_SAMPLER_ADDRESS_MODE_REPEAT;												\
 	}																								\
-	std::cout << "Texture mapping is :" << target << std::endl; \
 }
 
 #endif
