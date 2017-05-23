@@ -24,7 +24,7 @@ namespace f3d {
 				delete[] vk_commands;
 			}
 
-			std::cout << "Destructor end: " << __FILE__ << std::endl;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		void								RendererImpl::reset() {

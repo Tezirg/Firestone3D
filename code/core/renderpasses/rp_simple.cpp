@@ -226,7 +226,8 @@ namespace f3d {
 				VkBuffer				vertex_bufs[3];
 				VkDeviceSize			vertex_offsets[3];
 
-				if (mesh.numUV() == 0) {
+				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
+				if (mesh.numUV() == 0 || material == nullptr || material->getTextures().empty()) {
 
 					vertex_bufs[0] = m.getVertexBuffer();
 					vertex_bufs[1] = m.getNormalBuffer();
@@ -251,8 +252,8 @@ namespace f3d {
 					vertex_offsets[1] = 0;
 					vertex_offsets[2] = 0;
 
-					texture = dynamic_cast<f3d::tree::TextureImpl *>(scene->getMaterialByName(m.getMaterialName())->getTextures().front());
-
+					
+					texture = dynamic_cast<f3d::tree::TextureImpl *>(material->getTextures().front());
 					VkDescriptorSet sets[3] = { cam.getDescriptorSet() , m.getDescriptorSet(),  texture->getDescriptorSet() };
 					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _texture_prog->vk_pipeline_layout, 0, 3, sets, 0, nullptr);
 
