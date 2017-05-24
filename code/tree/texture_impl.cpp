@@ -3,7 +3,7 @@
 namespace f3d {
 	namespace tree {
 
-		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode[3], 
+		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureTypeBits type, eTextureAddressMode mode[3],
 			std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device) :
 			Texture::Texture(width, height, mip_levels, type, mode),
 			_physical(phys), _device(device) {

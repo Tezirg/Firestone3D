@@ -2,7 +2,7 @@
 
 namespace f3d {
 	namespace core {
-		Program::Program(VkDevice device) : vk_device(device) {
+		Program::Program(VkDevice device, ProgramMask mask) : vk_device(device), mask(mask) {
 		}
 
 		Program::~Program() {

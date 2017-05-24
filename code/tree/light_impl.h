@@ -10,6 +10,7 @@
 #include <assimp/light.h>
 
 #include "core/platform.h"
+#include "core/types.h"
 #include "tree/light.h"
 
 namespace f3d {
@@ -42,7 +43,7 @@ namespace f3d {
 			void					setName(const std::string& val);
 			glm::vec3				getPosition() const;
 			void					setPosition(const glm::vec3& val);
-			eLightType 				getType() const;
+			eLightType				getType() const;
 			void			 		setType(eLightType val);
 		private:
 			std::unique_ptr<aiLight>		_ai_light;

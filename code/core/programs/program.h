@@ -8,6 +8,9 @@
 #include <map>
 
 #include "core/platform.h"
+#include "core/types.h"
+#include "tree/mesh_impl.h"
+#include "tree/scene_impl.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
@@ -15,10 +18,11 @@ namespace f3d {
 
 		class F3D_API Program {
 		public:
-			Program(VkDevice device);
+			Program(VkDevice device, ProgramMask mask);
 			virtual ~Program();
 
 			void									bind(VkCommandBuffer& cmd);
+			virtual bool							drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) = 0;
 		protected:
 			bool									createSpvShader(const std::string& filename, VkShaderModule *shader);
 
@@ -26,6 +30,7 @@ namespace f3d {
 			virtual void							initVkPipelineInfos();
 		public:
 			VkDevice								vk_device; //Device to create from
+			ProgramMask								mask;
 			VkPipeline								vk_pipeline; //!< Vulkan pipeline native type
 			VkPipelineLayout						vk_pipeline_layout;//!< Piepline object
 			VkPipelineCache							vk_pipeline_cache; //!< Binary pipeline object

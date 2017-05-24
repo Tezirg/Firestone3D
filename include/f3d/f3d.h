@@ -5,6 +5,7 @@
 
 #include "version.h"
 #include "core/platform.h"
+#include "core/types.h"
 
 namespace f3d {
 	namespace core {

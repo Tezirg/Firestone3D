@@ -51,7 +51,7 @@ namespace f3d {
 			_ai_light->mPosition.y = val.y;
 			_ai_light->mPosition.z = val.z;
 		}
-		Light::eLightType		LightImpl::getType() const { return static_cast<eLightType>(_ai_light->mType); }
+		eLightType				LightImpl::getType() const { return static_cast<eLightType>(_ai_light->mType); }
 		void			 		LightImpl::setType(eLightType val) { _ai_light->mType = static_cast<aiLightSourceType>(val);  }
 	}
 }

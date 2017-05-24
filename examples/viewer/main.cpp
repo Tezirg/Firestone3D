@@ -16,7 +16,8 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
 		(*it)->scale(glm::vec3(4.0f));
 	}
-	f3d.scene->getCamera()->setPerspective(30.0f, 1920.0f / 1080.0f, 0.1f, 2048.0f);
+	
+	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
 	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 }
@@ -29,10 +30,13 @@ static glm::mat4 r;
 static glm::mat4 r2;
 static glm::mat4 t;
 
-void		updateScene(f3d::Firestone& f3d, void * arg) {
+void				updateScene(f3d::Firestone& f3d, void * arg) {
+	glm::mat4		r;
+	glm::mat4		r2;
+	glm::mat4		t;
 	/*
-		left sitck move regarding to forward vector
-		right sitck pan camera left / right
+		left stick move regarding to forward vector
+		right stick pan camera left / right
 		RL y aix down, RT y axis up
 	*/
 
@@ -42,21 +46,22 @@ void		updateScene(f3d::Firestone& f3d, void * arg) {
 	z += joystick->axisState(joystick->AXIS_LS_Y) * 2.0f;
 	float x = 0.0f;
 	x += joystick->axisState(joystick->AXIS_LS_X) * 2.0f;
-
-
 	float y = 0.0f;
 	y += (-(joystick->axisState(joystick->AXIS_LT) + 1.0f) * 2.0f); // Y up Left trigger
 	y += (joystick->axisState(joystick->AXIS_RT) + 1.0f) * 2.0f; //Y down on right trigger
+	t = glm::translate(t, glm::vec3(x, y, z));
 
 	float ay = 0.0f;
-	ay += joystick->axisState(joystick->AXIS_RS_X) / 12.0f;
+	ay += joystick->axisState(joystick->AXIS_RS_X) / 25.0f;
 	float ax = 0.0f;
 	ax += joystick->axisState(joystick->AXIS_RS_Y) / 25.0f;
 
-	r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));
-	r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
-	t = glm::translate(glm::mat4(), glm::vec3(x, y, z));
-	f3d.scene->getCamera()->setView(t * r * r2 * f3d.scene->getCamera()->getView());
+	if (ay != 0.0f)
+		r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));
+	if (ax != 0.0f)
+		r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	f3d.scene->getCamera()->setView(t * r2 * r * f3d.scene->getCamera()->getView());
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
@@ -108,7 +113,7 @@ int main(int ac, char **av) {
 	engine->mouseEventsCallback(mouseCallback, NULL);
 	engine->joystickEventsCallback(joystickCallback, &joystick);
 	engine->settings->applicationName.assign("Sample viewer");
-	engine->settings->fpsCap = 45;
+	engine->settings->fpsCap = 60;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
 	engine->settings->fullScreen = false;

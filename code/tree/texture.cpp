@@ -2,7 +2,7 @@
 
 namespace f3d {
 	namespace tree {
-		Texture::Texture(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode[3]) :
+		Texture::Texture(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureTypeBits type, eTextureAddressMode mode[3]) :
 			_width(width), _height(height), _mip_levels(mip_levels), _type(type), _address_mode() {
 			_address_mode[0] = mode[0];
 			_address_mode[1] = mode[1];
@@ -36,7 +36,7 @@ namespace f3d {
 			_mip_levels = value;
 		}
 
-		Texture::eTextureType				Texture::getType() const {
+		f3d::eTextureType					Texture::getType() const {
 			return _type;
 		}
 
@@ -44,7 +44,7 @@ namespace f3d {
 			_type = value;
 		}
 
-		Texture::eTextureAddressMode		Texture::getAddressMode() const {
+		f3d::eTextureAddressMode			Texture::getAddressMode() const {
 			return _address_mode[0];
 		}
 

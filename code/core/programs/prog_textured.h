@@ -4,6 +4,9 @@
 #define _F3D_TEXTURED_PROG_H
 
 #include "core/platform.h"
+#include "core/types.h"
+#include "tree/mesh_impl.h"
+#include "tree/scene_impl.h"
 #include "utils/vulkan.h"
 #include "core/programs/program.h"
 
@@ -27,6 +30,8 @@ namespace f3d {
 				* @brief Create the program layout for the unique uniform attribute
 				*/
 				virtual void				initVkLayout();
+
+				bool						drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene);
 			private:
 				VkVertexInputAttributeDescription		_vi_attr[3]; //!< pipeline has 3 inputs
 				VkVertexInputBindingDescription			_vi_bind[3]; //!< pipeline has one binding per attribute (total 3)

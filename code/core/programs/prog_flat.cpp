@@ -3,14 +3,17 @@
 namespace f3d {
 	namespace core {
 		namespace prog {
-			FlatProgram::FlatProgram(VkDevice device) : Program::Program(device) {
-			}
+			FlatProgram::FlatProgram(VkDevice device) : Program::Program(device, 
+				{	F3D_COLOR_AMBIENT | F3D_COLOR_DIFFUSE | F3D_COLOR_SPECULAR | F3D_COLOR_EMMISIVE, 
+					F3D_TEXTURE_UNDEFINED, F3D_LIGHT_UNDEFINED, F3D_SHADING_FLAT }
+			) {	}
 
 			FlatProgram::~FlatProgram() {
 				std::cout << "Destructor: " << __FILE__ << std::endl;
 			}
 
-			void									FlatProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) {
+			void									FlatProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) 
+			{
 				VkResult							r;
 				VkShaderModule						vert_shader;
 				VkShaderModule						frag_shader;
@@ -93,7 +96,8 @@ namespace f3d {
 				_vi.pVertexBindingDescriptions = _vi_bind;
 			}
 
-			void									FlatProgram::initVkLayout() {
+			void									FlatProgram::initVkLayout() 
+			{
 				VkResult							r;
 				VkDescriptorSetLayoutBinding		layout_bindings[2];
 				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
@@ -142,6 +146,26 @@ namespace f3d {
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
 				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create pipeline layout failed");
 			}
+
+			bool							FlatProgram::drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) 
+			{
+				f3d::tree::MeshImpl&		m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+				f3d::tree::CameraImpl&		cam = dynamic_cast<f3d::tree::CameraImpl&>(*scene.getCamera().get());
+				f3d::tree::Material*		material = scene.getMaterialByName(mesh.getMaterialName());
+				VkBuffer					vertex_bufs[2] = { m.getVertexBuffer(), m.getNormalBuffer(),};
+				VkDeviceSize				vertex_offsets[2] = { 0, 0 };
+				VkDescriptorSet				sets[2] = { cam.getDescriptorSet() , m.getDescriptorSet() };
+
+				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,vk_pipeline_layout, 0, 2, sets, 0, nullptr);
+				Program::bind(cmd);
+
+				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
+				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
+
+				return true;
+			}
+
 		}
 	}
 }

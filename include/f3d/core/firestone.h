@@ -9,6 +9,7 @@
 #include <chrono> 
 
 #include "core/platform.h"
+#include "core/types.h"
 #include "core/settings.h"
 #include "core/window.h"
 #include "tree/scene.h"
@@ -77,8 +78,6 @@ namespace f3d {
 	protected: //Callbacks 
 		bool									_run;
 	};
-
-	typedef uint32_t		F3D_Flags;
 }
 
 #endif
