@@ -9,7 +9,7 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/physical_device.h"
 #include "core/device.h"
 #include "utils/vulkan.h"

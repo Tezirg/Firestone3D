@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/transform.h"
 
 namespace f3d {

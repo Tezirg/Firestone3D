@@ -10,26 +10,14 @@
 #include <list>
 #include <glm/glm.hpp>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/texture.h"
+#include "core/types.h"
 
 namespace f3d {
 	namespace tree {
 		class F3D_API Material {
 		public:
-			enum eColorType {
-				F3D_COLOR_UNDEFINED = 0,
-				F3D_COLOR_AMBIENT = 1,
-				F3D_COLOR_DIFFUSE = 2,
-				F3D_COLOR_SPECULAR = 3,
-				F3D_COLOR_EMMISIVE = 4,
-				F3D_COLOR_REFLECTIVE = 5,
-				F3D_COLOR_BEGIN_RANGE = F3D_COLOR_UNDEFINED,
-				F3D_COLOR_END_RANGE = F3D_COLOR_REFLECTIVE,
-				F3D_COLOR_RANGE_SIZE = (F3D_COLOR_END_RANGE - F3D_COLOR_BEGIN_RANGE + 1),
-				F3D_COLOR_MAX_ENUM = 0x7FFFFFFF
-			};
-
 			Material(const std::string& name);
 			virtual ~Material();
 

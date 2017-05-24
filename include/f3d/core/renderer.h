@@ -6,7 +6,7 @@
 #include <iostream>
 #include <memory>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/settings.h"
 #include "tree/scene.h"
 

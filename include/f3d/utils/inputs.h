@@ -7,7 +7,7 @@
 #include <ostream>
 #include <cstdint>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 
 namespace f3d {
 	namespace utils {

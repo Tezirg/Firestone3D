@@ -8,7 +8,7 @@
 #include <stack>
 #include <list>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/window.h"
 #include "core/window_impl.h"
 #include "render_pass.h"

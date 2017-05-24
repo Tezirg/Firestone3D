@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/mesh.h"
 #include "utils/transform.h"
 

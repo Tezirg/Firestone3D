@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/device.h"
 #include "tree/texture.h"
 #include "utils/f3d_to_vk.h"

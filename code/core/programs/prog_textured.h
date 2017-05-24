@@ -3,7 +3,7 @@
 #ifndef _F3D_TEXTURED_PROG_H
 #define _F3D_TEXTURED_PROG_H
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/vulkan.h"
 #include "core/programs/program.h"
 

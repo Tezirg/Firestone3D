@@ -3,7 +3,7 @@
 #ifndef _F3D_RENDER_PASS_H
 #define _F3D_RENDER_PASS_H
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/device.h"
 #include "utils/vulkan.h"
 #include "core/window.h"

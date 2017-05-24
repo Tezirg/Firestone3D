@@ -13,7 +13,7 @@
 #include <assimp/postprocess.h>
 #include <Magick++.h> 
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/scene.h"
 #include "tree/camera_impl.h"
 #include "tree/light_impl.h"

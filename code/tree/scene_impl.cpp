@@ -142,27 +142,27 @@ namespace f3d {
 			//Query Ambient color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_AMBIENT, aiColor);
 			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query diffuse color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
 			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query specular color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_SPECULAR, aiColor);
 			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_SPECULAR, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_SPECULAR, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query Emmissive color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_EMISSIVE, aiColor);
 			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_EMMISIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_EMMISIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query reflective color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_REFLECTIVE, aiColor);
 			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_REFLECTIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_REFLECTIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Shineness property
 			aiRes = aiMat->Get(AI_MATKEY_SHININESS, aiShine);

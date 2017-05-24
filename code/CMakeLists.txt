@@ -12,6 +12,8 @@ SET ( f3d_core_sdk
 SET ( f3d_core_sdk_headers
 	${F3D_HEADER_PATH}/f3d.h
 	${F3D_HEADER_PATH}/core/firestone.h
+	${F3D_HEADER_PATH}/core/platform.h
+	${F3D_HEADER_PATH}/core/types.h
 	${F3D_HEADER_PATH}/core/settings.h
 	${F3D_HEADER_PATH}/core/window.h
 	${F3D_HEADER_PATH}/core/renderer.h

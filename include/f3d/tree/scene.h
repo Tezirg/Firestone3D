@@ -8,7 +8,7 @@
 #include <vector>
 #include <list>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/camera.h"
 #include "tree/object.h"
 #include "tree/material.h"

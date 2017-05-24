@@ -7,7 +7,8 @@
 #include <cstdint>
 #include <iostream>
 
-#include "core/plateform.h"
+#include "core/platform.h"
+#include "core/types.h"
 
 namespace f3d {
 	namespace tree {

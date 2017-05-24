@@ -9,7 +9,7 @@
 
 #include <glm/glm.hpp>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 
 namespace f3d {
 	namespace tree {

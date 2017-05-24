@@ -9,8 +9,8 @@
 
 #include <assimp/light.h>
 
-#include "core/plateform.h"
-#include "tree\/light.h"
+#include "core/platform.h"
+#include "tree/light.h"
 
 namespace f3d {
 	namespace tree {

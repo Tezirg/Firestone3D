@@ -5,7 +5,7 @@
 
 #include <map>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/renderer.h"
 #include "core/settings.h"
 #include "utils/vulkan.h"

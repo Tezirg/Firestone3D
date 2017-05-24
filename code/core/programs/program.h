@@ -7,7 +7,7 @@
 #include <fstream>
 #include <map>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/vulkan.h"
 
 namespace f3d {

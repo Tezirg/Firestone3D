@@ -4,7 +4,7 @@
 #define __F3D_H
 
 #include "version.h"
-#include "core/plateform.h"
+#include "core/platform.h"
 
 namespace f3d {
 	namespace core {

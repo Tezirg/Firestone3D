@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <assimp/camera.h>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 #include "core/device.h"

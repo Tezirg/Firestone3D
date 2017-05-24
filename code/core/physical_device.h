@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <vulkan/vulkan.h>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/vulkan.h"
 
 namespace f3d {
