@@ -25,7 +25,15 @@ namespace f3d {
 
 				initRenderPass();
 
-				f3d::core::Program * p = new f3d::core::prog::FlatProgram(device->vk_device);
+				f3d::core::Program * p = new f3d::core::prog::Program_0001_0000_0000_0001(device->vk_device);
+				p->initVkPipeline(vk_renderpass, 0);
+				setProgram(p);
+				
+				p = new f3d::core::prog::Program_0001_0000_0000_0000(device->vk_device);
+				p->initVkPipeline(vk_renderpass, 0);
+				setProgram(p);
+				
+				p = new f3d::core::prog::FlatProgram(device->vk_device);
 				p->initVkPipeline(vk_renderpass, 0);
 				setProgram(p);
 
@@ -233,8 +241,8 @@ namespace f3d {
 				VkDeviceSize			vertex_offsets[3];
 
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
-				mask.fields.colors = material->colorFlags();
-				mask.fields.textures = material->textureFlags();
+				mask.fields.colors = 0;// F3D_COLOR_AMBIENT;//material->colorFlags();
+				mask.fields.textures = 0;//material->textureFlags();
 				mask.fields.lights = 0;
 				mask.fields.shading = F3D_SHADING_FLAT;
 

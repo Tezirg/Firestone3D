@@ -28,24 +28,27 @@ SET ( f3d_core_src
 	core/depth.cpp
 	core/renderer_impl.cpp
 	core/renderpasses/rp_simple.cpp
-	core/programs/prog_flat.cpp
-	core/programs/prog_textured.cpp		
-	core/programs/program.cpp
 	core/renderpasses/render_pass.cpp
+	core/programs/program.cpp
+	core/programs/p-0001_0000_0000_0000.cpp
+	core/programs/p-0001_0000_0000_0001.cpp
+	core/programs/prog_flat.cpp
+	core/programs/prog_textured.cpp
 )
 SET ( f3d_core_headers 
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
-	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h
-		
 	${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/core/window_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
 	${F3D_PRIVATE_HEADER_PATH}/core/device.h
 	${F3D_PRIVATE_HEADER_PATH}/core/depth.h
 	${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
+	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h	
+	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0000_0000.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0000_0001.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_textured.h
-	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
 )
 
 SOURCE_GROUP( impl\\core FILES ${f3d_core_src} ${f3d_core_headers})
@@ -77,6 +80,7 @@ SET ( f3d_tree_src
 	tree/mesh_impl.cpp
 	tree/light_impl.cpp
 	tree/camera_impl.cpp
+	tree/material_impl.cpp	
 	tree/texture_impl.cpp
 )
 SET ( f3d_tree_headers
@@ -84,6 +88,7 @@ SET ( f3d_tree_headers
 	${F3D_PRIVATE_HEADER_PATH}/tree/mesh_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/light_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/camera_impl.h
+	${F3D_PRIVATE_HEADER_PATH}/tree/material_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/tree/texture_impl.h
 )
 SOURCE_GROUP( impl\\tree FILES ${f3d_tree_src} ${f3d_tree_headers} )

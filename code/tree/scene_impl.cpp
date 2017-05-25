@@ -137,7 +137,7 @@ namespace f3d {
 
 			aiRes = aiMat->Get(AI_MATKEY_NAME, aiStr);
 			materialName.assign(aiRes == AI_SUCCESS ? aiStr.C_Str() : AI_DEFAULT_MATERIAL_NAME);
-			mat = new f3d::tree::Material(materialName);
+			mat = new f3d::tree::MaterialImpl(materialName, _physical, _device);
 
 			//Query Ambient color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_AMBIENT, aiColor);

@@ -1,14 +1,11 @@
-#include "camera_impl.h"
+#include "material_impl.h"
 
 namespace f3d {
 	namespace tree {
-		CameraImpl::CameraImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device)
-			: _physical(phys), _device(device), _ai_camera(new aiCamera)
+		MaterialImpl::MaterialImpl(const std::string& name, std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device) :
+			Material::Material(name), _physical(phys), _device(device)
 		{
-			applyPreset(F3D_CAMERA_PRESET_DEFAULT);
-			setName(std::string("DefaultCamera"));
-			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
-			lookAt(glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
 			createAttribute();
 
 			VkResult							r;
@@ -18,8 +15,8 @@ namespace f3d {
 			VkDescriptorPoolCreateInfo			pool_info;
 			VkDescriptorSetAllocateInfo			desc_set_alloc;
 
-			//Create camera uniform descriptor set layout
-			//layout (set = 0, binding = 0) uniform camera;
+			//Create descriptor set layout
+			//layout (set = 2, binding = 0) uniform material;
 			std::memset(&layout_bindings, 0, sizeof(VkDescriptorSetLayoutBinding));
 			layout_bindings.binding = 0;
 			layout_bindings.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -34,7 +31,7 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Create descriptor set layout failed");
 
 
-			//Create camera Uniform descriptor pool
+			//CreateUniform descriptor pool
 			pool_types.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			pool_types.descriptorCount = 1;
 			std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
@@ -59,7 +56,7 @@ namespace f3d {
 			updateDescriptorSet();
 		}
 
-		CameraImpl::~CameraImpl() {
+		MaterialImpl::~MaterialImpl() {
 			vkFreeDescriptorSets(_device->vk_device, _desc_pool, 1, &_descriptor);
 			vkDestroyDescriptorPool(_device->vk_device, _desc_pool, nullptr);
 			vkDestroyDescriptorSetLayout(_device->vk_device, _desc_layout, nullptr);
@@ -68,7 +65,7 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		void						CameraImpl::createAttribute() {
+		void						MaterialImpl::createAttribute() {
 			VkResult				r;
 			VkBufferCreateInfo		buff_info;
 			VkMemoryRequirements	mem_reqs;
@@ -77,7 +74,7 @@ namespace f3d {
 			std::memset(&buff_info, 0, sizeof(VkBufferCreateInfo));
 			buff_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			buff_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-			buff_info.size = 16 * sizeof(float);
+			buff_info.size = 4 * sizeof(float);
 			r = vkCreateBuffer(_device->vk_device, &buff_info, NULL, &_buffer);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Creation vk buffer failed");
 
@@ -93,26 +90,28 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Bind memory to buffer fail");
 		}
 
-		void					CameraImpl::updateAttribute() {
+		void					MaterialImpl::updateAttribute() {
 			VkResult			r;
 			char				*pData;
+			glm::vec3			color;
 
-			r = vkMapMemory(_device->vk_device, _memory, 0, 16 * sizeof(float), 0, (void **)&pData);
+			r = vkMapMemory(_device->vk_device, _memory, 0, 4 * sizeof(float), 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
 
-			std::memcpy(pData, glm::value_ptr(_VP), 16 * sizeof(float));
+			getColor(F3D_COLOR_AMBIENT, color);
+			std::memcpy(pData, glm::value_ptr(color), 4 * sizeof(float));
 			vkUnmapMemory(_device->vk_device, _memory);
 		}
 
-		VkDescriptorSet							CameraImpl::getDescriptorSet() {
+		VkDescriptorSet							MaterialImpl::getDescriptorSet() {
 			return _descriptor;
 		}
 
-		void									CameraImpl::updateDescriptorSet() {
+		void									MaterialImpl::updateDescriptorSet() {
 			VkWriteDescriptorSet				pWrites;
 			VkDescriptorBufferInfo				buffer_info;
 
-			//Bind camera buffer with this camera descriptor set
+			//Bind buffer with this descriptor set
 			std::memset(&pWrites, 0, sizeof(VkWriteDescriptorSet));
 			pWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			pWrites.dstSet = _descriptor;

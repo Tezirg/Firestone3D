@@ -18,7 +18,7 @@
 #include "tree/camera_impl.h"
 #include "tree/light_impl.h"
 #include "tree/mesh_impl.h"
-#include "tree/material.h"
+#include "tree/material_impl.h"
 #include "tree/texture_impl.h"
 #include "core/physical_device.h"
 #include "core/device.h"
