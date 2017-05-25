@@ -2,7 +2,7 @@
 
 namespace f3d {
 	namespace core {
-		RenderPass::RenderPass(eRenderPassType type, 
+		RenderPass::RenderPass(RenderPassType type, 
 								std::shared_ptr<f3d::core::Device>& dev, 
 								std::shared_ptr<f3d::core::PhysicalDevice>& phys, 
 								std::shared_ptr<f3d::core::Window>& win):
@@ -26,12 +26,28 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		RenderPass::eRenderPassType		RenderPass::getType() const {
+		RenderPassType			RenderPass::getType() const {
 			return _type;
 		}
 
-		void				RenderPass::setType(const eRenderPassType type) {
+		void					RenderPass::setType(const RenderPassType type) {
 			_type = type;
+		}
+
+		f3d::core::Program*		RenderPass::getProgram(const F3D_Mask mask) {
+			std::cout << std::hex << mask << std::endl;
+			try {
+				return _programs.at(mask).get();
+			}
+			catch (std::exception& error) {
+				return nullptr;
+			}
+		}
+
+		void					RenderPass::setProgram(f3d::core::Program *program) {
+			std::cout << std::hex << program->getMask() << std::endl;
+
+			_programs[program->getMask()].reset(program);
 		}
 	}
 }

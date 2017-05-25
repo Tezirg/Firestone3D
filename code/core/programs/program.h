@@ -21,8 +21,11 @@ namespace f3d {
 			Program(VkDevice device, ProgramMask mask);
 			virtual ~Program();
 
+			F3D_Mask								getMask() const;
 			void									bind(VkCommandBuffer& cmd);
 			virtual bool							drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) = 0;
+			virtual void							initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) = 0;
+
 		protected:
 			bool									createSpvShader(const std::string& filename, VkShaderModule *shader);
 

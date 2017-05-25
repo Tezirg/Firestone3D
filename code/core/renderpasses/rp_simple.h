@@ -40,8 +40,6 @@ namespace f3d {
 			private:
 				std::unique_ptr<f3d::core::Depth>					_depth; //!< Z-Buffer wrapper
 				VkFormat											_color_format; //!< Image format
-				std::unique_ptr<f3d::core::prog::FlatProgram>		_flat_prog;
-				std::unique_ptr<f3d::core::prog::TexturedProgram>	_texture_prog;
 				VkClearValue										_clear[2]; //!< Color & depth clear values
 				VkAttachmentDescription								_attachments[2]; //!< Color & Depth description
 				VkAttachmentReference								_color_reference; //!< Color attachement details

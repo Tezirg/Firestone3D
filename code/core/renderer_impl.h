@@ -44,7 +44,7 @@ namespace f3d {
 			std::shared_ptr<f3d::core::Device>								_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>						_physical;
 			std::shared_ptr<f3d::core::Window>								_window;
-			std::map< f3d::core::RenderPass::eRenderPassType, RenderPass* >	_renders;
+			std::map< f3d::RenderPassType, RenderPass* >					_renders;
 		};
 	}
 }

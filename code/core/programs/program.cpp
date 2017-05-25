@@ -9,6 +9,10 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
+		F3D_Mask			Program::getMask() const {
+			return mask.mask;
+		}
+
 		void				Program::bind(VkCommandBuffer& cmd) {
 			vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vk_pipeline);
 		}

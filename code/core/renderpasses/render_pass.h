@@ -4,11 +4,13 @@
 #define _F3D_RENDER_PASS_H
 
 #include "core/platform.h"
+#include "core/types.h"
 #include "core/device.h"
 #include "utils/vulkan.h"
 #include "core/window.h"
 #include "core/physical_device.h"
 #include "tree/scene.h"
+#include "core/programs/program.h"
 
 #include <memory>
 
@@ -17,17 +19,7 @@ namespace f3d {
 
 		class F3D_API RenderPass {
 		public:
-
-			enum eRenderPassType {
-				F3D_RENDERPASS_UNDEFINED = 0,
-				F3D_RENDERPASS_SIMPLE = 1,
-				F3D_RENDERPASS_BEGIN_RANGE = F3D_RENDERPASS_UNDEFINED,
-				F3D_RENDERPASS_END_RANGE = F3D_RENDERPASS_SIMPLE,
-				F3D_RENDERPASS_RANGE_SIZE = (F3D_RENDERPASS_SIMPLE - F3D_RENDERPASS_UNDEFINED + 1),
-				F3D_RENDERPASS_MAX_ENUM = 0x7FFFFFFF
-			};
-
-			RenderPass(eRenderPassType type, 
+			RenderPass(f3d::RenderPassType type, 
 						std::shared_ptr<f3d::core::Device>& device, 
 						std::shared_ptr<f3d::core::PhysicalDevice>& physical, 
 						std::shared_ptr<f3d::core::Window>& window);			
@@ -36,16 +28,19 @@ namespace f3d {
 			RenderPass(const RenderPass& cpy_oth) = default;
 			RenderPass(const RenderPass&& move_oth) = delete;
 			RenderPass& operator=(const RenderPass& cpy_oth) = default;
-			RenderPass&	operator=(const RenderPass&& move_oth) = delete;
+			RenderPass&	operator=(const RenderPass&& move_oth) = delete;			
 
+			RenderPassType			getType() const;
+			void					setType(const RenderPassType val);
 
-			eRenderPassType		getType() const;
-			void				setType(const eRenderPassType val);
-
-			virtual void		render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene) = 0;
-
+			virtual void			render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene) = 0;
+		protected:
+			f3d::core::Program*		getProgram(const F3D_Mask mask);
+			void					setProgram(f3d::core::Program *program);
 		private:
-			eRenderPassType			_type;
+			f3d::RenderPassType									_type;
+		protected:
+			std::map< F3D_Mask, std::shared_ptr<f3d::core::Program> >			_programs;
 		public:
 			std::shared_ptr<f3d::core::Device>					device;
 			std::shared_ptr<f3d::core::Window>					window;

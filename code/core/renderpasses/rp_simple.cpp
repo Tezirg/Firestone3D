@@ -8,9 +8,7 @@ namespace f3d {
 											   std::shared_ptr<f3d::core::PhysicalDevice>& physical, 
 											   std::shared_ptr<f3d::core::Window>& window):
 				RenderPass::RenderPass(F3D_RENDERPASS_SIMPLE, device, physical, window), 
-				_color_format(VK_FORMAT_R8G8B8A8_UNORM),
-				_flat_prog(new f3d::core::prog::FlatProgram(device->vk_device)),
-				_texture_prog(new f3d::core::prog::TexturedProgram(device->vk_device)) {
+				_color_format(VK_FORMAT_R8G8B8A8_UNORM) {
 
 
 				WindowImpl *w = dynamic_cast<WindowImpl *>(window.get());
@@ -26,8 +24,14 @@ namespace f3d {
 				_clear[1].depthStencil.stencil = 0;
 
 				initRenderPass();
-				_flat_prog->initVkPipeline(vk_renderpass, 0);
-				_texture_prog->initVkPipeline(vk_renderpass, 0);
+
+				f3d::core::Program * p = new f3d::core::prog::FlatProgram(device->vk_device);
+				p->initVkPipeline(vk_renderpass, 0);
+				setProgram(p);
+
+				p = new f3d::core::prog::TexturedProgram(device->vk_device);
+				p->initVkPipeline(vk_renderpass, 0);
+				setProgram(p);
 
 				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
@@ -220,7 +224,7 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) 
 			{
-				ProgramMask				mask;
+				ProgramMask				mask = {0};
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
@@ -231,30 +235,13 @@ namespace f3d {
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
 				mask.fields.colors = material->colorFlags();
 				mask.fields.textures = material->textureFlags();
+				mask.fields.lights = 0;
 				mask.fields.shading = F3D_SHADING_FLAT;
 
-				std::cout << std::hex << mask.fields.textures << std::endl;
-				if (mask.mask == _flat_prog->mask.mask) {
-					_flat_prog->drawToCommandBuffer(cmd, mesh, * scene);
-					/*
-					vertex_bufs[0] = m.getVertexBuffer();
-					vertex_bufs[1] = m.getNormalBuffer();
-					vertex_offsets[0] = 0;
-					vertex_offsets[1] = 0;
-
-					VkDescriptorSet sets[2] = { cam.getDescriptorSet() , m.getDescriptorSet() };
-
-					vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _flat_prog->vk_pipeline_layout, 0, 2, sets, 0, nullptr);
-
-					_flat_prog->bind(cmd);
-
-					vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
-					vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-					vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
-					// */
-				}
-				else if (mask.mask == _texture_prog->mask.mask) {
-					_texture_prog->drawToCommandBuffer(cmd, mesh, *scene);
+				std::cout << std::hex << mask.fields.lights << std::endl;
+				auto prog = getProgram(mask.mask);
+				if (prog != nullptr) {
+					prog->drawToCommandBuffer(cmd, mesh, *scene);
 				}
 				else {
 					std::cout << "Unknown combination" << std::endl;

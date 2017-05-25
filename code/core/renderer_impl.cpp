@@ -13,7 +13,7 @@ namespace f3d {
 			valid_commands = false;
 
 			initCommandBuffers();
-			_renders.insert(std::make_pair(f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
+			_renders.insert(std::make_pair(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
 		}
 
 		RendererImpl::~RendererImpl() {
@@ -36,7 +36,7 @@ namespace f3d {
 			valid_commands = false;
 
 			_renders.clear();
-			_renders.insert(std::make_pair(f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
+			_renders.insert(std::make_pair(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
 		}
 
 		void								RendererImpl::initCommandBuffers() {
@@ -76,7 +76,7 @@ namespace f3d {
 
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
-				_renders[f3d::core::RenderPass::F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
+				_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
 			}
 			win->vk_present_frame = 0;
 			valid_commands = true;
