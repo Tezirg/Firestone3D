@@ -20,7 +20,7 @@ namespace f3d {
 			_name.assign(value);
 		}
 
-		bool					Material::Material::getColor(const eColorType type, glm::vec3& out) const {
+		bool					Material::getColor(const eColorType type, glm::vec3& out) const {
 			auto it = _colors.find(type);
 			if (it == _colors.end())
 				return false;
@@ -28,6 +28,14 @@ namespace f3d {
 			out.y = it->second.y;
 			out.z = it->second.z;
 			return true;
+		}
+
+		const glm::vec3&		Material::getColor(const eColorType type) const {
+			static glm::vec3	_black(0.0f, 0.0f, 0.0f);
+			auto it = _colors.find(type);
+			if (it == _colors.end())
+				return _black;
+			return it->second;
 		}
 
 		void					Material::setColor(const eColorType type, glm::vec3& in) {

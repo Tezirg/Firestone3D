@@ -105,31 +105,11 @@ namespace f3d {
 			r = vkMapMemory(_device->vk_device, _memory, 0, VK_WHOLE_SIZE, 0, (void **)&pData);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map material buffer memory");
 
-			F3D_ASSERT(getColor(F3D_COLOR_AMBIENT, color), "ambient");
-			std::cout << "Ambient " << color.r << " " << color.g << " " << color.b << std::endl;
-			std::memcpy(pData, glm::value_ptr(color), 3 * sizeof(float)); //vec3 ambient_color
-			color = glm::vec3();
-
-			F3D_ASSERT(getColor(F3D_COLOR_DIFFUSE, color), "diffuse");
-			std::cout << "Diffuse " << color.r << " " << color.g << " " << color.b << std::endl;
-			std::memcpy(& pData[4 * sizeof(float)], glm::value_ptr(color), 3 * sizeof(float)); //vec3 diffuse_color
-			color = glm::vec3();
-
-			F3D_ASSERT(getColor(F3D_COLOR_SPECULAR, color), "specular");
-			std::cout << "Specular " << color.r << " " << color.g << " " << color.b << std::endl;
-			std::memcpy(& pData[2 * 4 * sizeof(float)], glm::value_ptr(color), 3 * sizeof(float)); //vec3 specular_color
-			color = glm::vec3();
-
-			F3D_ASSERT(getColor(F3D_COLOR_EMISSIVE, color), "emissive");
-			std::cout << "Emissive " << color.r << " " << color.g << " " << color.b << std::endl;
-			std::memcpy(& pData[3 * 4 * sizeof(float)], glm::value_ptr(color), 3 * sizeof(float)); //vec3 emissive_color
-			color = glm::vec3();
-
-			F3D_ASSERT(getColor(F3D_COLOR_REFLECTIVE, color), "reflective");
-			std::cout << "Reflective " << color.r << " " << color.g << " "<< color.b << std::endl;
-			std::memcpy(& pData[4 * 4 * sizeof(float)], glm::value_ptr(color), 3 * sizeof(float)); //vec3 reflective_color
-			color = glm::vec3();
-
+			std::memcpy(pData, glm::value_ptr(getColor(F3D_COLOR_AMBIENT)), 3 * sizeof(float)); //vec3 ambient_color
+			std::memcpy(& pData[4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_DIFFUSE)), 3 * sizeof(float)); //vec3 diffuse_color
+			std::memcpy(& pData[2 * 4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_SPECULAR)), 3 * sizeof(float)); //vec3 specular_color
+			std::memcpy(& pData[3 * 4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_EMISSIVE)), 3 * sizeof(float)); //vec3 emissive_color
+			std::memcpy(& pData[4 * 4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_REFLECTIVE)), 3 * sizeof(float)); //vec3 reflective_color
 			std::memcpy(& pData[5 * 4 * sizeof(float)], &_shininess, sizeof(float)); //float shininess
 			vkUnmapMemory(_device->vk_device, _memory);
 		}

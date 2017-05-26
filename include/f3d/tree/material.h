@@ -25,6 +25,7 @@ namespace f3d {
 			const std::string&		getName() const;
 			void					setname(const std::string& value);
 			bool					getColor(const eColorType type, glm::vec3& out) const;
+			const glm::vec3&		getColor(const eColorType type) const;
 			void					setColor(const eColorType type, glm::vec3& in);
 			bool					removeColor(const eColorType type);
 			ColorTypeFlags			colorFlags() const;
