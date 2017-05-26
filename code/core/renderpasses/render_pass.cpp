@@ -35,7 +35,6 @@ namespace f3d {
 		}
 
 		f3d::core::Program*		RenderPass::getProgram(const F3D_Mask mask) {
-			std::cout << std::hex << mask << std::endl;
 			try {
 				return _programs.at(mask).get();
 			}

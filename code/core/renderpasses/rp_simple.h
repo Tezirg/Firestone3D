@@ -15,14 +15,15 @@
 #include "core/device.h"
 #include "core/depth.h"
 #include "core/physical_device.h"
-#include "core/programs/prog_flat.h"
-#include "core/programs/prog_textured.h"
-#include "core/programs/p-0001_0000_0000_0000.h"
-#include "core/programs/p-0001_0000_0000_0001.h"
 #include "tree/camera_impl.h"
 #include "tree/mesh_impl.h"
 #include "tree/texture_impl.h"
 #include "utils/vulkan.h"
+
+#include "core/programs/p-0001_0000_0000_0000.h"
+#include "core/programs/p-0001_0000_0000_0001.h"
+#include "core/programs/p-0001_0000_0000_0003.h"
+#include "core/programs/p-0001_0000_0001_0000.h"
 
 namespace f3d {
 	namespace core {

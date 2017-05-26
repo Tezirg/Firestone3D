@@ -28,7 +28,7 @@ namespace f3d {
 			desc_layout_info.bindingCount = 1;
 			desc_layout_info.pBindings = &layout_bindings;
 			r = vkCreateDescriptorSetLayout(_device->vk_device, &desc_layout_info, NULL, &_desc_layout);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Create descriptor set layout failed");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Material Create descriptor set layout failed");
 
 
 			//CreateUniform descriptor pool
@@ -41,7 +41,7 @@ namespace f3d {
 			pool_info.maxSets = 1;
 			pool_info.pPoolSizes = &pool_types;
 			r = vkCreateDescriptorPool(_device->vk_device, &pool_info, NULL, &_desc_pool);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Descriptor pool creation failed");
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Material Descriptor pool creation failed");
 
 			//Allocate descriptor set from pool 
 			std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
@@ -74,7 +74,7 @@ namespace f3d {
 			std::memset(&buff_info, 0, sizeof(VkBufferCreateInfo));
 			buff_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			buff_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-			buff_info.size = 4 * sizeof(float);
+			buff_info.size = 6 * 3 * sizeof(float) + sizeof(float);
 			r = vkCreateBuffer(_device->vk_device, &buff_info, NULL, &_buffer);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Creation vk buffer failed");
 
@@ -95,11 +95,35 @@ namespace f3d {
 			char				*pData;
 			glm::vec3			color;
 
-			r = vkMapMemory(_device->vk_device, _memory, 0, 4 * sizeof(float), 0, (void **)&pData);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map buffer memory");
+			r = vkMapMemory(_device->vk_device, _memory, 0, VK_WHOLE_SIZE, 0, (void **)&pData);
+			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map material buffer memory");
 
-			getColor(F3D_COLOR_AMBIENT, color);
-			std::memcpy(pData, glm::value_ptr(color), 4 * sizeof(float));
+			F3D_ASSERT(getColor(F3D_COLOR_AMBIENT, color), "ambient");
+			std::cout << "Ambient " << color.r << " " << color.g << " " << color.b << std::endl;
+			std::memcpy(pData, glm::value_ptr(color), 3 * sizeof(float)); //vec3 ambient_color
+			color = glm::vec3();
+
+			F3D_ASSERT(getColor(F3D_COLOR_DIFFUSE, color), "diffuse");
+			std::cout << "Diffuse " << color.r << " " << color.g << " " << color.b << std::endl;
+			std::memcpy(& pData[3 * sizeof(float)], glm::value_ptr(color), 3 * sizeof(float)); //vec3 diffuse_color
+			color = glm::vec3();
+
+			F3D_ASSERT(getColor(F3D_COLOR_SPECULAR, color), "specular");
+			std::cout << "Specular " << color.r << " " << color.g << " " << color.b << std::endl;
+			std::memcpy(pData + (2 * 3 * sizeof(float)), glm::value_ptr(color), 3 * sizeof(float)); //vec3 specular_color
+			color = glm::vec3();
+
+			F3D_ASSERT(getColor(F3D_COLOR_EMISSIVE, color), "emissive");
+			std::cout << "Emissive " << color.r << " " << color.g << " " << color.b << std::endl;
+			std::memcpy(pData + (3 * 3 * sizeof(float)), glm::value_ptr(color), 3 * sizeof(float)); //vec3 emissive_color
+			color = glm::vec3();
+
+			F3D_ASSERT(getColor(F3D_COLOR_REFLECTIVE, color), "reflective");
+			std::cout << "Reflective " << color.r << " " << color.g << " "<< color.b << std::endl;
+			std::memcpy(pData + (4 * 3 * sizeof(float)), glm::value_ptr(color), 3 * sizeof(float)); //vec3 reflective_color
+			color = glm::vec3();
+
+			std::memcpy(pData + (5 * 3 * sizeof(float)), &_shininess, sizeof(float)); //float shininess
 			vkUnmapMemory(_device->vk_device, _memory);
 		}
 

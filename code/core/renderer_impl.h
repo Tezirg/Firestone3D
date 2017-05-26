@@ -15,7 +15,6 @@
 #include "core/window_impl.h"
 #include "renderpasses/render_pass.h"
 #include "renderpasses/rp_simple.h"
-#include "core/programs/prog_flat.h"
 
 namespace f3d {
 	namespace core {

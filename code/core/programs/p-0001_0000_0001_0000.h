@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _F3D_TEXTURED_PROG_H
-#define _F3D_TEXTURED_PROG_H
+#ifndef _F3D_P_0001_0000_0001_0000_H
+#define _F3D_P_0001_0000_0001_0000_H
 
 #include "core/platform.h"
 #include "core/types.h"
@@ -10,17 +10,13 @@
 #include "utils/vulkan.h"
 #include "core/programs/program.h"
 
-
-const static char texture_vert_spv[] = "texture.vert.spv";
-const static char texture_frag_spv[] = "texture.frag.spv";
-
 namespace f3d {
 	namespace core {
 		namespace prog {
-			class F3D_API TexturedProgram : public f3d::core::Program {
+			class F3D_API Program_0001_0000_0001_0000 : public f3d::core::Program {
 			public:
-				TexturedProgram(VkDevice device);
-				~TexturedProgram();
+				Program_0001_0000_0001_0000(VkDevice device);
+				~Program_0001_0000_0001_0000();
 
 				void						initVkPipeline(VkRenderPass& renderpass, uint32_t subpass);
 

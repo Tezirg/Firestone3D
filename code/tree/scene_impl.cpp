@@ -50,6 +50,8 @@ namespace f3d {
 					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
 					if (aimesh->mNormals != NULL)
 						fmesh->addNormal(glm::vec3(aimesh->mNormals[v].x, aimesh->mNormals[v].y, aimesh->mNormals[v].z));
+					else
+						fmesh->addNormal(glm::vec3(0.0f));
 					if (aimesh->HasTextureCoords(0)) {
 						fmesh->addUV(aimesh->mTextureCoords[0][v].x, aimesh->mTextureCoords[0][v].y);
 					}
@@ -128,7 +130,7 @@ namespace f3d {
 		}
 
 		f3d::tree::Material*				SceneImpl::_aiMaterialToF3D(const std::string& path, const aiMaterial* aiMat) {
-			f3d::tree::Material				*mat = nullptr;
+			f3d::tree::MaterialImpl			*mat = nullptr;
 			aiReturn						aiRes;
 			aiString						aiStr;
 			aiColor3D						aiColor;
@@ -139,15 +141,18 @@ namespace f3d {
 			materialName.assign(aiRes == AI_SUCCESS ? aiStr.C_Str() : AI_DEFAULT_MATERIAL_NAME);
 			mat = new f3d::tree::MaterialImpl(materialName, _physical, _device);
 
+
+			std::cout << "====================================" <<  materialName << std::endl;
 			//Query Ambient color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_AMBIENT, aiColor);
-			if (aiRes == AI_SUCCESS)
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
 				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
-
+			std::cout << "has Ambient " << !aiColor.IsBlack() << std::endl;
 			//Query diffuse color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
-			if (aiRes == AI_SUCCESS)
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
 				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			std::cout << "has Diffuse " << !aiColor.IsBlack() << " " << std::endl;
 
 			//Query specular color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_SPECULAR, aiColor);
@@ -157,7 +162,7 @@ namespace f3d {
 			//Query Emmissive color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_EMISSIVE, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_EMMISIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_EMISSIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query reflective color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_REFLECTIVE, aiColor);
@@ -182,6 +187,9 @@ namespace f3d {
 			texture = _aiTextureToF3D(path, aiMat, aiTextureType_SPECULAR, 0);
 			if (texture != nullptr)
 				mat->addTexture(texture);
+
+			mat->updateAttribute();
+			mat->updateDescriptorSet();
 
 			return mat;
 		}

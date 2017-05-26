@@ -25,21 +25,16 @@ namespace f3d {
 
 				initRenderPass();
 
-				f3d::core::Program * p = new f3d::core::prog::Program_0001_0000_0000_0001(device->vk_device);
-				p->initVkPipeline(vk_renderpass, 0);
-				setProgram(p);
-				
-				p = new f3d::core::prog::Program_0001_0000_0000_0000(device->vk_device);
-				p->initVkPipeline(vk_renderpass, 0);
-				setProgram(p);
-				
-				p = new f3d::core::prog::FlatProgram(device->vk_device);
-				p->initVkPipeline(vk_renderpass, 0);
-				setProgram(p);
+				std::list<f3d::core::Program *> progs;
 
-				p = new f3d::core::prog::TexturedProgram(device->vk_device);
-				p->initVkPipeline(vk_renderpass, 0);
-				setProgram(p);
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0000(device->vk_device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0001(device->vk_device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0003(device->vk_device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0000(device->vk_device));
+				for (auto it = progs.begin(); it != progs.end(); ++it) {
+					(*it)->initVkPipeline(vk_renderpass, 0);
+					setProgram(*it);
+				}
 
 				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
@@ -237,22 +232,27 @@ namespace f3d {
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
 
-				VkBuffer				vertex_bufs[3];
-				VkDeviceSize			vertex_offsets[3];
 
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
-				mask.fields.colors = 0;// F3D_COLOR_AMBIENT;//material->colorFlags();
-				mask.fields.textures = 0;//material->textureFlags();
+				mask.fields.colors = material->colorFlags();
+				mask.fields.textures = material->textureFlags();
 				mask.fields.lights = 0;
 				mask.fields.shading = F3D_SHADING_FLAT;
 
-				std::cout << std::hex << mask.fields.lights << std::endl;
+				std::cout << m.getMaterialName() << std::endl;
+				std::cout << std::hex << mask.fields.colors << std::endl;
+				glm::vec3 color;
+				material->getColor(F3D_COLOR_DIFFUSE, color);
+				std::cout << color.r<< " " << color.g << ' '<< color.b << std::endl;
+				material->getColor(F3D_COLOR_AMBIENT, color);
+				std::cout << color.r << " " << color.g << ' ' << color.b << std::endl;
 				auto prog = getProgram(mask.mask);
+				std::cout << std::hex << prog->getMask() << std::endl;
 				if (prog != nullptr) {
 					prog->drawToCommandBuffer(cmd, mesh, *scene);
 				}
 				else {
-					std::cout << "Unknown combination" << std::endl;
+					std::cout << "Unknown combination: " <<  std::hex << mask.mask << std::endl;
 				}
 			}
 		}

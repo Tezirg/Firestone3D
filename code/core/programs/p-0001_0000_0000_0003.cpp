@@ -1,18 +1,17 @@
-#include "prog_flat.h"
+#include "p-0001_0000_0000_0003.h"
 
 namespace f3d {
 	namespace core {
 		namespace prog {
-			FlatProgram::FlatProgram(VkDevice device) : Program::Program(device, 
-				{	F3D_COLOR_AMBIENT | F3D_COLOR_DIFFUSE | F3D_COLOR_SPECULAR | F3D_COLOR_EMMISIVE, 
-					F3D_TEXTURE_UNDEFINED, F3D_LIGHT_UNDEFINED, F3D_SHADING_FLAT }
+			Program_0001_0000_0000_0003::Program_0001_0000_0000_0003(VkDevice device) : Program::Program(device, 
+				{ F3D_COLOR_AMBIENT | F3D_COLOR_DIFFUSE, F3D_TEXTURE_UNDEFINED, F3D_LIGHT_UNDEFINED, F3D_SHADING_FLAT }
 			) {	}
 
-			FlatProgram::~FlatProgram() {
+			Program_0001_0000_0000_0003::~Program_0001_0000_0000_0003() {
 				std::cout << "Destructor: " << __FILE__ << std::endl;
 			}
 
-			void									FlatProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) 
+			void									Program_0001_0000_0000_0003::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) 
 			{
 				VkResult							r;
 				VkShaderModule						vert_shader;
@@ -24,15 +23,14 @@ namespace f3d {
 				initVkPipelineInfos();
 
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
-
-				F3D_ASSERT(createSpvShader(flat_vert_spv, &vert_shader) != false, "Flat program vertex shader");
+				F3D_ASSERT(createSpvShader("0001_0000_0000_0003.vert.spv", &vert_shader) != false, "Program_0001_0000_0000_0003 vertex shader");
 
 				shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 				shaderStages[0].module = vert_shader;
 				shaderStages[0].pName = "main";
 
-				F3D_ASSERT(createSpvShader(flat_frag_spv, &frag_shader) != false, "Flat program fragment shader");
+				F3D_ASSERT(createSpvShader("0001_0000_0000_0003.frag.spv", &frag_shader) != false, "Program_0001_0000_0000_0003 fragment shader");
 
 				shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -64,7 +62,7 @@ namespace f3d {
 				vkDestroyShaderModule(vk_device, frag_shader, NULL);
 			}
 
-			void				FlatProgram::initVkPipelineInfos() {
+			void				Program_0001_0000_0000_0003::initVkPipelineInfos() {
 				Program::initVkPipelineInfos();
 
 				//layout (location = 0) in vec4 position
@@ -96,10 +94,10 @@ namespace f3d {
 				_vi.pVertexBindingDescriptions = _vi_bind;
 			}
 
-			void									FlatProgram::initVkLayout() 
+			void									Program_0001_0000_0000_0003::initVkLayout() 
 			{
 				VkResult							r;
-				VkDescriptorSetLayoutBinding		layout_bindings[2];
+				VkDescriptorSetLayoutBinding		layout_bindings[3];
 				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
@@ -119,44 +117,55 @@ namespace f3d {
 				layout_bindings[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 				layout_bindings[1].pImmutableSamplers = NULL;
 
+				//layout (set = 2, binding = 0) uniform material;
+				layout_bindings[2].binding = 0;
+				layout_bindings[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				layout_bindings[2].descriptorCount = 1;
+				layout_bindings[2].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				layout_bindings[2].pImmutableSamplers = NULL;
+
+				vk_desc_layout = new VkDescriptorSetLayout[3];
+
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
 				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info.bindingCount = 1;
 				desc_layout_info.pBindings = &layout_bindings[0];
-
-				vk_desc_layout = new VkDescriptorSetLayout[2];
-				r = vkCreateDescriptorSetLayout(vk_device,& desc_layout_info, NULL, &vk_desc_layout[0]);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[0] failed");
+				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[0]);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[0] failed");
 				
-				// /*
 				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
 				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 				desc_layout_info.bindingCount = 1;
 				desc_layout_info.pBindings = &layout_bindings[1];
-
-
 				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[1]);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create descriptor set layout[1] failed");
-				// */
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[1] failed");
+
+				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				desc_layout_info.bindingCount = 1;
+				desc_layout_info.pBindings = &layout_bindings[2];
+				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[2]);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[2] failed");
+
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 				pipe_layout_info.pNext = NULL;
-				pipe_layout_info.setLayoutCount = 2;
+				pipe_layout_info.setLayoutCount = 3;
 				pipe_layout_info.pSetLayouts = vk_desc_layout;
 				r = vkCreatePipelineLayout(vk_device, &pipe_layout_info, NULL, &vk_pipeline_layout);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "FlatProgram Create pipeline layout failed");
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create pipeline layout failed");
 			}
 
-			bool							FlatProgram::drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) 
+			bool							Program_0001_0000_0000_0003::drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) 
 			{
 				f3d::tree::MeshImpl&		m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&		cam = dynamic_cast<f3d::tree::CameraImpl&>(*scene.getCamera().get());
-				f3d::tree::Material*		material = scene.getMaterialByName(mesh.getMaterialName());
-				VkBuffer					vertex_bufs[2] = { m.getVertexBuffer(), m.getNormalBuffer(),};
+				f3d::tree::MaterialImpl*	material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
+				VkBuffer					vertex_bufs[2] = { m.getVertexBuffer(), m.getNormalBuffer() };
 				VkDeviceSize				vertex_offsets[2] = { 0, 0 };
-				VkDescriptorSet				sets[2] = { cam.getDescriptorSet() , m.getDescriptorSet() };
+				VkDescriptorSet				sets[3] = { cam.getDescriptorSet() , m.getDescriptorSet(), material->getDescriptorSet() };
 
-				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,vk_pipeline_layout, 0, 2, sets, 0, nullptr);
+				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vk_pipeline_layout, 0, 3, sets, 0, nullptr);
 				Program::bind(cmd);
 
 				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);

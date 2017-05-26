@@ -12,8 +12,6 @@
 #include "tree/scene.h"
 #include "core/programs/program.h"
 
-#include <memory>
-
 namespace f3d {
 	namespace core {
 

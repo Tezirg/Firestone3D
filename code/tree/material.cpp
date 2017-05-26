@@ -7,6 +7,13 @@ namespace f3d {
 			_name(name), _shininess(0.0f) {
 			_color_mask = F3D_COLOR_UNDEFINED;
 			_texture_mask = F3D_TEXTURE_UNDEFINED;
+
+			//Push default colors values
+			_colors[F3D_COLOR_AMBIENT] = glm::vec3(0.0f, 0.0f, 0.0f);
+			_colors[F3D_COLOR_DIFFUSE] = glm::vec3(0.0f, 0.0f, 0.0f);
+			_colors[F3D_COLOR_SPECULAR] = glm::vec3(0.0f, 0.0f, 0.0f);
+			_colors[F3D_COLOR_EMISSIVE] = glm::vec3(0.0f, 0.0f, 0.0f);
+			_colors[F3D_COLOR_REFLECTIVE] = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
 		Material::~Material() {

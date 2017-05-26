@@ -29,11 +29,6 @@ SET ( f3d_core_src
 	core/renderer_impl.cpp
 	core/renderpasses/rp_simple.cpp
 	core/renderpasses/render_pass.cpp
-	core/programs/program.cpp
-	core/programs/p-0001_0000_0000_0000.cpp
-	core/programs/p-0001_0000_0000_0001.cpp
-	core/programs/prog_flat.cpp
-	core/programs/prog_textured.cpp
 )
 SET ( f3d_core_headers 
 	${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
@@ -44,15 +39,25 @@ SET ( f3d_core_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h	
 	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
+)
+SOURCE_GROUP( impl\\core FILES ${f3d_core_src} ${f3d_core_headers})
+
+SET ( f3d_program_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0000_0000.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0000_0001.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_flat.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/prog_textured.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0000_0003.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0001_0000.h
 )
+SET ( f3d_program_src
+	core/programs/program.cpp
+	core/programs/p-0001_0000_0000_0000.cpp
+	core/programs/p-0001_0000_0000_0001.cpp
+	core/programs/p-0001_0000_0000_0003.cpp
+	core/programs/p-0001_0000_0001_0000.cpp
+)
+SOURCE_GROUP( impl\\programs FILES ${f3d_program_src} ${f3d_program_headers})
 
-SOURCE_GROUP( impl\\core FILES ${f3d_core_src} ${f3d_core_headers})
- 
 SET ( f3d_tree_sdk 
 	tree/scene.cpp
 	tree/object.cpp
@@ -103,7 +108,6 @@ SET ( f3d_utils_sdk_headers
 	${F3D_HEADER_PATH}/utils/inputs.h
 	${F3D_HEADER_PATH}/utils/timer.h
 	${F3D_HEADER_PATH}/utils/transform.h
-	
 	${F3D_HEADER_PATH}/helpers/xbox_360.hpp
 )
 SOURCE_GROUP ( sdk\\utils FILES ${f3d_utils_sdk} ${f3d_utils_sdk_headers} )
@@ -122,6 +126,8 @@ SET( f3d_src
 	${f3d_core_sdk_headers}
 	${f3d_core_src}
 	${f3d_core_headers}
+	${f3d_program_src}
+	${f3d_program_headers}
 
 	${f3d_tree_sdk}
 	${f3d_tree_sdk_headers}
