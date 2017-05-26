@@ -247,8 +247,8 @@ namespace f3d {
 				material->getColor(F3D_COLOR_AMBIENT, color);
 				std::cout << color.r << " " << color.g << ' ' << color.b << std::endl;
 				auto prog = getProgram(mask.mask);
-				std::cout << std::hex << prog->getMask() << std::endl;
 				if (prog != nullptr) {
+					std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
 					prog->drawToCommandBuffer(cmd, mesh, *scene);
 				}
 				else {
