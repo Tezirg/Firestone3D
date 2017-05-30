@@ -133,6 +133,11 @@ namespace f3d {
 			buffer_info.range = VK_WHOLE_SIZE;
 			buffer_info.buffer = _buffer;
 			vkUpdateDescriptorSets(_device->vk_device, 1, &pWrites, 0, nullptr);
+
+			for (auto it = _textures.begin(); it != _textures.end(); ++it) {
+				f3d::tree::TextureImpl * t = dynamic_cast<f3d::tree::TextureImpl *>(it->second);
+				t->updateDescriptorSet();
+			}
 		}
 
 	}

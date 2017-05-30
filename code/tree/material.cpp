@@ -57,25 +57,27 @@ namespace f3d {
 		}
 
 		void					Material::addTexture(f3d::tree::Texture *texture) {
-			_textures.push_back(texture);
+			_textures[texture->getType()] = texture;
 			//Add to bitmask
 			_texture_mask |= texture->getType();
 		}
 		void					Material::removeTexture(f3d::tree::Texture *texture) {
-			_textures.remove(texture);
+			_textures.erase(texture->getType());
 			//Removes from bitmask
 			_texture_mask &= ~texture->getType();
 		}
 		void					Material::removeTexture(const TextureTypeFlags type) {
-			std::remove_if(_textures.begin(), _textures.end(), [&type](auto it) {
-				return it->getType() == type; //Lambda match all textures == remove type
-			});
+			_textures.erase(type);
 			//Removes from bitmask
 			_texture_mask &= ~type;
 		}
 
-		const std::list<f3d::tree::Texture *>& Material::getTextures(void) const {
-			return _textures;
+		f3d::tree::Texture*		Material::getTexture(const TextureTypeFlags type) const {
+			auto it = _textures.find(type);
+			if (it != _textures.end())
+				return it->second;
+			else
+				return nullptr;
 		}
 
 		TextureTypeFlags		Material::textureFlags() const {

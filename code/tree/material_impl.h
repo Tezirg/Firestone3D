@@ -14,6 +14,7 @@
 #include "core/physical_device.h"
 #include "utils/vulkan.h"
 #include "tree/material.h"
+#include "tree/texture_impl.h"
 
 namespace f3d {
 	namespace tree {

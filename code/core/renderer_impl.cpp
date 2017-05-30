@@ -65,13 +65,10 @@ namespace f3d {
 			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
 			f3d::tree::TextureImpl *	texture = nullptr;
 
-
 			cam->updateDescriptorSet();
 			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
-				if ((*it)->getTextures().empty() == false) {
-					texture = dynamic_cast<f3d::tree::TextureImpl *>((*it)->getTextures().front());
-					texture->updateDescriptorSet();
-				}
+				f3d::tree::MaterialImpl * mat = dynamic_cast<f3d::tree::MaterialImpl *>(*it);
+				mat->updateDescriptorSet();
 			}
 
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {

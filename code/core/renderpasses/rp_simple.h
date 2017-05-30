@@ -22,8 +22,17 @@
 
 #include "core/programs/p-0001_0000_0000_0000.h"
 #include "core/programs/p-0001_0000_0000_0001.h"
+#include "core/programs/p-0001_0000_0000_0002.h"
 #include "core/programs/p-0001_0000_0000_0003.h"
 #include "core/programs/p-0001_0000_0001_0000.h"
+#include "core/programs/p-0001_0000_0001_0001.h"
+#include "core/programs/p-0001_0000_0001_0002.h"
+#include "core/programs/p-0001_0000_0001_0003.h"
+#include "core/programs/p-0001_0000_0001_0006.h"
+#include "core/programs/p-0001_0000_0003_0006.h"
+#include "core/programs/p-0001_0000_0005_0001.h"
+#include "core/programs/p-0001_0000_0005_0003.h"
+#include "core/programs/p-0001_0000_0005_0007.h"
 
 namespace f3d {
 	namespace core {

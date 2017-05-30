@@ -36,14 +36,14 @@ namespace f3d {
 			void					addTexture(f3d::tree::Texture *texture);
 			void					removeTexture(f3d::tree::Texture *texture);
 			void					removeTexture(TextureTypeFlags type);
-			const std::list<f3d::tree::Texture *>& getTextures(void) const;
+			f3d::tree::Texture *	getTexture(const TextureTypeFlags type) const;
 			TextureTypeFlags		textureFlags() const;
 		protected:
 			std::string							_name;
 			float								_shininess;
 			std::map<eColorType, glm::vec3>		_colors;
 			ColorTypeFlags						_color_mask;
-			std::list<f3d::tree::Texture *>		_textures;
+			std::map< TextureTypeFlags, f3d::tree::Texture *>	_textures;
 			TextureTypeFlags					_texture_mask;
 		};
 	}// tree::
