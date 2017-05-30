@@ -11,14 +11,16 @@
 
 #include "core/platform.h"
 #include "core/types.h"
+#include "core/physical_device.h"
+#include "core/device.h"
 #include "tree/light.h"
 
 namespace f3d {
 	namespace tree {
 		class F3D_API LightImpl : public Light {
 		public:
-			LightImpl();
-			LightImpl(aiLight *);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light);
 			~LightImpl();
 
 			float					getAngleInnerCone() const;
@@ -45,8 +47,33 @@ namespace f3d {
 			void					setPosition(const glm::vec3& val);
 			eLightType				getType() const;
 			void			 		setType(eLightType val);
+
+			void					updateAttribute();
+			void					createAttribute();
+			VkDescriptorSet			getDescriptorSet();
+			void					updateDescriptorSet();
 		private:
-			std::unique_ptr<aiLight>		_ai_light;
+			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
+			std::shared_ptr<f3d::core::Device>			_device;
+
+			VkBuffer									_buffer;
+			VkDeviceMemory								_memory;
+			VkDescriptorSetLayout						_desc_layout;
+			VkDescriptorPool							_desc_pool;
+			VkDescriptorSet								_descriptor;
+
+			std::string									_name;
+			eLightType									_type;
+			glm::vec4									_position;
+			glm::vec4									_direction;
+			float										_inner_cone;
+			float										_outer_cone;
+			glm::vec4									_ambient_color;
+			glm::vec4									_diffuse_color;
+			glm::vec4									_specular_color;
+			float										_constant;
+			float										_linear;
+			float										_quadratic;			
 		};
 	}
 }

@@ -108,7 +108,7 @@ namespace f3d {
 				
 			//Loading lights
 			for (uint32_t i = 0; i < ai_scene->mNumLights; i++) {
-				addLight(new f3d::tree::LightImpl(ai_scene->mLights[i]));
+				addLight(new f3d::tree::LightImpl(_physical, _device, ai_scene->mLights[i]));
 			}
 	
 			if (ai_scene->mNumMeshes == 0) { //Root that contains multiple objs 
