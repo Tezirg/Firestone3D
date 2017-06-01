@@ -3,55 +3,17 @@
 namespace f3d {
 	namespace tree {
 		MaterialImpl::MaterialImpl(const std::string& name, std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device) :
-			Material::Material(name), _physical(phys), _device(device)
+			Material::Material(name), DescriptorContainer::DescriptorContainer(phys, device), AttributeContainer::AttributeContainer(phys, device),
+			_physical(phys), _device(device)
 		{
 
 			createAttribute();
 
-			VkResult							r;
-			VkDescriptorSetLayoutBinding		layout_bindings;
-			VkDescriptorSetLayoutCreateInfo		desc_layout_info;
-			VkDescriptorPoolSize				pool_types;
-			VkDescriptorPoolCreateInfo			pool_info;
-			VkDescriptorSetAllocateInfo			desc_set_alloc;
-
-			//Create descriptor set layout
-			//layout (set = 2, binding = 0) uniform material;
-			std::memset(&layout_bindings, 0, sizeof(VkDescriptorSetLayoutBinding));
-			layout_bindings.binding = 0;
-			layout_bindings.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			layout_bindings.descriptorCount = 1;
-			layout_bindings.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-			layout_bindings.pImmutableSamplers = NULL;
-			std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-			desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			desc_layout_info.bindingCount = 1;
-			desc_layout_info.pBindings = &layout_bindings;
-			r = vkCreateDescriptorSetLayout(_device->vk_device, &desc_layout_info, NULL, &_desc_layout);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Material Create descriptor set layout failed");
-
-
-			//CreateUniform descriptor pool
-			pool_types.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			pool_types.descriptorCount = 1;
-			std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
-			pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-			pool_info.poolSizeCount = 1;
-			pool_info.maxSets = 1;
-			pool_info.pPoolSizes = &pool_types;
-			r = vkCreateDescriptorPool(_device->vk_device, &pool_info, NULL, &_desc_pool);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Material Descriptor pool creation failed");
-
-			//Allocate descriptor set from pool 
-			std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
-			desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			desc_set_alloc.descriptorPool = _desc_pool;
-			desc_set_alloc.descriptorSetCount = 1;
-			desc_set_alloc.pSetLayouts = &_desc_layout;
-			r = vkAllocateDescriptorSets(device->vk_device, &desc_set_alloc, &_descriptor);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Camera Descriptor set allocation failed");
-
+			DescriptorContainer::addDescriptor(2);
+			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+			_desc_layout = DescriptorContainer::getDescriptorLayout(2);
+			_descriptor = DescriptorContainer::getDescriptorSet(2);
+		
 			//Push default colors values
 			_colors[F3D_COLOR_AMBIENT] = glm::vec3(1.0f, 1.0f, 1.0f);
 			_colors[F3D_COLOR_DIFFUSE] = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -64,9 +26,9 @@ namespace f3d {
 		}
 
 		MaterialImpl::~MaterialImpl() {
-			vkFreeDescriptorSets(_device->vk_device, _desc_pool, 1, &_descriptor);
-			vkDestroyDescriptorPool(_device->vk_device, _desc_pool, nullptr);
-			vkDestroyDescriptorSetLayout(_device->vk_device, _desc_layout, nullptr);
+			//vkFreeDescriptorSets(_device->vk_device, _desc_pool, 1, &_descriptor);
+			//vkDestroyDescriptorPool(_device->vk_device, _desc_pool, nullptr);
+			//vkDestroyDescriptorSetLayout(_device->vk_device, _desc_layout, nullptr);
 			vkDestroyBuffer(_device->vk_device, _buffer, nullptr);
 			vkFreeMemory(_device->vk_device, _memory, nullptr);
 			std::cout << "Destructor: " << __FILE__ << std::endl;

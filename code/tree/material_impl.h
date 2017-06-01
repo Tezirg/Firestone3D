@@ -12,13 +12,18 @@
 #include "core/types.h"
 #include "core/device.h"
 #include "core/physical_device.h"
+#include "core/descriptor_container.h"
+#include "core/attribute_container.h"
 #include "utils/vulkan.h"
 #include "tree/material.h"
 #include "tree/texture_impl.h"
 
 namespace f3d {
 	namespace tree {
-		class F3D_API MaterialImpl : public Material {
+		class F3D_API MaterialImpl : 
+			public Material, 
+			protected f3d::core::DescriptorContainer, 
+			protected f3d::core::AttributeContainer {
 		public:
 			MaterialImpl(const std::string& name, std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
 			virtual ~MaterialImpl();

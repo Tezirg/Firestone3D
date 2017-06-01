@@ -87,5 +87,6 @@ namespace f3d {
 				return positive_code_strs[int_code];
 			return negative_codes_strs[-int_code];
 		}
-	}
-}
+
+	} // utils::
+} //f3d::

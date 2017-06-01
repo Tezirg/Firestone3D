@@ -29,6 +29,8 @@ SET ( f3d_core_src
 	core/renderer_impl.cpp
 	core/renderpasses/rp_simple.cpp
 	core/renderpasses/render_pass.cpp
+	core/attribute_container.cpp
+	core/descriptor_container.cpp
 )
 SET ( f3d_core_headers 
 	${F3D_PRIVATE_HEADER_PATH}/core/firestone_impl.h
@@ -36,6 +38,8 @@ SET ( f3d_core_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/physical_device.h
 	${F3D_PRIVATE_HEADER_PATH}/core/device.h
 	${F3D_PRIVATE_HEADER_PATH}/core/depth.h
+	${F3D_PRIVATE_HEADER_PATH}/core/attribute_container.h	
+	${F3D_PRIVATE_HEADER_PATH}/core/descriptor_container.h	
 	${F3D_PRIVATE_HEADER_PATH}/core/renderer_impl.h
 	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/render_pass.h	
 	${F3D_PRIVATE_HEADER_PATH}/core/renderpasses/rp_simple.h
@@ -57,9 +61,11 @@ SET ( f3d_program_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0005_0001.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0005_0003.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0000_0005_0007.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/p-0001_0001_0000_0000.h
 )
 SET ( f3d_program_src
 	core/programs/program.cpp
+#Flat Shading
 	core/programs/p-0001_0000_0000_0000.cpp
 	core/programs/p-0001_0000_0000_0001.cpp
 	core/programs/p-0001_0000_0000_0002.cpp
@@ -73,6 +79,7 @@ SET ( f3d_program_src
 	core/programs/p-0001_0000_0005_0001.cpp
 	core/programs/p-0001_0000_0005_0003.cpp
 	core/programs/p-0001_0000_0005_0007.cpp
+	core/programs/p-0001_0001_0000_0000.cpp	
 )
 SOURCE_GROUP( impl\\programs FILES ${f3d_program_src} ${f3d_program_headers})
 
