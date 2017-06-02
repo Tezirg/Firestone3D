@@ -3,7 +3,9 @@
 namespace f3d {
 	namespace tree {
 		SceneImpl::SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device) :
-			_physical(physical), _device(device) {
+			_physical(physical), _device(device),
+			AttributeContainer::AttributeContainer(physical, device),
+			DescriptorContainer::DescriptorContainer(physical, device) {
 			_camera.reset(new f3d::tree::CameraImpl(physical, device));
 			
 			_matrix.push(glm::mat4());
@@ -105,11 +107,81 @@ namespace f3d {
 				if (mat != nullptr)
 					addMaterial(mat);
 			}
-				
+
+			std::cout << "1" << std::endl;
+
+			uint32_t light_attr_size = sizeof(float) * 25 + sizeof(uint32_t);
+			DescriptorContainer::addDescriptor(0);
+			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+			AttributeContainer::addAttribute(0, light_attr_size * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 			//Loading lights
-			for (uint32_t i = 0; i < ai_scene->mNumLights; i++) {
-				addLight(new f3d::tree::LightImpl(_physical, _device, ai_scene->mLights[i]));
+			char *b;
+			std::cout << "2" << std::endl;
+
+			for (uint32_t i = 0; i < ai_scene->mNumLights && i < 16; i++) {
+				
+				f3d::tree::LightImpl * l = new f3d::tree::LightImpl(_physical, _device, ai_scene->mLights[i]);
+				l->getProperties((void **)&b, light_attr_size);
+				AttributeContainer::updateAttribute(0, b, i * light_attr_size, light_attr_size);
+				addLight(l);
 			}
+			std::cout << "3" << std::endl;
+
+			AttributeContainer::updateAttribute(1, (void*)&ai_scene->mNumLights, 0, sizeof(uint32_t));
+
+			//Force test light
+			uint32_t numLight = 1;
+			std::cout << "4" << std::endl;
+
+			f3d::tree::LightImpl * l = new f3d::tree::LightImpl(_physical, _device);
+			std::cout << "5" << std::endl;
+
+			l->getProperties((void **)&b, light_attr_size);
+			std::cout << "6" << std::endl;
+
+			addLight(l);
+
+			std::cout << "7" << std::endl;
+
+			AttributeContainer::updateAttribute(0, b, 0, light_attr_size);
+			std::cout << "8" << std::endl;
+
+			AttributeContainer::updateAttribute(1, (void*)&numLight, 0, sizeof(uint32_t));
+			//End force test
+			std::cout << "9" << std::endl;
+
+			VkWriteDescriptorSet				pWrites[2];
+			VkDescriptorBufferInfo				buffer_info[2];
+
+			//Buffers in use
+			buffer_info[0].offset = 0;
+			buffer_info[0].range = VK_WHOLE_SIZE;
+			buffer_info[0].buffer = AttributeContainer::getAttributeBuffer(0);
+			buffer_info[1].offset = 0;
+			buffer_info[1].range = VK_WHOLE_SIZE;
+			buffer_info[1].buffer = AttributeContainer::getAttributeBuffer(1);
+			//Bind buffer 0 to binding 0 on this descriptor set
+			std::memset(&pWrites[0], 0, sizeof(VkWriteDescriptorSet));
+			pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			pWrites[0].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[0].descriptorCount = 1;
+			pWrites[0].dstBinding = 0;
+			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pWrites[0].pBufferInfo = &buffer_info[0];
+
+			//Bind buffer 1 to binding 1 on this descriptor set
+			std::memset(&pWrites[1], 0, sizeof(VkWriteDescriptorSet));
+			pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			pWrites[1].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[1].descriptorCount = 1;
+			pWrites[1].dstBinding = 1;
+			pWrites[1].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pWrites[1].pBufferInfo = &buffer_info[1];
+			std::cout << "10" << std::endl;
+			vkUpdateDescriptorSets(_device->vk_device, 2, pWrites, 0, nullptr);
+			std::cout << "11" << std::endl;
 	
 			if (ai_scene->mNumMeshes == 0) { //Root that contains multiple objs 
 				for (uint32_t i = 0; i < ai_scene->mRootNode->mNumChildren; i++) {
@@ -265,7 +337,17 @@ namespace f3d {
 			}			
 
 			return texture;
-
 		}
+
+		VkDescriptorSet						SceneImpl::getWorldDescriptorSet() {
+			f3d::tree::CameraImpl*			cam = dynamic_cast<f3d::tree::CameraImpl *>(_camera.get());
+
+			return cam->getDescriptorSet();
+		}
+
+		VkDescriptorSet						SceneImpl::getLightsDescriptorSet() {
+			return DescriptorContainer::getDescriptorSet(0);
+		}
+
 	}
 }

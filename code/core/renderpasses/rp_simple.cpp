@@ -40,6 +40,7 @@ namespace f3d {
 				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0001(physical, device));
 				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0003(physical, device));
 				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);
@@ -250,6 +251,7 @@ namespace f3d {
 
 				std::cout << m.getMaterialName() << std::endl;
 				std::cout << std::hex << mask.fields.colors << std::endl;
+				mask.mask = 0x0001000100000000;
 				auto prog = getProgram(mask.mask);
 				if (prog != nullptr) {
 					std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
