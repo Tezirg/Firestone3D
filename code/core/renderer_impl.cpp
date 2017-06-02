@@ -66,10 +66,6 @@ namespace f3d {
 			f3d::tree::TextureImpl *	texture = nullptr;
 
 			cam->updateDescriptorSet();
-			for (auto it = scene->getMaterials().begin(); it != scene->getMaterials().end(); ++it) {
-				f3d::tree::MaterialImpl * mat = dynamic_cast<f3d::tree::MaterialImpl *>(*it);
-				mat->updateDescriptorSet();
-			}
 
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;

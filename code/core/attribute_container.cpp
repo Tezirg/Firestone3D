@@ -69,5 +69,18 @@ namespace f3d {
 			vkUnmapMemory(_device->vk_device, m->second);
 			return true;
 		}
+
+		VkBuffer				AttributeContainer::getAttributeBuffer(uint32_t attrIndex) {
+			auto it = _buffer.find(attrIndex);
+			if (it == _buffer.end())
+				return VK_NULL_HANDLE;
+			return it->second;
+		}
+		VkDeviceMemory			AttributeContainer::getAttributeMemory(uint32_t attrIndex) {
+			auto it = _memory.find(attrIndex);
+			if (it == _memory.end())
+				return VK_NULL_HANDLE;
+			return it->second;
+		}
 	}// core::
 } //f3d::

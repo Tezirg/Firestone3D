@@ -16,10 +16,11 @@ namespace f3d {
 			AttributeContainer(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
 			~AttributeContainer();
 
-			bool	addAttribute(uint32_t attrIndex, uint32_t size, VkBufferUsageFlags usage);
-			bool	removeAttribute(uint32_t attrIndex);
-
-			bool	updateAttribute(uint32_t attrIndex, void *data, uint32_t offset, uint32_t size);
+			bool			addAttribute(uint32_t attrIndex, uint32_t size, VkBufferUsageFlags usage);
+			bool			removeAttribute(uint32_t attrIndex);
+			bool			updateAttribute(uint32_t attrIndex, void *data, uint32_t offset, uint32_t size);
+			VkBuffer		getAttributeBuffer(uint32_t attrIndex);
+			VkDeviceMemory	getAttributeMemory(uint32_t attrIndex);
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
