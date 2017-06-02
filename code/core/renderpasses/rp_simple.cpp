@@ -27,19 +27,19 @@ namespace f3d {
 
 				std::list<f3d::core::Program *> progs;
 
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0000(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0001(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0002(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0003(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0000(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0001(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0002(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0003(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0006(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0003_0006(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0001(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0003(device->vk_device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0007(device->vk_device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0003(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0000(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0001(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0002(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0003(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0006(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0003_0006(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0001(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0003(physical, device));
+				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);
@@ -257,6 +257,8 @@ namespace f3d {
 				}
 				else {
 					std::cout << "Unknown combination: " <<  std::hex << mask.mask << std::endl;
+					prog = getProgram(0x0001000000000000);
+					prog->drawToCommandBuffer(cmd, mesh, *scene);
 				}
 			}
 		}

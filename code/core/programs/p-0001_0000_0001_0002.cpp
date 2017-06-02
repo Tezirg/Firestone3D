@@ -3,10 +3,10 @@
 namespace f3d {
 	namespace core {
 		namespace prog {
-			Program_0001_0000_0001_0002::Program_0001_0000_0001_0002(VkDevice device) : Program::Program(device, 
-				{	F3D_COLOR_DIFFUSE, F3D_TEXTURE_DIFFUSE,
-					F3D_LIGHT_UNDEFINED, F3D_SHADING_FLAT }
-			) {	}
+			Program_0001_0000_0001_0002::Program_0001_0000_0001_0002(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device) : 
+				Program::Program(device->vk_device, { F3D_COLOR_DIFFUSE, F3D_TEXTURE_DIFFUSE, F3D_LIGHT_UNDEFINED, F3D_SHADING_FLAT }),
+				DescriptorContainer::DescriptorContainer(phys, device) {
+			}
 
 			Program_0001_0000_0001_0002::~Program_0001_0000_0001_0002() {
 				std::cout << "Destructor: " << __FILE__ << std::endl;
