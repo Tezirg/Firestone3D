@@ -7,6 +7,7 @@ namespace f3d {
 		}
 
 		Light::~Light() {
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		float					Light::getAngleInnerCone() const { return _inner_cone; }

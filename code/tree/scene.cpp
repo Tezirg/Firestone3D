@@ -9,6 +9,13 @@ namespace f3d {
 		}
 
 		Scene::~Scene() {
+			for (auto mat = _materials.begin(); mat != _materials.end(); ++mat)
+				delete *mat;
+			for (auto obj = _objects.begin(); obj != _objects.end(); ++obj)
+				delete *obj;
+			for (auto light = _lights.begin(); light != _lights.end(); ++light)
+				delete *light;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		std::shared_ptr<f3d::tree::Camera>&				Scene::getCamera() {

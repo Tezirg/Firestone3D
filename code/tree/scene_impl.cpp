@@ -188,8 +188,8 @@ namespace f3d {
 			if (texture != nullptr)
 				mat->addTexture(texture);
 
-			mat->updateAttribute();
-			mat->updateDescriptorSet();
+			mat->writeAttribute();
+			mat->writeDescriptorSet();
 
 			return mat;
 		}

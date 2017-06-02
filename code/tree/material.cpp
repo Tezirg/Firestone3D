@@ -10,6 +10,9 @@ namespace f3d {
 		}
 
 		Material::~Material() {
+			for (auto text = _textures.begin(); text != _textures.end(); ++text)
+				delete text->second;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		const std::string&		Material::getName() const {

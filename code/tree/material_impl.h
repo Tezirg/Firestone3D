@@ -28,10 +28,9 @@ namespace f3d {
 			MaterialImpl(const std::string& name, std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
 			virtual ~MaterialImpl();
 
-			void				updateAttribute();
-			void				createAttribute();
+			void				writeAttribute();
+			void				writeDescriptorSet();
 			VkDescriptorSet		getDescriptorSet();
-			void				updateDescriptorSet();
 
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;

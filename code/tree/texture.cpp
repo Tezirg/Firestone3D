@@ -10,6 +10,7 @@ namespace f3d {
 		}
 
 		Texture::~Texture() {
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		uint32_t							Texture::getWidth() const {

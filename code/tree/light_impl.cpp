@@ -16,7 +16,7 @@ namespace f3d {
 			setName(std::string("DefaultLight"));
 			setType(F3D_LIGHT_DIRECTIONAL);
 
-			createAttributeBuffer();
+			createProperties();
 		}
 		
 		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light) : 
@@ -30,21 +30,21 @@ namespace f3d {
 			setColorAmbient(glm::vec3(light->mColorAmbient.r, light->mColorAmbient.g, light->mColorAmbient.b));
 			setColorDiffuse(glm::vec3(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b));
 			setColorSpecular(glm::vec3(light->mColorSpecular.r, light->mColorSpecular.g, light->mColorSpecular.b));
-			setDirection(glm::vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z));// From the top
+			setDirection(glm::vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z));
 			setName(std::string(light->mName.C_Str()));
 			setPosition(glm::vec3(light->mPosition.x, light->mPosition.y, light->mPosition.z));
 			setType(F3D_LIGHT_DIRECTIONAL);
 
-			createAttributeBuffer();
+			createProperties();
 		}
 
 		LightImpl::~LightImpl() {
-			std::cout << "Destructor: " << __FILE__ << std::endl;
 			if (_buffer != nullptr)
 				delete[] _buffer;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		void						LightImpl::createAttributeBuffer() {
+		void						LightImpl::createProperties() {
 			_buffer_size = (sizeof(float) * 4) * 5; //vec4 attributes
 			_buffer_size += sizeof(float) * 5; //float attributes
 			_buffer_size += sizeof(uint32_t); //uint type
@@ -54,7 +54,7 @@ namespace f3d {
 			F3D_ASSERT(_buffer != nullptr, "Allocating light buffer failed");
 		}
 
-		void					LightImpl::updateAttributeBuffer() {
+		void					LightImpl::updateProperties() {
 			char				*pData = _buffer;
 
 			std::memcpy(&pData[0], glm::value_ptr(_position), 4 * sizeof(float)); //vec4 position
@@ -72,9 +72,10 @@ namespace f3d {
 			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_type, sizeof(float)); //uint type
 		}
 
-		bool								LightImpl::getAttributeBuffer(void **buf, uint32_t& size) {
+		bool								LightImpl::getProperties(void **buf, uint32_t& size) {
 			if (_buffer == nullptr || _buffer_size == 0)
 				return false;
+			updateProperties();
 			*buf = _buffer;
 			size = _buffer_size;
 			return true;
