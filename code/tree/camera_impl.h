@@ -11,32 +11,28 @@
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 #include "core/device.h"
+#include "core/descriptor_container.h"
+#include "core/attribute_container.h"
 #include "tree/camera.h"
 
 namespace f3d {
 	namespace tree {
-		
-		class F3D_API CameraImpl final : public Camera {
+		class F3D_API CameraImpl final : 
+			public Camera,
+			protected f3d::core::DescriptorContainer,
+			protected f3d::core::AttributeContainer {
 		public:
 			CameraImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
 			~CameraImpl();
 
-			void				updateAttribute();
-			void				createAttribute();
+			void				writeAttribute();
 			VkDescriptorSet		getDescriptorSet();
-			void				updateDescriptorSet();
+			void				writeDescriptorSet();
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
-			std::shared_ptr<aiCamera>					_ai_camera;
-
-			VkBuffer									_buffer;
-			VkDeviceMemory								_memory;
-			VkDescriptorSetLayout						_desc_layout;
-			VkDescriptorPool							_desc_pool;
-			VkDescriptorSet								_descriptor;
 		};
-	}
-}
+	} // tree::
+} // f3d::
 
 #endif

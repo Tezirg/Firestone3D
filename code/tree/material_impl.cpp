@@ -11,8 +11,6 @@ namespace f3d {
 
 			DescriptorContainer::addDescriptor(2);
 			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-			_desc_layout = DescriptorContainer::getDescriptorLayout(2);
-			_descriptor = DescriptorContainer::getDescriptorSet(2);
 		
 			//Push default colors values
 			_colors[F3D_COLOR_AMBIENT] = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -29,7 +27,6 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-
 		void					MaterialImpl::writeAttribute() {
 			char				pData[6 * 4 * sizeof(float) + sizeof(float)];
 
@@ -44,7 +41,7 @@ namespace f3d {
 		}
 
 		VkDescriptorSet							MaterialImpl::getDescriptorSet() {
-			return _descriptor;
+			return DescriptorContainer::getDescriptorSet(2);
 		}
 
 		void									MaterialImpl::writeDescriptorSet() {
@@ -54,7 +51,7 @@ namespace f3d {
 			//Bind buffer with this descriptor set
 			std::memset(&pWrites, 0, sizeof(VkWriteDescriptorSet));
 			pWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			pWrites.dstSet = _descriptor;
+			pWrites.dstSet = DescriptorContainer::getDescriptorSet(2);
 			pWrites.descriptorCount = 1;
 			pWrites.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			pWrites.pBufferInfo = &buffer_info;
@@ -68,6 +65,5 @@ namespace f3d {
 				t->updateDescriptorSet();
 			}
 		}
-
-	}
-}
+	} // tree::
+} // f3d::

@@ -35,13 +35,6 @@ namespace f3d {
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
-
-			VkBuffer									_buffer;
-			VkDeviceMemory								_memory;
-			VkDescriptorSetLayout						_desc_layout;
-			VkDescriptorPool							_desc_pool;
-			VkDescriptorSet								_descriptor;
-
 		};
 	}// tree::
 }// f3d::

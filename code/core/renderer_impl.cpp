@@ -65,7 +65,7 @@ namespace f3d {
 			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
 			f3d::tree::TextureImpl *	texture = nullptr;
 
-			cam->updateDescriptorSet();
+			cam->writeDescriptorSet();
 
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
@@ -91,7 +91,7 @@ namespace f3d {
 
 			for (auto it = scene_impl->getObjects().begin(); it != scene_impl->getObjects().end(); ++it)
 				scene_impl->recursive_uniformUpdate((*it)->getRoot());
-			cam->updateAttribute();
+			cam->writeAttribute();
 
 			win->swapBuffers();
 

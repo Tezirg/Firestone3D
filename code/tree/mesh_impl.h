@@ -12,11 +12,16 @@
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 #include "core/device.h"
+#include "core/descriptor_container.h"
+#include "core/attribute_container.h"
 #include "tree/mesh.h"
 
 namespace f3d {
 	namespace tree {
-		class F3D_API MeshImpl : public Mesh {
+		class F3D_API MeshImpl : 
+			public Mesh, 
+			protected f3d::core::DescriptorContainer,
+			protected f3d::core::AttributeContainer {
 		public:
 			MeshImpl(std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device);
 			~MeshImpl();
@@ -30,33 +35,10 @@ namespace f3d {
 
 			VkDescriptorSet			getDescriptorSet();
 			bool					updateDescriptorSet(glm::mat4& model);
-		private:
-			bool					createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer);
-			bool					updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size);
-			bool					deleteAttribute(VkDeviceMemory& mem, VkBuffer& buffer);
+
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_phys;
 			std::shared_ptr<f3d::core::Device>			_device;
-
-
-			VkDescriptorPool		_uniform_pool;
-			VkDescriptorSetLayout	_uniform_layout;
-			VkDescriptorSet			_uniform_set;
-			VkBuffer				_uniform_buf;
-			VkDeviceMemory			_uniform_mem;
-
-
-			VkBuffer				_vertex_buf;
-			VkDeviceMemory			_vertex_mem;
-
-			VkBuffer				_normal_buf;
-			VkDeviceMemory			_normal_mem;
-			
-			VkBuffer				_index_buf;
-			VkDeviceMemory			_index_mem;
-
-			VkBuffer				_uv_buf;
-			VkDeviceMemory			_uv_mem;
 		};
 	}
 }

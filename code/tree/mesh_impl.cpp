@@ -4,55 +4,17 @@ namespace f3d {
 	namespace tree{
 		MeshImpl::MeshImpl(std::shared_ptr<f3d::core::PhysicalDevice>& phys, 
 							std::shared_ptr<f3d::core::Device>& device) :
+			DescriptorContainer::DescriptorContainer(phys, device),
+			AttributeContainer::AttributeContainer(phys, device),
 			_phys(phys), _device(device) {
 
-			createAttribute(_uniform_mem, sizeof(float) * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, _uniform_buf);
+			AttributeContainer::addAttribute(0, sizeof(float) * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			DescriptorContainer::addDescriptor(5);
+			DescriptorContainer::addDescriptorBinding(5, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 
-
-			VkResult							r;
-			VkDescriptorPoolCreateInfo			poolinfo;
-			VkDescriptorPoolSize				poolsize;
-			VkDescriptorSetLayoutBinding		uniforminfo;
-			VkDescriptorSetLayoutCreateInfo		layoutinfo;
-			VkDescriptorSetAllocateInfo			setinfo;
-
-			std::memset(&poolsize, 0, sizeof(VkDescriptorPoolSize));
-			poolsize.descriptorCount = 1;
-			poolsize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-
-
-			std::memset(&poolinfo, 0, sizeof(VkDescriptorPoolCreateInfo));
-			poolinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			poolinfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-			poolinfo.maxSets = 1;
-			poolinfo.poolSizeCount = 1;
-			poolinfo.pPoolSizes = &poolsize;
-			r = vkCreateDescriptorPool(device->vk_device, &poolinfo, NULL, &_uniform_pool);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Mesh descriptor pool allocate fail");
-
-
-			std::memset(&uniforminfo, 0, sizeof(VkDescriptorSetLayoutBinding));
-			uniforminfo.binding = 0;
-			uniforminfo.descriptorCount = 1;
-			uniforminfo.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			uniforminfo.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-			std::memset(&layoutinfo, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-			layoutinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			layoutinfo.bindingCount = 1;
-			layoutinfo.pBindings = &uniforminfo;
-			r = vkCreateDescriptorSetLayout(_device->vk_device, &layoutinfo, NULL, &_uniform_layout);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Create mesh desc set layout failed");
-
-			std::memset(&setinfo, 0, sizeof(VkDescriptorSetAllocateInfo));
-			setinfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			setinfo.descriptorPool = _uniform_pool;
-			setinfo.descriptorSetCount = 1;
-			setinfo.pSetLayouts = &_uniform_layout;
-			r = vkAllocateDescriptorSets(_device->vk_device, &setinfo, &_uniform_set);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Mesh uniform descriptor set allocate fail");
 
 			VkDescriptorBufferInfo	bufinfo;
-			bufinfo.buffer = _uniform_buf;
+			bufinfo.buffer = AttributeContainer::getAttributeBuffer(0);
 			bufinfo.offset = 0;
 			bufinfo.range = VK_WHOLE_SIZE;
 
@@ -61,7 +23,7 @@ namespace f3d {
 			desc_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			desc_write.descriptorCount = 1;
 			desc_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			desc_write.dstSet = _uniform_set;
+			desc_write.dstSet = DescriptorContainer::getDescriptorSet(5);
 			desc_write.dstBinding = 0;
 			desc_write.pBufferInfo = &bufinfo;
 			vkUpdateDescriptorSets(_device->vk_device, 1, &desc_write, 0, NULL);
@@ -70,102 +32,42 @@ namespace f3d {
 
 
 		MeshImpl::~MeshImpl() {
-			vkFreeDescriptorSets(_device->vk_device, _uniform_pool, 1, &_uniform_set);
-			vkDestroyDescriptorPool(_device->vk_device, _uniform_pool, nullptr);
-			vkDestroyDescriptorSetLayout(_device->vk_device, _uniform_layout, nullptr);
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 		
 		VkDescriptorSet			MeshImpl::getDescriptorSet() {
-			return _uniform_set;
+			return DescriptorContainer::getDescriptorSet(5);
 		}
 
 		bool					MeshImpl::updateDescriptorSet(glm::mat4& model) {
-			return updateAttribute(glm::value_ptr(model), _uniform_mem, sizeof(float) * 16);
+			return AttributeContainer::updateAttribute(0, glm::value_ptr(model), 0, sizeof(float) * 16);
 		}
 
-		VkBuffer				MeshImpl::getVertexBuffer() { return _vertex_buf;  }
-		VkBuffer				MeshImpl::getNormalBuffer() { return _normal_buf;  }
-		VkBuffer				MeshImpl::getIndexBuffer() { return _index_buf; }
-		VkBuffer				MeshImpl::getUvBuffer() { return _uv_buf; }
+		VkBuffer				MeshImpl::getVertexBuffer() { return AttributeContainer::getAttributeBuffer(1);  }
+		VkBuffer				MeshImpl::getNormalBuffer() { return AttributeContainer::getAttributeBuffer(2);  }
+		VkBuffer				MeshImpl::getIndexBuffer() { return AttributeContainer::getAttributeBuffer(4); }
+		VkBuffer				MeshImpl::getUvBuffer() { return AttributeContainer::getAttributeBuffer(3); }
 
 		bool			MeshImpl::makeRenderReady() {
-			createAttribute(_vertex_mem, _vertices.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _vertex_buf);
-			updateAttribute(_vertices.data(), _vertex_mem, _vertices.size() * sizeof(float));
+			AttributeContainer::addAttribute(1, _vertices.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+			AttributeContainer::updateAttribute(1, _vertices.data(), 0, _vertices.size() * sizeof(float));
 			_vertices.clear();
 
-			createAttribute(_normal_mem, _normals.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _normal_buf);
-			updateAttribute(_normals.data(), _normal_mem, _normals.size() * sizeof(float));
+			AttributeContainer::addAttribute(2, _normals.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+			AttributeContainer::updateAttribute(2, _normals.data(), 0, _normals.size() * sizeof(float));
 			_normals.clear();
 
 			if (_uvs.empty() == false) {
-				createAttribute(_uv_mem, _uvs.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, _uv_buf);
-				updateAttribute(_uvs.data(), _uv_mem, _uvs.size() * sizeof(float));
+				AttributeContainer::addAttribute(3, _uvs.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+				AttributeContainer::updateAttribute(3, _uvs.data(), 0, _uvs.size() * sizeof(float));
 				_uvs.clear();
 			}
 
-			createAttribute(_index_mem, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, _index_buf);
-			updateAttribute(_indices.data(), _index_mem, _indices.size() * sizeof(uint32_t));
+			AttributeContainer::addAttribute(4, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+			AttributeContainer::updateAttribute(4, _indices.data(), 0, _indices.size() * sizeof(uint32_t));
 			_indices.clear();
 
 			_ready = true;
-			return true;
-		}
-
-		bool						MeshImpl::createAttribute(VkDeviceMemory& mem, uint32_t mem_size, VkBufferUsageFlags usage, VkBuffer& buffer) {
-			VkResult				r;
-			VkBufferCreateInfo		buff_info;
-			VkMemoryRequirements	mem_reqs;
-			VkMemoryAllocateInfo	mem_info;
-
-			std::memset(&buff_info, 0, sizeof(VkBufferCreateInfo));
-			buff_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			buff_info.usage = usage;
-			buff_info.size = mem_size;
-			r = vkCreateBuffer(_device->vk_device, &buff_info, NULL, &buffer);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Creation vk buffer failed");
-
-			vkGetBufferMemoryRequirements(_device->vk_device, buffer, &mem_reqs);
-			std::memset(&mem_info, 0, sizeof(VkMemoryAllocateInfo));
-			mem_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			mem_info.memoryTypeIndex = _phys->getMemoryIndex(mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-			mem_info.allocationSize = mem_reqs.size;
-			r = vkAllocateMemory(_device->vk_device, &mem_info, NULL, &mem);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Buffer mem allocation failed");
-
-			r = vkBindBufferMemory(_device->vk_device, buffer, mem, 0);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Bind memory to buffer fail");
-			return true;
-
-		}
-
-		bool					MeshImpl::deleteAttribute(VkDeviceMemory& mem, VkBuffer& buffer) {
-			vkDestroyBuffer(_device->vk_device, buffer, NULL);
-			vkFreeMemory(_device->vk_device, mem, NULL);
-			return true;
-		}
-
-		bool					MeshImpl::updateAttribute(void *data, VkDeviceMemory& mem, uint64_t size) {
-			VkResult			r;
-			void				*pData;
-			const uint32_t		step = 1024 * 1024 * 4;
-
-			// /*
-			for (uint32_t i = 0; i < size; i += step) {
-				VkDeviceSize mapsize = size >(i + step) ? step : (size - i);
-				r = vkMapMemory(_device->vk_device, mem, i, mapsize, 0, &pData);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
-				std::memcpy(pData, (char *)data + i, mapsize);
-				vkUnmapMemory(_device->vk_device, mem);
-			}
-			// */
-
-			/*
-			r = vkMapMemory(_device->vk_device, mem, 0, size, 0, (void **)&pData);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
-			std::memcpy(pData, data, size);
-			vkUnmapMemory(_device->vk_device, mem);
-			// */
 			return true;
 		}
 	}
