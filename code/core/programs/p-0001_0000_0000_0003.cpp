@@ -98,55 +98,19 @@ namespace f3d {
 			void									Program_0001_0000_0000_0003::initVkLayout() 
 			{
 				VkResult							r;
-				VkDescriptorSetLayoutBinding		layout_bindings[3];
-				VkDescriptorSetLayoutCreateInfo		desc_layout_info;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
-
-				//layout (set = 0, binding = 0) uniform camera;
-				std::memset(&layout_bindings[0], 0, sizeof(VkDescriptorSetLayoutBinding));
-				layout_bindings[0].binding = 0;
-				layout_bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				layout_bindings[0].descriptorCount = 1;
-				layout_bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings[0].pImmutableSamplers = NULL;
-
-				//layout (set = 1, binding = 0) uniform model;
-				layout_bindings[1].binding = 0;
-				layout_bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				layout_bindings[1].descriptorCount = 1;
-				layout_bindings[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings[1].pImmutableSamplers = NULL;
-
-				//layout (set = 2, binding = 0) uniform material;
-				layout_bindings[2].binding = 0;
-				layout_bindings[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				layout_bindings[2].descriptorCount = 1;
-				layout_bindings[2].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-				layout_bindings[2].pImmutableSamplers = NULL;
+				DescriptorContainer::addDescriptor(0); //layout (set = 0, binding = 0) uniform camera;
+				DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+				DescriptorContainer::addDescriptor(1); //layout (set = 1, binding = 0) uniform model;
+				DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+				DescriptorContainer::addDescriptor(2); //layout (set = 2, binding = 0) uniform material;
+				DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 
 				vk_desc_layout = new VkDescriptorSetLayout[3];
-
-				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info.bindingCount = 1;
-				desc_layout_info.pBindings = &layout_bindings[0];
-				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[0]);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[0] failed");
-				
-				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info.bindingCount = 1;
-				desc_layout_info.pBindings = &layout_bindings[1];
-				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[1]);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[1] failed");
-
-				std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-				desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				desc_layout_info.bindingCount = 1;
-				desc_layout_info.pBindings = &layout_bindings[2];
-				r = vkCreateDescriptorSetLayout(vk_device, &desc_layout_info, NULL, &vk_desc_layout[2]);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Program_0001_0000_0000_0003 Create descriptor set layout[2] failed");
+				vk_desc_layout[0] = DescriptorContainer::getDescriptorLayout(0);
+				vk_desc_layout[1] = DescriptorContainer::getDescriptorLayout(1);
+				vk_desc_layout[2] = DescriptorContainer::getDescriptorLayout(2);
 
 				std::memset(&pipe_layout_info, 0, sizeof(VkPipelineLayoutCreateInfo));
 				pipe_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

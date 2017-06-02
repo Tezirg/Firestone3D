@@ -101,9 +101,9 @@ namespace f3d {
 				VkResult							r;
 				VkPipelineLayoutCreateInfo			pipe_layout_info;
 
-				DescriptorContainer::addDescriptor(0); //  uniform camera;
+				DescriptorContainer::addDescriptor(0); //layout (set = 0, binding = 0) uniform camera;
 				DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-				DescriptorContainer::addDescriptor(1); //  uniform model;
+				DescriptorContainer::addDescriptor(1); //layout (set = 1, binding = 0) uniform model;
 				DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 
 				vk_desc_layout = new VkDescriptorSetLayout[2];
