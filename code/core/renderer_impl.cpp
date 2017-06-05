@@ -62,10 +62,11 @@ namespace f3d {
 
 		void							RendererImpl::computeCommandBuffers(std::shared_ptr<f3d::tree::Scene> scene) {
 			WindowImpl *				win = dynamic_cast<WindowImpl *>(_window.get());
+			f3d::tree::SceneImpl*		sc = dynamic_cast<f3d::tree::SceneImpl *>(scene.get());
 			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
 			f3d::tree::TextureImpl *	texture = nullptr;
 
-			cam->writeDescriptorSet();
+			sc->writeDescriptorSet();
 
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
@@ -83,16 +84,14 @@ namespace f3d {
 			f3d::tree::TextureImpl *	texture = nullptr;
 			uint32_t					fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
-
 			if (valid_commands == false) {
 				computeCommandBuffers(scene);
 			}
 
-
 			for (auto it = scene_impl->getObjects().begin(); it != scene_impl->getObjects().end(); ++it)
 				scene_impl->recursive_uniformUpdate((*it)->getRoot());
 			cam->writeAttribute();
-
+			scene_impl->writeAttribute();
 			win->swapBuffers();
 
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;

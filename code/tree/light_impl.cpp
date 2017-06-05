@@ -5,22 +5,11 @@ namespace f3d {
 		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device) : 
 			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
 		{
-			//Defaults to directional, white color
-			setAttenuationConstant(1.0);
-			setAttenuationLinear(0.0);
-			setAttenuationQuadratic(0.0);
-			setColorAmbient(glm::vec3(1.0f));
-			setColorDiffuse(glm::vec3(1.0f));
-			setColorSpecular(glm::vec3(1.0f));
-			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
-			setName(std::string("DefaultLight"));
-			setType(F3D_LIGHT_DIRECTIONAL);
-
 			createProperties();
 		}
 		
 		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light) : 
-			_physical(phys), _device(device)
+			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
 		{
 			setAngleInnerCone(light->mAngleInnerCone);
 			setAngleOuterCone(light->mAngleOuterCone);
@@ -38,6 +27,26 @@ namespace f3d {
 			createProperties();
 		}
 
+		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, const f3d::tree::Light& oth) :
+			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
+		{
+			setName(oth.getName());
+			setType(oth.getType());
+			setAngleInnerCone(oth.getAngleInnerCone());
+			setAngleOuterCone(oth.getAngleOuterCone());
+			setAttenuationConstant(oth.getAttenuationConstant());
+			setAttenuationLinear(oth.getAttenuationLinear());
+			setAttenuationQuadratic(oth.getAttenuationQuadratic());
+			setColorAmbient(oth.getColorAmbient());
+			setColorDiffuse(oth.getColorDiffuse());
+			setColorSpecular(oth.getColorSpecular());
+			setDirection(oth.getDirection());
+			setPosition(oth.getPosition());
+
+			createProperties();
+		}
+
+
 		LightImpl::~LightImpl() {
 			if (_buffer != nullptr)
 				delete[] _buffer;
@@ -45,13 +54,13 @@ namespace f3d {
 		}
 
 		void						LightImpl::createProperties() {
-			_buffer_size = (sizeof(float) * 4) * 5; //vec4 attributes
+			_buffer_size = sizeof(float) * 4 * 5; //vec4 attributes
 			_buffer_size += sizeof(float) * 5; //float attributes
 			_buffer_size += sizeof(uint32_t); //uint type
 
 			_buffer = new char[_buffer_size];
-
 			F3D_ASSERT(_buffer != nullptr, "Allocating light buffer failed");
+			std::memset(_buffer, 0, _buffer_size);
 		}
 
 		void					LightImpl::updateProperties() {
@@ -69,7 +78,7 @@ namespace f3d {
 			std::memcpy(&pData[5 * 4 * sizeof(float) + 3 * sizeof(float)], &_linear, sizeof(float)); //float linear
 			std::memcpy(&pData[5 * 4 * sizeof(float) + 4 * sizeof(float)], &_quadratic, sizeof(float)); //float quadratic
 
-			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_type, sizeof(float)); //uint type
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_type, sizeof(uint32_t)); //uint type
 		}
 
 		bool								LightImpl::getProperties(void **buf, uint32_t& size) {

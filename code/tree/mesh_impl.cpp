@@ -27,7 +27,6 @@ namespace f3d {
 			desc_write.dstBinding = 0;
 			desc_write.pBufferInfo = &bufinfo;
 			vkUpdateDescriptorSets(_device->vk_device, 1, &desc_write, 0, NULL);
-
 		}
 
 

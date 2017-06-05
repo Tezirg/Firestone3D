@@ -35,9 +35,12 @@ namespace f3d {
 			SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device);
 			~SceneImpl();
 
+			void						addLight(f3d::tree::Light* light);
+
+			void						writeDescriptorSet();
+			void						writeAttribute();
 			VkDescriptorSet				getWorldDescriptorSet();
 			VkDescriptorSet				getLightsDescriptorSet();
-
 
 			void						loadFromFile(const std::string& path, const std::string& file);
 			void						recursive_uniformUpdate(f3d::tree::Node* f3d_node);

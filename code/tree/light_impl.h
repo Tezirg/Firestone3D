@@ -20,6 +20,7 @@ namespace f3d {
 		class F3D_API LightImpl : public Light {
 		public:
 			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, const f3d::tree::Light& oth);
 			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light);
 			~LightImpl();
 

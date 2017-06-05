@@ -3,7 +3,20 @@
 namespace f3d {
 	namespace tree {
 
-		Light::Light()  {
+		Light::Light()  
+		{ 
+			// Defaults to directional, white color, from the top
+			setAngleInnerCone(0.0);
+			setAngleOuterCone(0.0);
+			setAttenuationConstant(1.0);
+			setAttenuationLinear(0.0);
+			setAttenuationQuadratic(0.0);
+			setColorAmbient(glm::vec3(1.0f)); // White
+			setColorDiffuse(glm::vec3(1.0f)); // White
+			setColorSpecular(glm::vec3(1.0f)); // White
+			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
+			setName(std::string("DefaultLight"));
+			setType(F3D_LIGHT_DIRECTIONAL); // Directional
 		}
 
 		Light::~Light() {

@@ -4,6 +4,7 @@
 void		loadScene(f3d::Firestone& f3d, void * arg) {
 	std::string path((char *)arg);
 	std::string file((char *)arg);
+	f3d::tree::Light		l;
 
 	path = path.substr(0, path.find_last_of("/\\") + 1);
 	file = file.substr(file.find_last_of("/\\") + 1);
@@ -20,6 +21,11 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
 	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+
+	l.setName("Test light");
+	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
+	l.setPosition(glm::vec3(0.0, 0.0, -42.0));
+	f3d.scene->addLight(&l);
 }
 
 static float distance = 400.0f;
