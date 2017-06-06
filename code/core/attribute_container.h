@@ -21,11 +21,13 @@ namespace f3d {
 			bool			updateAttribute(uint32_t attrIndex, void *data, uint32_t offset, uint32_t size);
 			VkBuffer		getAttributeBuffer(uint32_t attrIndex);
 			VkDeviceMemory	getAttributeMemory(uint32_t attrIndex);
+			uint32_t		getAttributeSize(uint32_t attrIndex) const;
+			uint32_t		getAttributeSizeStd140(uint32_t attrIndex) const;
 		private:
 			std::shared_ptr<f3d::core::PhysicalDevice>	_physical;
 			std::shared_ptr<f3d::core::Device>			_device;
 			std::map<uint32_t, VkDeviceMemory>			_memory;
-			std::map<uint32_t, VkBuffer>				_buffer;
+			std::map<uint32_t, VkBuffer>				_buffer;			
 			std::map<uint32_t, uint32_t>				_size;
 		};
 	} //core::

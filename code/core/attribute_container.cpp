@@ -40,19 +40,24 @@ namespace f3d {
 			r = vkBindBufferMemory(_device->vk_device, _buffer[attrIndex], _memory[attrIndex], 0);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Bind memory to buffer fail");
 
+			//Save this attribute size
+			_size[attrIndex] = size;
+
 			return true;
 		}
 
 		bool				AttributeContainer::removeAttribute(uint32_t attrIndex) {
 			auto			b = _buffer.find(attrIndex);
 			auto			m = _memory.find(attrIndex);
+			auto			s = _size.find(attrIndex);
 
-			if (b == _buffer.end() || m == _memory.end())
+			if (b == _buffer.end() || m == _memory.end() || s == _size.end())
 				return false;
 			vkDestroyBuffer(_device->vk_device, b->second, nullptr);
 			vkFreeMemory(_device->vk_device, m->second, nullptr);
 			_buffer.erase(b);
 			_memory.erase(m);
+			_size.erase(s);
 			return true;
 		}
 
@@ -90,11 +95,29 @@ namespace f3d {
 				return VK_NULL_HANDLE;
 			return it->second;
 		}
+
 		VkDeviceMemory			AttributeContainer::getAttributeMemory(uint32_t attrIndex) {
 			auto it = _memory.find(attrIndex);
 			if (it == _memory.end())
 				return VK_NULL_HANDLE;
 			return it->second;
 		}
+
+		uint32_t		AttributeContainer::getAttributeSize(uint32_t attrIndex) const {
+			auto it = _size.find(attrIndex);
+			if (it == _size.end())
+				return 0;
+			return it->second;
+		}
+
+		uint32_t		AttributeContainer::getAttributeSizeStd140(uint32_t attrIndex) const {
+			auto it = _size.find(attrIndex);
+			if (it == _size.end())
+				return 0;
+			uint32_t padded = it->second;
+			padded += it->second % (sizeof(float) * 4); // std140 alignement on vec4 size
+			return padded;
+		}
+
 	}// core::
 } //f3d::
