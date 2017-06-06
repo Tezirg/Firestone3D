@@ -3,8 +3,9 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 layout(set = 0, binding = 0) uniform camera_s {
-	mat4 	VP;
-}   Camera;
+	mat4	view;
+	mat4	perspective;
+}	Camera;
 
 layout(set = 1, binding = 0) uniform model_s {
 	mat4	M;
@@ -17,7 +18,7 @@ layout(location = 0) out vec3 color;
 
 void main() 
 {
-	gl_Position = Camera.VP * Model.M * position;
+	gl_Position = Camera.perspective * Camera.view * Model.M * position;
 	
 	color = vec3(1.000, 0.078, 0.576); //Deep pink
 	

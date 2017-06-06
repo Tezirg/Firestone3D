@@ -12,7 +12,7 @@ namespace f3d {
 			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
 			lookAt(glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			
-			AttributeContainer::addAttribute(0, 16 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			AttributeContainer::addAttribute(0, 32 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 			DescriptorContainer::addDescriptor(0);
 			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 			
@@ -24,17 +24,18 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		void					CameraImpl::writeAttribute() {
-			AttributeContainer::updateAttribute(0, glm::value_ptr(_VP), 0, 16 * sizeof(float));
+		void								CameraImpl::writeAttribute() {
+			AttributeContainer::updateAttribute(0, glm::value_ptr(_view), 0, 16 * sizeof(float));
+			AttributeContainer::updateAttribute(0, glm::value_ptr(_perspective), 16 * sizeof(float), 16 * sizeof(float));
 		}
 
-		VkDescriptorSet							CameraImpl::getDescriptorSet() {
+		VkDescriptorSet						CameraImpl::getDescriptorSet() {
 			return DescriptorContainer::getDescriptorSet(0);
 		}
 
-		void									CameraImpl::writeDescriptorSet() {
-			VkWriteDescriptorSet				pWrites;
-			VkDescriptorBufferInfo				buffer_info;
+		void								CameraImpl::writeDescriptorSet() {
+			VkWriteDescriptorSet			pWrites;
+			VkDescriptorBufferInfo			buffer_info;
 
 			//Bind camera buffer with this camera descriptor set
 			std::memset(&pWrites, 0, sizeof(VkWriteDescriptorSet));

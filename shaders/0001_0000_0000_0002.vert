@@ -3,7 +3,8 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 layout(set = 0, binding = 0) uniform camera_s {
-	mat4 	VP;
+	mat4	view;
+	mat4	perspective;
 }   Camera;
 
 layout(set = 1, binding = 0) uniform model_s {
@@ -25,7 +26,7 @@ layout(location = 0) out vec3 color;
 
 void main() 
 {
-	gl_Position = Camera.VP * Model.M * position;
+	gl_Position = Camera.perspective * Camera.view * Model.M * position;
 	
 	color = vec3(Material.diffuse_color);
 	
