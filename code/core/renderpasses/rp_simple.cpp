@@ -27,20 +27,21 @@ namespace f3d {
 
 				std::list<f3d::core::Program *> progs;
 
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0000_0003(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0000(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0001(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0002(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0003(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0001_0006(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0003_0006(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0001(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0003(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
-				progs.push_front(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0003_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0003(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);
@@ -246,12 +247,11 @@ namespace f3d {
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
 				mask.fields.colors = material->colorFlags();
 				mask.fields.textures = material->textureFlags();
-				mask.fields.lights = 0;
+				mask.fields.lights = scene->getLightMask();
 				mask.fields.shading = F3D_SHADING_FLAT;
 
 				std::cout << m.getMaterialName() << std::endl;
 				std::cout << std::hex << mask.fields.colors << std::endl;
-				mask.mask = 0x0001000100000000;
 				auto prog = getProgram(mask.mask);
 				if (prog != nullptr) {
 					std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;

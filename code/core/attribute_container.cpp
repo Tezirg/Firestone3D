@@ -65,19 +65,22 @@ namespace f3d {
 			if (m == _memory.end())
 				return false;
 
-			for (uint32_t i = 0; i < size; i += step) {
-				VkDeviceSize mapsize = size > (i + step) ? step : (size - i);
-				r = vkMapMemory(_device->vk_device, m->second, i, mapsize, 0, &pData);
-				F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map mesh buffer memory");
-				std::memcpy(pData, (char *)data + i, mapsize);
+			if (size <= step) {
+				r = vkMapMemory(_device->vk_device, m->second, offset, size, 0, (void **)&pData);
+				F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map attribute memory");
+				std::memcpy(pData, data, size);
 				vkUnmapMemory(_device->vk_device, m->second);
 			}
-			/*
-			r = vkMapMemory(_device->vk_device, m->second, offset, size, 0, (void **)&pData);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map attribute memory");
-			std::memcpy(pData, data, size);
-			vkUnmapMemory(_device->vk_device, m->second);
-			// */
+			else {
+				for (uint32_t i = 0; i < size; i += step) {
+					VkDeviceSize mapsize = size > (i + step) ? step : (size - i);
+					r = vkMapMemory(_device->vk_device, m->second, offset + i, mapsize, 0, &pData);
+					F3D_ASSERT_VK(r, VK_SUCCESS, "Can't map attribute memory");
+					std::memcpy(pData, (char *)data + i, mapsize);
+					vkUnmapMemory(_device->vk_device, m->second);
+				}
+			}
+
 			return true;
 		}
 

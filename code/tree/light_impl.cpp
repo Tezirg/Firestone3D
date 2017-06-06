@@ -22,7 +22,7 @@ namespace f3d {
 			setDirection(glm::vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z));
 			setName(std::string(light->mName.C_Str()));
 			setPosition(glm::vec3(light->mPosition.x, light->mPosition.y, light->mPosition.z));
-			setType(F3D_LIGHT_DIRECTIONAL);
+			ASSIMP_LIGHT_2_F3D(light->mType, _type);
 
 			createProperties();
 		}
@@ -57,7 +57,9 @@ namespace f3d {
 			_buffer_size = sizeof(float) * 4 * 5; //vec4 attributes
 			_buffer_size += sizeof(float) * 5; //float attributes
 			_buffer_size += sizeof(uint32_t); //uint type
-
+			
+			 //Adjust buffer size to align on 4N
+			_buffer_size += _buffer_size % (sizeof(float) * 4);
 			_buffer = new char[_buffer_size];
 			F3D_ASSERT(_buffer != nullptr, "Allocating light buffer failed");
 			std::memset(_buffer, 0, _buffer_size);

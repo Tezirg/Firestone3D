@@ -34,6 +34,7 @@ namespace f3d {
 
 			virtual void									addLight(f3d::tree::Light* light);
 			void											removeLight(f3d::tree::Light* light);
+			uint32_t										getLightMask() const;
 
 			virtual void									addMaterial(f3d::tree::Material* material);
 			void											removeMaterial(f3d::tree::Material* material);

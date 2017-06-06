@@ -11,10 +11,10 @@ namespace f3d {
 			_matrix.push(glm::mat4());
 
 			DescriptorContainer::addDescriptor(0);
-			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t)) * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) + 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 		}
 
 		SceneImpl::~SceneImpl() {
@@ -24,6 +24,7 @@ namespace f3d {
 		void				SceneImpl::addLight(f3d::tree::Light *l) {
 			f3d::tree::LightImpl	*li = new f3d::tree::LightImpl(_physical, _device, *l);
 		
+			std::cout << l->getName() << std::endl;
 			//Call inherited adder with forced light implementation instance
 			Scene::addLight(li);
 		}
@@ -223,7 +224,7 @@ namespace f3d {
 			unsigned int  							uvindex;
 			float  									blend;
 			aiTextureOp  							op;
-			aiTextureMapMode  						mapmode[3] = { aiTextureMapMode_Wrap,aiTextureMapMode_Wrap,aiTextureMapMode_Wrap };
+			aiTextureMapMode  						mapmode[3];
 
 			f3d::tree::TextureImpl*					texture = nullptr;
 			f3d::eTextureTypeBits					type = F3D_TEXTURE_UNDEFINED;
@@ -232,39 +233,18 @@ namespace f3d {
 			if ((aiRes = aiMaterial->GetTexture(aiType, aiIndex, &aiPath, &mapping, &uvindex, &blend, &op, mapmode)) != AI_SUCCESS)
 				return nullptr;
 
-			type = (aiType == aiTextureType_AMBIENT) ? F3D_TEXTURE_AMBIENT : type;
-			type = (aiType == aiTextureType_DIFFUSE) ? F3D_TEXTURE_DIFFUSE : type;
-			type = (aiType == aiTextureType_SPECULAR) ? F3D_TEXTURE_SPECULAR : type;
-			type = (aiType == aiTextureType_EMISSIVE) ? F3D_TEXTURE_EMISSIVE : type;
-			type = (aiType == aiTextureType_HEIGHT) ? F3D_TEXTURE_HEIGHT : type;
-			type = (aiType == aiTextureType_NORMALS) ? F3D_TEXTURE_NORMALS : type;
-			type = (aiType == aiTextureType_SHININESS) ? F3D_TEXTURE_SHININESS : type;
-			type = (aiType == aiTextureType_OPACITY) ? F3D_TEXTURE_OPACITY : type;
-			type = (aiType == aiTextureType_DISPLACEMENT) ? F3D_TEXTURE_DISPLACEMENT : type;
-			type = (aiType == aiTextureType_LIGHTMAP) ? F3D_TEXTURE_LIGHTMAP : type;
-			type = (aiType == aiTextureType_REFLECTION) ? F3D_TEXTURE_REFLECTION : type;
-			
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Wrap) ? F3D_ADDRESS_REPEAT : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Clamp) ? F3D_ADDRESS_CLAMP_BORDER : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Decal) ? F3D_ADDRESS_CLAMP_EDGE : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Mirror) ? F3D_ADDRESS_MIRROR_REPEAT : address_mode[0];
-
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Wrap) ?  F3D_ADDRESS_REPEAT : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Clamp) ? F3D_ADDRESS_CLAMP_BORDER : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Decal) ? F3D_ADDRESS_CLAMP_EDGE : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Mirror) ? F3D_ADDRESS_MIRROR_REPEAT : address_mode[1];
-
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Wrap) ? F3D_ADDRESS_REPEAT : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Clamp) ? F3D_ADDRESS_CLAMP_BORDER : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Decal) ? F3D_ADDRESS_CLAMP_EDGE : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Mirror) ? F3D_ADDRESS_MIRROR_REPEAT : address_mode[2];
+			ASSIMP_TEXTURE_2_F3D(aiType, type);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[0], address_mode[0]);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[1], address_mode[1]);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[2], address_mode[2]);
 
 			std::string texture_path(path);
 			texture_path.append(aiPath.C_Str());
 
-			std::cout << "Loading texture at " << texture_path << std::endl;
 
 			try {
+				std::cout << "Loading texture at " << texture_path << std::endl;
+
 				Magick::Image	magick_texture(texture_path);
 				magick_texture.magick("RGBA");
 
@@ -311,8 +291,9 @@ namespace f3d {
 			pWrites[0].dstSet = DescriptorContainer::getDescriptorSet(0);
 			pWrites[0].descriptorCount = 1;
 			pWrites[0].dstBinding = 0;
-			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			pWrites[0].pBufferInfo = &buffer_info[0];
+
 			//Bind buffer 1 to binding 1 on this descriptor set
 			std::memset(&pWrites[1], 0, sizeof(VkWriteDescriptorSet));
 			pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -331,11 +312,12 @@ namespace f3d {
 			uint32_t						light_attr_size = 0;
 
 			//Update lights Buffer
-			for (auto it = _lights.begin(); it != _lights.end() && i < 16; ++it) {
+			for (auto it = _lights.begin(); it != _lights.end(); ++it) {
 				f3d::tree::LightImpl * l = dynamic_cast<f3d::tree::LightImpl *>(*it);
 				props = l->getProperties((void **)&b, light_attr_size);
 				AttributeContainer::updateAttribute(0, b, i * light_attr_size, light_attr_size); // Light buffer on binding 0
 				i++;
+				//std::cout << i * light_attr_size << std::endl;
 			}
 			AttributeContainer::updateAttribute(1, (void*)&i, 0, sizeof(uint32_t)); // num lights in binding 1
 		}
@@ -350,6 +332,5 @@ namespace f3d {
 		VkDescriptorSet						SceneImpl::getLightsDescriptorSet() {
 			return DescriptorContainer::getDescriptorSet(0);
 		}
-
 	}
 }

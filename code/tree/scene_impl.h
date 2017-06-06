@@ -24,6 +24,7 @@
 #include "tree/mesh_impl.h"
 #include "tree/material_impl.h"
 #include "tree/texture_impl.h"
+#include "utils/assimp_to_f3d.h"
 
 namespace f3d {
 	namespace tree {

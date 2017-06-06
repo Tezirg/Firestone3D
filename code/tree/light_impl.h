@@ -14,6 +14,7 @@
 #include "core/physical_device.h"
 #include "core/device.h"
 #include "tree/light.h"
+#include "utils/assimp_to_f3d.h"
 
 namespace f3d {
 	namespace tree {
