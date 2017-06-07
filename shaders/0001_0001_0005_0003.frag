@@ -15,7 +15,7 @@ layout(std140, set = 2, binding = 0) buffer light_s {
 	float		quadratic;
 	uint		type;
 }	Light[];
-layout (set = 2, binding = 1) uniform n_light_s {
+layout(set = 2, binding = 1) uniform n_light_s {
 	uint 		value;
 }	n_light;
 layout(set = 3, binding = 0) uniform material_s {
@@ -26,8 +26,11 @@ layout(set = 3, binding = 0) uniform material_s {
 	vec4 		reflective_color;
 	float 		shininess;
 }	Material;
+layout(set = 4, binding = 0) uniform sampler2D ambient_samplerColor;
+layout(set = 5, binding = 0) uniform sampler2D diffuse_samplerColor;
 
-layout(location = 0) in vec4 normal;
+layout(location = 0) in vec2 inUv;
+layout(location = 1) in vec4 inNormal;
 
 layout(location = 0) out vec4 outFragColor;
 
@@ -37,9 +40,9 @@ void main()
 	vec4 ambient_color = vec4(0.0, 0.0, 0.0, 0.0);
 	for (uint i = 0; i < n_light.value; i++) {
 		vec3 l = vec3(normalize(Light[i].direction));
-		float angle = max(dot(vec3(normal), l), 0.0);
-		diffuse_color += Material.diffuse_color * Light[i].diffuse_color * angle;
-		ambient_color += Material.ambient_color * Light[i].ambient_color;
+		float angle = max(dot(vec3(inNormal),l), 0.0);
+		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUv) * Light[i].diffuse_color * angle;
+		ambient_color += Material.ambient_color * texture(ambient_samplerColor, inUv) * Light[i].ambient_color;
 	}
 	outFragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);
 }

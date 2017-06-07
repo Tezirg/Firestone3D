@@ -10,14 +10,17 @@ layout(set = 1, binding = 0) uniform mesh_s {
 	mat4	model;
 }	Mesh;
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec4 inPosition;
 layout(location = 1) in vec4 inNormal;
+layout(location = 2) in vec2 inUv;
 
-layout(location = 0) out vec4 outNormal;
+layout(location = 0) out vec2 outUv;
+layout(location = 1) out vec4 outNormal;
 
 void main() 
 {
-	gl_Position = Camera.perspective * Camera.view * Mesh.model * position;
+	gl_Position = Camera.perspective * Camera.view * Mesh.model * inPosition;
+	outUv = inUv;
 	outNormal = normalize(Mesh.model * inNormal);
 	
 	// GL->VK conventions

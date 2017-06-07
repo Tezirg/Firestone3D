@@ -35,6 +35,7 @@
 #include "core/programs/p-0001_0000_0005_0007.h"
 #include "core/programs/p-0001_0001_0000_0000.h"
 #include "core/programs/p-0001_0001_0000_0003.h"
+#include "core/programs/p-0001_0001_0005_0003.h"
 
 namespace f3d {
 	namespace core {

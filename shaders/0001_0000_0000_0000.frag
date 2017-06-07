@@ -9,5 +9,5 @@ layout(location = 0) out vec4 FragColor;
 
 void main() 
 {
-   FragColor = vec4(color, 1.0);
+   FragColor = vec4(1.000, 0.078, 0.576, 1.000); //Deep pink
 }

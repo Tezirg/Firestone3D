@@ -102,14 +102,16 @@ namespace f3d {
 
 				DescriptorContainer::addDescriptor(0); //layout (set = 0, binding = 0) uniform camera;
 				DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-				DescriptorContainer::addDescriptor(1); //layout (set = 1, binding = 0) uniform light;
-				DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-				//layout (set = 1, binding = 1) uniform uint n_light;
-				DescriptorContainer::addDescriptorBinding(1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-				DescriptorContainer::addDescriptor(2); //layout (set = 2, binding = 0) uniform model;
-				DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+				DescriptorContainer::addDescriptor(1); //layout (set = 1, binding = 0) uniform model;
+				DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+
+				DescriptorContainer::addDescriptor(2); //layout (set = 2, binding = 0) uniform light;
+				DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+				//layout (set = 2, binding = 1) uniform uint n_light;
+				DescriptorContainer::addDescriptorBinding(2, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+
 				DescriptorContainer::addDescriptor(3); //layout(set = 3, binding = 0) uniform material;
-				DescriptorContainer::addDescriptorBinding(3, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+				DescriptorContainer::addDescriptorBinding(3, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 
 				vk_desc_layout = new VkDescriptorSetLayout[4];
@@ -135,7 +137,7 @@ namespace f3d {
 				f3d::tree::MaterialImpl*	material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
 				VkBuffer					vertex_bufs[2] = { m.getVertexBuffer(), m.getNormalBuffer() };
 				VkDeviceSize				vertex_offsets[2] = { 0, 0 };
-				VkDescriptorSet				sets[4] = { sc.getWorldDescriptorSet() , sc.getLightsDescriptorSet(), m.getDescriptorSet(), material->getDescriptorSet()};
+				VkDescriptorSet				sets[4] = { sc.getWorldDescriptorSet(), m.getDescriptorSet(), sc.getLightsDescriptorSet(), material->getDescriptorSet()};
 
 				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vk_pipeline_layout, 0, 4, sets, 0, nullptr);
 				Program::bind(cmd);

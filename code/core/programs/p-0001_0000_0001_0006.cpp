@@ -71,36 +71,26 @@ namespace f3d {
 				_vi_bind[0].binding = 0;
 				_vi_bind[0].stride = sizeof(float) * 4;
 				_vi_bind[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-				std::memset(&_vi_attr, 0, sizeof(VkVertexInputAttributeDescription));
 				_vi_attr[0].format = VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
 				_vi_attr[0].binding = 0;
 				_vi_attr[0].location = 0;
 				_vi_attr[0].offset = 0;
 
-				//layout (location = 1) in vec4 inNormal
+				//layout (location = 1) in vec2 inUv;
 				_vi_bind[1].binding = 1;
-				_vi_bind[1].stride = sizeof(float) * 4;
+				_vi_bind[1].stride = sizeof(float) * 2;
 				_vi_bind[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-				_vi_attr[1].format = VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+				_vi_attr[1].format = VkFormat::VK_FORMAT_R32G32_SFLOAT;
 				_vi_attr[1].binding = 1;
 				_vi_attr[1].location = 1;
 				_vi_attr[1].offset = 0;
 
-				//layout(location = 2) in vec2 inUv;
-				_vi_bind[2].binding = 2;
-				_vi_bind[2].stride = sizeof(float) * 2;
-				_vi_bind[2].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-				_vi_attr[2].format = VkFormat::VK_FORMAT_R32G32_SFLOAT;
-				_vi_attr[2].binding = 2;
-				_vi_attr[2].location = 2;
-				_vi_attr[2].offset = 0;
-
 				//Setup vkGraphicsPipelineCreateInfos.vertexInputStateCreateInfos struct
 				std::memset(&_vi, 0, sizeof(_vi));
 				_vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-				_vi.vertexAttributeDescriptionCount = 3;
+				_vi.vertexAttributeDescriptionCount = 2;
 				_vi.pVertexAttributeDescriptions = _vi_attr;
-				_vi.vertexBindingDescriptionCount = 3;
+				_vi.vertexBindingDescriptionCount = 2;
 				_vi.pVertexBindingDescriptions = _vi_bind;
 			}
 
@@ -114,7 +104,7 @@ namespace f3d {
 				DescriptorContainer::addDescriptor(1); //layout (set = 1, binding = 0) uniform model;
 				DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
 				DescriptorContainer::addDescriptor(2); //layout (set = 2, binding = 0) uniform material;
-				DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+				DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 				DescriptorContainer::addDescriptor(3); //layout (set = 3, binding = 0) uniform sampler2D samplerColor;
 				DescriptorContainer::addDescriptorBinding(3, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
@@ -137,15 +127,15 @@ namespace f3d {
 			{
 				f3d::tree::MeshImpl&		m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&		cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene.getCamera().get());
-				f3d::tree::MaterialImpl*		material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
+				f3d::tree::MaterialImpl*	material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
 				f3d::tree::TextureImpl*		texture = dynamic_cast<f3d::tree::TextureImpl *>(material->getTexture(F3D_TEXTURE_DIFFUSE));
-				VkBuffer					vertex_bufs[3] = { m.getVertexBuffer(), m.getNormalBuffer(), m.getUvBuffer() };
-				VkDeviceSize				vertex_offsets[3] = { 0, 0, 0 };				
+				VkBuffer					vertex_bufs[2] = { m.getVertexBuffer(), m.getUvBuffer() };
+				VkDeviceSize				vertex_offsets[2] = { 0, 0 };
 				VkDescriptorSet				sets[4] = { cam.getDescriptorSet() , m.getDescriptorSet(),  material->getDescriptorSet(), texture->getDescriptorSet() };
 
 				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vk_pipeline_layout, 0, 4, sets, 0, nullptr);
 				Program::bind(cmd);
-				vkCmdBindVertexBuffers(cmd, 0, 3, vertex_bufs, vertex_offsets);
+				vkCmdBindVertexBuffers(cmd, 0, 2, vertex_bufs, vertex_offsets);
 				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
 

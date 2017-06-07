@@ -34,8 +34,8 @@ namespace f3d {
 
 				bool						drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene);
 			private:
-				VkVertexInputAttributeDescription		_vi_attr[3]; //!< pipeline has 3 inputs
-				VkVertexInputBindingDescription			_vi_bind[3]; //!< pipeline has one binding per attribute (total 3)
+				VkVertexInputAttributeDescription		_vi_attr[2]; //!< pipeline has 3 inputs
+				VkVertexInputBindingDescription			_vi_bind[2]; //!< pipeline has one binding per attribute (total 3)
 			};
 		}
 	}

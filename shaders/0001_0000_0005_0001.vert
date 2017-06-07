@@ -7,34 +7,21 @@ layout(set = 0, binding = 0) uniform camera_s {
 	mat4	perspective;
 }   Camera;
 
-layout(set = 1, binding = 0) uniform model_s {
-	mat4	M;
-}	Model;
-
-layout(set = 2, binding = 0) uniform material_s {
-	vec4 		ambient_color;
-	vec4 		diffuse_color;
-	vec4 		specular_color;
-	vec4 		emissive_color;
-	vec4 		reflective_color;
-	float 		shininess;
-}	Material;
+layout(set = 1, binding = 0) uniform mesh_s {
+	mat4	model;
+}	Mesh;
 
 layout(location = 0) in vec4 inPosition;
-layout(location = 1) in vec4 inNormal;
-layout(location = 2) in vec2 inUv;
+layout(location = 1) in vec2 inUv;
 
 layout(location = 0) out vec2 outUv;
-layout(location = 1) out vec4 outColor;
 
 void main() 
 {
-	gl_Position = Camera.perspective * Camera.view * Model.M * inPosition;
-	
-	outUv = inUv;
-	outColor = Material.ambient_color;
-	
-   // GL->VK conventions
-   gl_Position.y = -gl_Position.y;
-   gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
+	gl_Position = Camera.perspective * Camera.view * Mesh.model * inPosition;	
+	outUv = inUv;	
+   
+	// GL->VK conventions
+	gl_Position.y = -gl_Position.y;
+	gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _F3D_P_0001_0000_0005_0001_H
-#define _F3D_P_0001_0000_0005_0001_H
+#ifndef _F3D_P_0001_0001_0005_0003_H
+#define _F3D_P_0001_0001_0005_0003_H
 
 #include "core/platform.h"
 #include "core/types.h"
@@ -16,12 +16,12 @@
 namespace f3d {
 	namespace core {
 		namespace prog {
-			class F3D_API Program_0001_0000_0005_0001 :
+			class F3D_API Program_0001_0001_0005_0003 :
 				public f3d::core::Program,
 				protected f3d::core::DescriptorContainer {
 			public:
-				Program_0001_0000_0005_0001(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
-				~Program_0001_0000_0005_0001();
+				Program_0001_0001_0005_0003(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
+				~Program_0001_0001_0005_0003();
 
 				void						initVkPipeline(VkRenderPass& renderpass, uint32_t subpass);
 
@@ -34,8 +34,8 @@ namespace f3d {
 
 				bool						drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene);
 			private:
-				VkVertexInputAttributeDescription		_vi_attr[2]; //!< pipeline has 3 inputs
-				VkVertexInputBindingDescription			_vi_bind[2]; //!< pipeline has one binding per attribute (total 3)
+				VkVertexInputAttributeDescription		_vi_attr[3]; //!< pipeline has 3 inputs
+				VkVertexInputBindingDescription			_vi_bind[3]; //!< pipeline has one binding per attribute (total 3)
 			};
 		}
 	}

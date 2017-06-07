@@ -11,8 +11,8 @@ namespace f3d {
 			_matrix.push(glm::mat4());
 
 			DescriptorContainer::addDescriptor(0);
-			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) + 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 		}
