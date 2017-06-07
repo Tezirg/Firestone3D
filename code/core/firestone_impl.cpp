@@ -62,8 +62,19 @@ static void										mouse_button_callback(GLFWwindow* window, int button, int a
 	state = (action == GLFW_RELEASE) ? f3d::utils::MouseInput::eMouseButtonState::F3D_MOUSE_BUTTON_RELEASE : state;
 	state = (action == GLFW_REPEAT) ? f3d::utils::MouseInput::eMouseButtonState::F3D_MOUSE_BUTTON_REPEAT : state;
 
+	//Get the position from last mouse event
+	double x = 0.0;
+	double y = 0.0;
+	if (f3d_impl->mouseEvent.get() != nullptr) {
+		x = f3d_impl->mouseEvent->xoffset;
+		y = f3d_impl->mouseEvent->yoffset;
+	}
+
 	f3d_impl->mouseEvent.reset(new f3d::utils::MouseInput(button, state));
-	
+
+
+	f3d_impl->mouseEvent->xoffset = x;
+	f3d_impl->mouseEvent->yoffset = y;
 	// Call mouse input callback if defined
 	if (f3d->_mouse_input != nullptr) {
 		f3d->_mouse_input(*f3d, * f3d_impl->mouseEvent.get(), f3d->_mouse_input_arg);

@@ -1,36 +1,6 @@
 #include <f3d/f3d.h>
 #include <f3d/helpers/xbox_360.hpp>
 
-void		loadScene(f3d::Firestone& f3d, void * arg) {
-	std::string path((char *)arg);
-	std::string file((char *)arg);
-	f3d::tree::Light		l;
-
-	path = path.substr(0, path.find_last_of("/\\") + 1);
-	file = file.substr(file.find_last_of("/\\") + 1);
-
-	std::cout << path << std::endl;
-	std::cout << file << std::endl;
-	f3d.scene->loadFromFile(path, file);
-
-	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
-		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
-		(*it)->scale(glm::vec3(4.0f));
-	}
-	
-	//f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
-	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
-	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-
-	l.setName("Test light1");
-	l.setColorAmbient(glm::vec3(0.4f));
-	l.setColorDiffuse(glm::vec3(1.0, 1.0, 1.0));
-	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
-	l.setPosition(glm::vec3(0.0, 0.0, -42.0));
-	f3d.scene->addLight(&l);
-
-}
-
 static float distance = 400.0f;
 static glm::vec3 center;
 static float angleX = 0.0f, angleY = 0.0f;
@@ -38,6 +8,44 @@ static float angleX = 0.0f, angleY = 0.0f;
 static glm::mat4 r;
 static glm::mat4 r2;
 static glm::mat4 t;
+
+static uint32_t									sequence_frequency = 0;
+static std::list<f3d::tree::Object*>::iterator	sequence_it;
+
+void		loadScene(f3d::Firestone& f3d, void * arg) {
+	std::list<std::string>*	sequence = static_cast<std::list<std::string>*>(arg);
+	f3d::tree::Light		l;
+
+	for (auto it = sequence->begin(); it != sequence->end(); ++it)
+		f3d.scene->loadFromFile("./", *it);
+
+	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
+		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
+		(*it)->scale(glm::vec3(4.0f));
+		(*it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+	}
+	sequence_it = f3d.scene->getObjects().begin();
+	(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+	sequence_frequency = 0;
+
+	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
+	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+
+	l.setName("Test light1");
+	l.setColorAmbient(glm::vec3(0.0f));
+	l.setColorDiffuse(glm::vec3(-1.0, 1.0, 1.0));
+	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
+	l.setPosition(glm::vec3(0.0, 0.0, -42.0));
+	f3d.scene->addLight(&l);
+
+	l.setName("Test light2");
+	l.setColorAmbient(glm::vec3(0.1f));
+	l.setColorDiffuse(glm::vec3(0.0, 0.0, 1.0));
+	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
+	l.setPosition(glm::vec3(0.0, 0.0, -44.0));
+	f3d.scene->addLight(&l);
+}
 
 void				updateScene(f3d::Firestone& f3d, void * arg) {
 	glm::mat4		r;
@@ -48,6 +56,17 @@ void				updateScene(f3d::Firestone& f3d, void * arg) {
 		right stick pan camera left / right
 		RL y aix down, RT y axis up
 	*/
+
+	sequence_frequency++;
+	if (sequence_frequency % 10 == 0) { // Every 20 frames
+		(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+		sequence_it++;
+		if (sequence_it == f3d.scene->getObjects().end())
+			sequence_it = f3d.scene->getObjects().begin();
+		(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+		sequence_frequency = 0;
+	}
+
 
 	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
 	
@@ -99,6 +118,10 @@ void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg
 
 void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg) {
 	(void)arg;
+	if (mouseEvent.type == mouseEvent.F3D_MOUSE_INPUT_BUTTON && \
+		mouseEvent.buttonState == mouseEvent.F3D_MOUSE_BUTTON_PRESS) {
+		std::cout << mouseEvent << std::endl;
+	}
 }
 
 void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg) {
@@ -108,15 +131,17 @@ void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickE
 }
 
 int main(int ac, char **av) {
-	if (ac != 2) {
-		F3D_ERROR("No file to load");
-		return 1;
+
+	std::list<std::string>			sequence;
+
+	for (uint32_t i = 1; i < ac; i++) {
+		sequence.push_back(av[i]);
 	}
 
 	f3d::helpers::Xbox360Controller joystick;
 	f3d::Firestone	*engine = f3d::getF3D();
 
-	engine->startCallback(loadScene, av[1]);
+	engine->startCallback(loadScene, &sequence);
 	engine->drawCallback(updateScene, &joystick);
 	engine->keybordEventsCallback(keyCallback, NULL);
 	engine->mouseEventsCallback(mouseCallback, NULL);
