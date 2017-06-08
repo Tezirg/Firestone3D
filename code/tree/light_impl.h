@@ -9,43 +9,32 @@
 
 #include <assimp/light.h>
 
-#include "core/plateform.h"
-#include "tree\/light.h"
+#include "core/platform.h"
+#include "core/types.h"
+#include "core/physical_device.h"
+#include "core/device.h"
+#include "tree/light.h"
+#include "utils/assimp_to_f3d.h"
 
 namespace f3d {
 	namespace tree {
 		class F3D_API LightImpl : public Light {
 		public:
-			LightImpl();
-			LightImpl(aiLight *);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, const f3d::tree::Light& oth);
+			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light);
 			~LightImpl();
 
-			float					getAngleInnerCone() const;
-			void					setAngleInnerCone(float val);
-			float					getAngleOuterCone() const;
-			void					setAngleOuterCone(float val);
-			float					getAttenuationConstant() const;
-			void					setAttenuationConstant(float val);
-			float					getAttenuationLinear() const;
-			void					setAttenuationLinear(float val);
-			float					getAttenuationQuadratic() const;
-			void					setAttenuationQuadratic(float val);
-			glm::vec3				getColorAmbient() const;
-			void					setColorAmbient(const glm::vec3& val);
-			glm::vec3				getColorDiffuse() const;
-			void					setColorDiffuse(const glm::vec3& val);
-			glm::vec3				getColorSpecular() const;
-			void					setColorSpecular(const glm::vec3& val);
-			glm::vec3				getDirection() const;
-			void					setDirection(const glm::vec3& val);
-			std::string				getName() const;
-			void					setName(const std::string& val);
-			glm::vec3				getPosition() const;
-			void					setPosition(const glm::vec3& val);
-			eLightType 				getType() const;
-			void			 		setType(eLightType val);
+			void					updateProperties();
+			void					createProperties();
+			bool					getProperties(void **ptr, uint32_t & size);
+
 		private:
-			std::unique_ptr<aiLight>		_ai_light;
+			std::shared_ptr< f3d::core::PhysicalDevice >	_physical;
+			std::shared_ptr< f3d::core::Device >			_device;
+			char*											_buffer;
+			uint32_t										_buffer_size;
+
 		};
 	}
 }

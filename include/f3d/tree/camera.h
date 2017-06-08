@@ -3,7 +3,7 @@
 #ifndef __F3D_CAMERA_H
 #define __F3D_CAMERA_H
 
-#include "core/plateform.h"
+#include "core/platform.h"
 
 namespace f3d {
 	namespace tree {

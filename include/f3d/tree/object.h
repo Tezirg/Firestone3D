@@ -7,7 +7,7 @@
 #include <memory>
 #include <cstdint>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/node.h"
 
 namespace f3d {

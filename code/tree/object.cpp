@@ -7,7 +7,7 @@ namespace f3d {
 		}
 
 		Object::~Object() {
-
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		Node*			Object::getRoot() {

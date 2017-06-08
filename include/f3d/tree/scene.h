@@ -8,7 +8,7 @@
 #include <vector>
 #include <list>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/camera.h"
 #include "tree/object.h"
 #include "tree/material.h"
@@ -29,13 +29,14 @@ namespace f3d {
 			std::list< f3d::tree::Material *>&				getMaterials();
 			f3d::tree::Material*							getMaterialByName(const std::string& name);
 
-			void											addObject(f3d::tree::Object* mesh);
+			virtual void									addObject(f3d::tree::Object* mesh);
 			void											removeObject(f3d::tree::Object* mesh);
 
-			void											addLight(f3d::tree::Light* light);
+			virtual void									addLight(f3d::tree::Light* light);
 			void											removeLight(f3d::tree::Light* light);
+			uint32_t										getLightMask() const;
 
-			void											addMaterial(f3d::tree::Material* material);
+			virtual void									addMaterial(f3d::tree::Material* material);
 			void											removeMaterial(f3d::tree::Material* material);
 
 			virtual void									loadFromFile(const std::string& path, const std::string& file) = 0;

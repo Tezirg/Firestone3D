@@ -5,7 +5,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
+#include <vector>
 #include <vulkan/vulkan.h>
+
+#include "core/platform.h"
 #include "utils/logging.h"
 
 namespace f3d {
@@ -23,8 +27,7 @@ namespace f3d {
 
 		bool													queryInstancePFN(VkInstance instance);
 		bool													queryDevicePFN(VkDevice device);
-		char const*												vkResultToString(VkResult code);
-
+		char const*												vkResultToString(VkResult code);	
 	}
 }
 

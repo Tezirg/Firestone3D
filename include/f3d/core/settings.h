@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <iostream>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 
 namespace f3d {
 	namespace core {

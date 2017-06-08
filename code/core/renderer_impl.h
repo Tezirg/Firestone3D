@@ -4,8 +4,10 @@
 #define _F3D_RENDERER_IMPL_H
 
 #include <map>
+#include <memory>
+#include <utility>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "core/renderer.h"
 #include "core/settings.h"
 #include "utils/vulkan.h"
@@ -15,7 +17,6 @@
 #include "core/window_impl.h"
 #include "renderpasses/render_pass.h"
 #include "renderpasses/rp_simple.h"
-#include "core/programs/prog_flat.h"
 
 namespace f3d {
 	namespace core {
@@ -26,6 +27,11 @@ namespace f3d {
 						 std::shared_ptr<f3d::core::PhysicalDevice>& physical_device,
 						 std::shared_ptr<f3d::core::Window>& window);
 			~RendererImpl();
+
+			RendererImpl(RendererImpl& copy_oth) = delete; //No copies
+			RendererImpl(RendererImpl&& move_oth) = delete; //No moves
+			RendererImpl& operator=(RendererImpl& copy_oth) = delete; //No copy assignement
+			RendererImpl& operator=(RendererImpl&& move_oth) = delete; //No move assignement
 
 			void	reset();
 			void	render(std::shared_ptr<f3d::tree::Scene> scene);
@@ -44,7 +50,7 @@ namespace f3d {
 			std::shared_ptr<f3d::core::Device>								_device;
 			std::shared_ptr<f3d::core::PhysicalDevice>						_physical;
 			std::shared_ptr<f3d::core::Window>								_window;
-			std::map< f3d::core::RenderPass::eRenderPassType, RenderPass* >	_renders;
+			std::map< f3d::RenderPassType, std::unique_ptr<RenderPass> >	_renders;
 		};
 	}
 }

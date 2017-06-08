@@ -5,9 +5,14 @@ namespace f3d {
 
 		Material::Material(const std::string& name) :
 			_name(name), _shininess(0.0f) {
+			_color_mask = F3D_COLOR_UNDEFINED;
+			_texture_mask = F3D_TEXTURE_UNDEFINED;
 		}
 
 		Material::~Material() {
+			for (auto text = _textures.begin(); text != _textures.end(); ++text)
+				delete text->second;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		const std::string&		Material::getName() const {
@@ -18,7 +23,7 @@ namespace f3d {
 			_name.assign(value);
 		}
 
-		bool					Material::Material::getColor(const eColorType type, glm::vec3& out) const {
+		bool					Material::getColor(const eColorType type, glm::vec3& out) const {
 			auto it = _colors.find(type);
 			if (it == _colors.end())
 				return false;
@@ -28,19 +33,58 @@ namespace f3d {
 			return true;
 		}
 
+		const glm::vec3&		Material::getColor(const eColorType type) const {
+			static glm::vec3	_black(0.0f, 0.0f, 0.0f);
+			auto it = _colors.find(type);
+			if (it == _colors.end())
+				return _black;
+			return it->second;
+		}
+
 		void					Material::setColor(const eColorType type, glm::vec3& in) {
 			_colors[type] = in;
+			_color_mask |= type;
+		}
+
+		bool					Material::removeColor(const eColorType type) {
+			auto it = _colors.find(type);
+			_color_mask &= ~type; // Removes from bitmask
+			if (it == _colors.end())
+				return false;
+			_colors.erase(it);
+			return true;
+		}
+
+		ColorTypeFlags			Material::colorFlags() const {
+			return _color_mask;
 		}
 
 		void					Material::addTexture(f3d::tree::Texture *texture) {
-			_textures.push_back(texture);
+			_textures[texture->getType()] = texture;
+			//Add to bitmask
+			_texture_mask |= texture->getType();
 		}
 		void					Material::removeTexture(f3d::tree::Texture *texture) {
-			_textures.remove(texture);
+			_textures.erase(texture->getType());
+			//Removes from bitmask
+			_texture_mask &= ~texture->getType();
+		}
+		void					Material::removeTexture(const TextureTypeFlags type) {
+			_textures.erase(type);
+			//Removes from bitmask
+			_texture_mask &= ~type;
 		}
 
-		const std::list<f3d::tree::Texture *>& Material::getTextures(void) const {
-			return _textures;
+		f3d::tree::Texture*		Material::getTexture(const TextureTypeFlags type) const {
+			auto it = _textures.find(type);
+			if (it != _textures.end())
+				return it->second;
+			else
+				return nullptr;
+		}
+
+		TextureTypeFlags		Material::textureFlags() const {
+			return _texture_mask;
 		}
 
 		float					Material::getShininess(void) const {

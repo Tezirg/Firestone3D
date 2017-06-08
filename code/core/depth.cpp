@@ -11,7 +11,11 @@ namespace f3d {
 		}
 
 		Depth::~Depth() {
-			destroyVk();
+			vkDestroyImageView(_device->vk_device, vk_view, NULL);
+			vkFreeMemory(_device->vk_device, vk_memory, NULL);
+			vkDestroyImage(_device->vk_device, vk_image, NULL);
+
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		void						Depth::createVk() {
@@ -76,7 +80,5 @@ namespace f3d {
 											 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
 			F3D_ASSERT(r_bool == true, "Init depth buffer image layout failed");
 		}
-
-		void			Depth::destroyVk() {}
 	}
 }

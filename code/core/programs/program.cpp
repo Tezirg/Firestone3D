@@ -2,11 +2,15 @@
 
 namespace f3d {
 	namespace core {
-		Program::Program(VkDevice device) : vk_device(device) {
+		Program::Program(VkDevice device, ProgramMask mask) : vk_device(device), mask(mask) {
 		}
 
 		Program::~Program() {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
+		}
+
+		F3D_Mask			Program::getMask() const {
+			return mask.mask;
 		}
 
 		void				Program::bind(VkCommandBuffer& cmd) {

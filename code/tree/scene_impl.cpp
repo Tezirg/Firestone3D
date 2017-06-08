@@ -3,14 +3,30 @@
 namespace f3d {
 	namespace tree {
 		SceneImpl::SceneImpl(std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Device>& device) :
-			_physical(physical), _device(device) {
+			_physical(physical), _device(device),
+			AttributeContainer::AttributeContainer(physical, device),
+			DescriptorContainer::DescriptorContainer(physical, device) {
 			_camera.reset(new f3d::tree::CameraImpl(physical, device));
 			
 			_matrix.push(glm::mat4());
+
+			DescriptorContainer::addDescriptor(0);
+			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) + 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 		}
 
 		SceneImpl::~SceneImpl() {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
+		}
+
+		void				SceneImpl::addLight(f3d::tree::Light *l) {
+			f3d::tree::LightImpl	*li = new f3d::tree::LightImpl(_physical, _device, *l);
+		
+			std::cout << l->getName() << std::endl;
+			//Call inherited adder with forced light implementation instance
+			Scene::addLight(li);
 		}
 
 		void				SceneImpl::recursive_uniformUpdate(f3d::tree::Node* f3d_node) {
@@ -50,6 +66,8 @@ namespace f3d {
 					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
 					if (aimesh->mNormals != NULL)
 						fmesh->addNormal(glm::vec3(aimesh->mNormals[v].x, aimesh->mNormals[v].y, aimesh->mNormals[v].z));
+					else
+						fmesh->addNormal(glm::vec3(0.0f));
 					if (aimesh->HasTextureCoords(0)) {
 						fmesh->addUV(aimesh->mTextureCoords[0][v].x, aimesh->mTextureCoords[0][v].y);
 					}
@@ -81,14 +99,17 @@ namespace f3d {
 			}
 		}
 
-		void						SceneImpl::loadFromFile(const std::string& path, const std::string& filename) {
-			std::string				sceneFile(path);
-			sceneFile.append(filename);
+		void							SceneImpl::loadFromFile(const std::string& path, const std::string& filename) {
+			std::string					sceneFile(path);
+			Assimp::Importer			importer;
+			const aiScene*				ai_scene = nullptr;
 
-			Assimp::Importer		importer;
-			const aiScene*			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate |   \
-																					aiProcess_SplitLargeMeshes | aiProcess_SortByPType | aiProcess_OptimizeMeshes | aiProcess_FlipWindingOrder);
-			
+			//Load scene with assimp
+			sceneFile.append(filename);
+			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenSmoothNormals | \
+															aiProcess_Triangulate | aiProcess_SplitLargeMeshes | \
+															aiProcess_SortByPType | aiProcess_OptimizeMeshes | \
+															aiProcess_FlipWindingOrder);
 			if (ai_scene == 0x0)
 				F3D_FATAL_ERROR(importer.GetErrorString());
 
@@ -97,16 +118,19 @@ namespace f3d {
 				_camera.reset(new f3d::tree::CameraImpl(ai_scene->mCameras[0]));
 			}
 			*/
+
 			//Loading materials
 			for (uint32_t i = 0; i < ai_scene->mNumMaterials; i++) {
 				f3d::tree::Material* mat = _aiMaterialToF3D(path, ai_scene->mMaterials[i]);
 				if (mat != nullptr)
 					addMaterial(mat);
 			}
-				
+
 			//Loading lights
-			for (uint32_t i = 0; i < ai_scene->mNumLights; i++) {
-				addLight(new f3d::tree::LightImpl(ai_scene->mLights[i]));
+			char *b;
+			for (uint32_t i = 0; i < ai_scene->mNumLights && i < 16; i++) {
+				f3d::tree::LightImpl * l = new f3d::tree::LightImpl(_physical, _device, ai_scene->mLights[i]);
+				Scene::addLight(l);
 			}
 	
 			if (ai_scene->mNumMeshes == 0) { //Root that contains multiple objs 
@@ -124,11 +148,12 @@ namespace f3d {
 				addObject(o);
 			}
 		
+			//Release assimp scene
 			importer.FreeScene();
 		}
 
 		f3d::tree::Material*				SceneImpl::_aiMaterialToF3D(const std::string& path, const aiMaterial* aiMat) {
-			f3d::tree::Material				*mat = nullptr;
+			f3d::tree::MaterialImpl			*mat = nullptr;
 			aiReturn						aiRes;
 			aiString						aiStr;
 			aiColor3D						aiColor;
@@ -137,32 +162,35 @@ namespace f3d {
 
 			aiRes = aiMat->Get(AI_MATKEY_NAME, aiStr);
 			materialName.assign(aiRes == AI_SUCCESS ? aiStr.C_Str() : AI_DEFAULT_MATERIAL_NAME);
-			mat = new f3d::tree::Material(materialName);
+			mat = new f3d::tree::MaterialImpl(materialName, _physical, _device);
 
+
+			std::cout << "====================================" <<  materialName << std::endl;
 			//Query Ambient color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_AMBIENT, aiColor);
-			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
-
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
+				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			std::cout << "has Ambient " << !aiColor.IsBlack() << std::endl;
 			//Query diffuse color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
-			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
+				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			std::cout << "has Diffuse " << !aiColor.IsBlack() << " " << std::endl;
 
 			//Query specular color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_SPECULAR, aiColor);
-			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_SPECULAR, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
+				mat->setColor(f3d::F3D_COLOR_SPECULAR, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query Emmissive color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_EMISSIVE, aiColor);
-			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_EMMISIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
+				mat->setColor(f3d::F3D_COLOR_EMISSIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Query reflective color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_REFLECTIVE, aiColor);
-			if (aiRes == AI_SUCCESS)
-				mat->setColor(f3d::tree::Material::F3D_COLOR_REFLECTIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
+				mat->setColor(f3d::F3D_COLOR_REFLECTIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
 
 			//Shineness property
 			aiRes = aiMat->Get(AI_MATKEY_SHININESS, aiShine);
@@ -183,6 +211,9 @@ namespace f3d {
 			if (texture != nullptr)
 				mat->addTexture(texture);
 
+			mat->writeAttribute();
+			mat->writeDescriptorSet();
+
 			return mat;
 		}
 
@@ -193,54 +224,27 @@ namespace f3d {
 			unsigned int  							uvindex;
 			float  									blend;
 			aiTextureOp  							op;
-			aiTextureMapMode  						mapmode[3] = { aiTextureMapMode_Wrap,aiTextureMapMode_Wrap,aiTextureMapMode_Wrap };
+			aiTextureMapMode  						mapmode[3];
 
 			f3d::tree::TextureImpl*					texture = nullptr;
-			f3d::tree::Texture::eTextureType		type = f3d::tree::Texture::F3D_TEXTURE_UNDEFINED;
-			f3d::tree::Texture::eTextureAddressMode	address_mode[3] = { 
-																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED,
-																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED, 
-																		f3d::tree::Texture::F3D_ADDRESS_UNDEFINED
-																	  };
+			f3d::eTextureTypeBits					type = F3D_TEXTURE_UNDEFINED;
+			f3d::eTextureAddressMode				address_mode[3] = { F3D_ADDRESS_UNDEFINED, F3D_ADDRESS_UNDEFINED, F3D_ADDRESS_UNDEFINED };
 
-			aiRes = aiMaterial->GetTexture(aiType, aiIndex, &aiPath, &mapping, &uvindex, &blend, &op, mapmode);
-			if (aiRes != AI_SUCCESS)
+			if ((aiRes = aiMaterial->GetTexture(aiType, aiIndex, &aiPath, &mapping, &uvindex, &blend, &op, mapmode)) != AI_SUCCESS)
 				return nullptr;
-			type = (aiType == aiTextureType_AMBIENT) ? f3d::tree::Texture::F3D_TEXTURE_AMBIENT : type;
-			type = (aiType == aiTextureType_DIFFUSE) ? f3d::tree::Texture::F3D_TEXTURE_DIFFUSE : type;
-			type = (aiType == aiTextureType_SPECULAR) ? f3d::tree::Texture::F3D_TEXTURE_SPECULAR : type;
-			type = (aiType == aiTextureType_EMISSIVE) ? f3d::tree::Texture::F3D_TEXTURE_EMISSIVE : type;
-			type = (aiType == aiTextureType_HEIGHT) ? f3d::tree::Texture::F3D_TEXTURE_HEIGHT : type;
-			type = (aiType == aiTextureType_NORMALS) ? f3d::tree::Texture::F3D_TEXTURE_NORMALS : type;
-			type = (aiType == aiTextureType_SHININESS) ? f3d::tree::Texture::F3D_TEXTURE_SHININESS : type;
-			type = (aiType == aiTextureType_OPACITY) ? f3d::tree::Texture::F3D_TEXTURE_OPACITY : type;
-			type = (aiType == aiTextureType_DISPLACEMENT) ? f3d::tree::Texture::F3D_TEXTURE_DISPLACEMENT : type;
-			type = (aiType == aiTextureType_LIGHTMAP) ? f3d::tree::Texture::F3D_TEXTURE_LIGHTMAP : type;
-			type = (aiType == aiTextureType_REFLECTION) ? f3d::tree::Texture::F3D_TEXTURE_REFLECTION : type;
-			
-			
-			std::cout << mapmode[0] << "/" << mapmode[1] << "/" << mapmode[2] << std::endl;
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[0];
-			address_mode[0] = (mapmode[0] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[0];
 
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[1];
-			address_mode[1] = (mapmode[1] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[1];
-
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Wrap) ? f3d::tree::Texture::F3D_ADDRESS_REPEAT : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Clamp) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_BORDER : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Decal) ? f3d::tree::Texture::F3D_ADDRESS_CLAMP_EDGE : address_mode[2];
-			address_mode[2] = (mapmode[2] == aiTextureMapMode_Mirror) ? f3d::tree::Texture::F3D_ADDRESS_MIRROR_REPEAT : address_mode[2];
+			ASSIMP_TEXTURE_2_F3D(aiType, type);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[0], address_mode[0]);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[1], address_mode[1]);
+			ASSIMP_ADDRESS_MODE_2_F3D(mapmode[2], address_mode[2]);
 
 			std::string texture_path(path);
 			texture_path.append(aiPath.C_Str());
 
-			std::cout << "Loading texture at " << texture_path << std::endl;
 
 			try {
+				std::cout << "Loading texture at " << texture_path << std::endl;
+
 				Magick::Image	magick_texture(texture_path);
 				magick_texture.magick("RGBA");
 
@@ -263,7 +267,70 @@ namespace f3d {
 			}			
 
 			return texture;
+		}
 
+		void								SceneImpl::writeDescriptorSet() {
+			f3d::tree::CameraImpl*			cam = dynamic_cast<f3d::tree::CameraImpl *>(_camera.get());
+			VkWriteDescriptorSet			pWrites[2];
+			VkDescriptorBufferInfo			buffer_info[2];
+
+			//Write camera descriptor sets
+			cam->writeDescriptorSet();
+
+			//Write lights into descriptor set
+			//Buffers in use
+			buffer_info[0].offset = 0;
+			buffer_info[0].range = VK_WHOLE_SIZE;
+			buffer_info[0].buffer = AttributeContainer::getAttributeBuffer(0); // Buffer 0
+			buffer_info[1].offset = 0;
+			buffer_info[1].range = VK_WHOLE_SIZE;
+			buffer_info[1].buffer = AttributeContainer::getAttributeBuffer(1); // Buffer 1
+			//Bind buffer 0 to binding 0 on this descriptor set
+			std::memset(&pWrites[0], 0, sizeof(VkWriteDescriptorSet));
+			pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			pWrites[0].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[0].descriptorCount = 1;
+			pWrites[0].dstBinding = 0;
+			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			pWrites[0].pBufferInfo = &buffer_info[0];
+
+			//Bind buffer 1 to binding 1 on this descriptor set
+			std::memset(&pWrites[1], 0, sizeof(VkWriteDescriptorSet));
+			pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			pWrites[1].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[1].descriptorCount = 1;
+			pWrites[1].dstBinding = 1;
+			pWrites[1].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pWrites[1].pBufferInfo = &buffer_info[1];
+			vkUpdateDescriptorSets(_device->vk_device, 2, pWrites, 0, nullptr);
+		}
+
+		void								SceneImpl::writeAttribute() {
+			uint32_t						i = 0;
+			char							*b;
+			bool							props;
+			uint32_t						light_attr_size = 0;
+
+			//Update lights Buffer
+			for (auto it = _lights.begin(); it != _lights.end(); ++it) {
+				f3d::tree::LightImpl * l = dynamic_cast<f3d::tree::LightImpl *>(*it);
+				props = l->getProperties((void **)&b, light_attr_size);
+				AttributeContainer::updateAttribute(0, b, i * light_attr_size, light_attr_size); // Light buffer on binding 0
+				i++;
+				//std::cout << i * light_attr_size << std::endl;
+			}
+			AttributeContainer::updateAttribute(1, (void*)&i, 0, sizeof(uint32_t)); // num lights in binding 1
+		}
+
+
+		VkDescriptorSet						SceneImpl::getWorldDescriptorSet() {
+			f3d::tree::CameraImpl*			cam = dynamic_cast<f3d::tree::CameraImpl *>(_camera.get());
+
+			return cam->getDescriptorSet();
+		}
+
+		VkDescriptorSet						SceneImpl::getLightsDescriptorSet() {
+			return DescriptorContainer::getDescriptorSet(0);
 		}
 	}
 }

@@ -3,17 +3,14 @@
 namespace f3d {
 	namespace tree {
 
-		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureType type, eTextureAddressMode mode[3], 
+		TextureImpl::TextureImpl(uint32_t width, uint32_t height, uint32_t mip_levels, eTextureTypeBits type, eTextureAddressMode mode[3],
 			std::shared_ptr<f3d::core::PhysicalDevice>& phys, std::shared_ptr<f3d::core::Device>& device) :
 			Texture::Texture(width, height, mip_levels, type, mode),
-			_physical(phys), _device(device) {
-		}
+			_physical(phys), _device(device), 
+			DescriptorContainer::DescriptorContainer(phys, device) 
+		{ }
 
 		TextureImpl::~TextureImpl() {
-			vkFreeDescriptorSets(_device->vk_device, vk_desc_pool, 1, &vk_descriptor);
-			vkDestroyDescriptorPool(_device->vk_device, vk_desc_pool, nullptr);
-			vkDestroyDescriptorSetLayout(_device->vk_device, vk_desc_layout, nullptr);
-
 			vkDestroySampler(_device->vk_device, vk_sampler, nullptr);
 			vkDestroyImageView(_device->vk_device, vk_view, nullptr);
 			vkDestroyImage(_device->vk_device, vk_image, nullptr);
@@ -38,46 +35,10 @@ namespace f3d {
 			_device->initImageLayout(vk_image, VK_IMAGE_LAYOUT_PREINITIALIZED, vk_image_layout, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			createSampler();
 			createView(format);
-			//Assign Image descriptor data
-			vk_descriptor_info.imageLayout = vk_image_layout;
-			vk_descriptor_info.imageView = vk_view;
-			vk_descriptor_info.sampler = vk_sampler;
-
 
 			//Create descriptor set layout
-			//layout (set = 2, binding = 0) uniform sampler2D samplerColor;
-			layout_bindings.binding = 0;
-			layout_bindings.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			layout_bindings.descriptorCount = 1;
-			layout_bindings.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			layout_bindings.pImmutableSamplers = NULL;
-
-			std::memset(&desc_layout_info, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
-			desc_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-			desc_layout_info.bindingCount = 1;
-			desc_layout_info.pBindings = &layout_bindings;
-			r = vkCreateDescriptorSetLayout(_device->vk_device, &desc_layout_info, NULL, &vk_desc_layout);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Texture sampler Create descriptor set layout failed");
-
-
-			pool_types.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			pool_types.descriptorCount = 1;
-			std::memset(&pool_info, 0, sizeof(VkDescriptorPoolCreateInfo));
-			pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-			pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-			pool_info.poolSizeCount = 1;
-			pool_info.maxSets = 1;
-			pool_info.pPoolSizes = &pool_types;
-			r = vkCreateDescriptorPool(_device->vk_device, &pool_info, NULL, &vk_desc_pool);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "TexturedProgram Descriptor pool creation failed");
-
-			std::memset(&desc_set_alloc, 0, sizeof(VkDescriptorSetAllocateInfo));
-			desc_set_alloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			desc_set_alloc.descriptorPool = vk_desc_pool;
-			desc_set_alloc.descriptorSetCount = 1;
-			desc_set_alloc.pSetLayouts = &vk_desc_layout;
-			r = vkAllocateDescriptorSets(_device->vk_device, &desc_set_alloc, &vk_descriptor);
-			F3D_ASSERT_VK(r, VK_SUCCESS, "Descriptor set 0 allocation failed");
+			DescriptorContainer::addDescriptor(2); //layout (set = 2, binding = 0) uniform sampler2D samplerColor;
+			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 			updateDescriptorSet();
 
@@ -120,24 +81,6 @@ namespace f3d {
 			r = vkBindImageMemory(_device->vk_device, vk_image, vk_memory, 0);
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Binding texture memory");
 			
-			/*
-			VkSubresourceLayout imageLayout;
-			VkImageSubresource subresource = {};
-			vkGetImageSubresourceLayout(_device->vk_device, vk_image, &subresource, &imageLayout);
-
-			vkMapMemory(_device->vk_device, vk_memory, 0, size, 0, &pData);
-			if (imageLayout.rowPitch == _width * 4) {
-				memcpy(pData, data, (size_t)size);
-			}
-			else {
-				uint8_t* dataBytes = reinterpret_cast<uint8_t*>(pData);
-
-				for (int y = 0; y < _height; y++) {
-					memcpy(&dataBytes[y * imageLayout.rowPitch], &((char *)data)[y * _width * 4], _width * 4);
-				}
-			}
-			vkUnmapMemory(_device->vk_device, vk_memory);
-			*/
 
 			 /*
 			r = vkMapMemory(_device->vk_device, vk_memory, 0, total, 0, &pData);
@@ -210,7 +153,7 @@ namespace f3d {
 
 
 		VkDescriptorSet					TextureImpl::getDescriptorSet() {
-			return vk_descriptor;
+			return DescriptorContainer::getDescriptorSet(2);
 		}
 
 		void							TextureImpl::updateDescriptorSet() {
@@ -219,7 +162,7 @@ namespace f3d {
 
 			std::memset(&pWrites, 0, sizeof(VkWriteDescriptorSet));
 			pWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			pWrites.dstSet = vk_descriptor;
+			pWrites.dstSet = DescriptorContainer::getDescriptorSet(2);
 			pWrites.descriptorCount = 1;
 			pWrites.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			pWrites.pImageInfo = &sampler_info;

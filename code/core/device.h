@@ -9,7 +9,7 @@
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "utils/vulkan.h"
 #include "core/physical_device.h"
 

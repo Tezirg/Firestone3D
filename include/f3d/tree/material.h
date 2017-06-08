@@ -8,47 +8,43 @@
 #include <iostream>
 #include <map>
 #include <list>
+#include <algorithm>
 #include <glm/glm.hpp>
 
-#include "core/plateform.h"
+#include "core/platform.h"
 #include "tree/texture.h"
+#include "core/types.h"
 
 namespace f3d {
 	namespace tree {
 		class F3D_API Material {
 		public:
-			enum eColorType {
-				F3D_COLOR_UNDEFINED = 0,
-				F3D_COLOR_AMBIENT = 1,
-				F3D_COLOR_DIFFUSE = 2,
-				F3D_COLOR_SPECULAR = 3,
-				F3D_COLOR_EMMISIVE = 4,
-				F3D_COLOR_REFLECTIVE = 5,
-				F3D_COLOR_BEGIN_RANGE = F3D_COLOR_UNDEFINED,
-				F3D_COLOR_END_RANGE = F3D_COLOR_REFLECTIVE,
-				F3D_COLOR_RANGE_SIZE = (F3D_COLOR_END_RANGE - F3D_COLOR_BEGIN_RANGE + 1),
-				F3D_COLOR_MAX_ENUM = 0x7FFFFFFF
-			};
-
 			Material(const std::string& name);
 			virtual ~Material();
 
 			const std::string&		getName() const;
 			void					setname(const std::string& value);
 			bool					getColor(const eColorType type, glm::vec3& out) const;
+			const glm::vec3&		getColor(const eColorType type) const;
 			void					setColor(const eColorType type, glm::vec3& in);
+			bool					removeColor(const eColorType type);
+			ColorTypeFlags			colorFlags() const;
+
 			float					getShininess(void) const;
 			void					setShininess(const float value);
 
 			void					addTexture(f3d::tree::Texture *texture);
 			void					removeTexture(f3d::tree::Texture *texture);
-			const std::list<f3d::tree::Texture *>& getTextures(void) const;
+			void					removeTexture(TextureTypeFlags type);
+			f3d::tree::Texture *	getTexture(const TextureTypeFlags type) const;
+			TextureTypeFlags		textureFlags() const;
 		protected:
 			std::string							_name;
 			float								_shininess;
 			std::map<eColorType, glm::vec3>		_colors;
-			std::list<f3d::tree::Texture *>		_textures;
-
+			ColorTypeFlags						_color_mask;
+			std::map< TextureTypeFlags, f3d::tree::Texture *>	_textures;
+			TextureTypeFlags					_texture_mask;
 		};
 	}// tree::
 }// f3d::

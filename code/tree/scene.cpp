@@ -9,6 +9,13 @@ namespace f3d {
 		}
 
 		Scene::~Scene() {
+			for (auto mat = _materials.begin(); mat != _materials.end(); ++mat)
+				delete *mat;
+			for (auto obj = _objects.begin(); obj != _objects.end(); ++obj)
+				delete *obj;
+			for (auto light = _lights.begin(); light != _lights.end(); ++light)
+				delete *light;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
 		std::shared_ptr<f3d::tree::Camera>&				Scene::getCamera() {
@@ -42,6 +49,15 @@ namespace f3d {
 		void											Scene::removeObject(f3d::tree::Object* obj) {
 			_objects.remove(obj);
 		}
+
+		uint32_t										Scene::getLightMask() const {
+			uint32_t		m = 0;
+
+			for (auto it = _lights.begin(); it != _lights.end(); ++it)
+				m |= (*it)->getType();
+			return m;
+		}
+
 		void											Scene::addLight(f3d::tree::Light* light) {
 			_lights.push_back(light);
 			_dirty = true;

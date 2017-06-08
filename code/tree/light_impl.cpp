@@ -2,56 +2,94 @@
 
 namespace f3d {
 	namespace tree{
-		LightImpl::LightImpl() : _ai_light(new aiLight) {
-			//Defaults to directional, white color
-			setAttenuationConstant(1.0);
-			setAttenuationLinear(0.0);
-			setAttenuationQuadratic(0.0);
-			setColorAmbient(glm::vec3(1.0f));
-			setColorDiffuse(glm::vec3(1.0f));
-			setColorSpecular(glm::vec3(1.0f));
-			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
-			setName(std::string("DefaultLight"));
-			setType(F3D_LIGHT_DIRECTIONAL);
+		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device) : 
+			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
+		{
+			createProperties();
 		}
 		
-		LightImpl::LightImpl(aiLight *light) : _ai_light(new aiLight(*light)) {
+		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light) : 
+			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
+		{
+			setAngleInnerCone(light->mAngleInnerCone);
+			setAngleOuterCone(light->mAngleOuterCone);
+			setAttenuationConstant(light->mAttenuationConstant);
+			setAttenuationLinear(light->mAttenuationLinear);
+			setAttenuationQuadratic(light->mAttenuationQuadratic);
+			setColorAmbient(glm::vec3(light->mColorAmbient.r, light->mColorAmbient.g, light->mColorAmbient.b));
+			setColorDiffuse(glm::vec3(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b));
+			setColorSpecular(glm::vec3(light->mColorSpecular.r, light->mColorSpecular.g, light->mColorSpecular.b));
+			setDirection(glm::vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z));
+			setName(std::string(light->mName.C_Str()));
+			setPosition(glm::vec3(light->mPosition.x, light->mPosition.y, light->mPosition.z));
+			ASSIMP_LIGHT_2_F3D(light->mType, _type);
+
+			createProperties();
 		}
+
+		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, const f3d::tree::Light& oth) :
+			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
+		{
+			setName(oth.getName());
+			setType(oth.getType());
+			setAngleInnerCone(oth.getAngleInnerCone());
+			setAngleOuterCone(oth.getAngleOuterCone());
+			setAttenuationConstant(oth.getAttenuationConstant());
+			setAttenuationLinear(oth.getAttenuationLinear());
+			setAttenuationQuadratic(oth.getAttenuationQuadratic());
+			setColorAmbient(oth.getColorAmbient());
+			setColorDiffuse(oth.getColorDiffuse());
+			setColorSpecular(oth.getColorSpecular());
+			setDirection(oth.getDirection());
+			setPosition(oth.getPosition());
+
+			createProperties();
+		}
+
 
 		LightImpl::~LightImpl() {
+			if (_buffer != nullptr)
+				delete[] _buffer;
+			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		float					LightImpl::getAngleInnerCone() const	{ return _ai_light->mAngleInnerCone; }
-		void					LightImpl::setAngleInnerCone(float val)	{ _ai_light->mAngleInnerCone = val;  }
-		float					LightImpl::getAngleOuterCone() const	{ return _ai_light->mAngleOuterCone; }
-		void					LightImpl::setAngleOuterCone(float val) { _ai_light->mAngleOuterCone = val; }
-		float					LightImpl::getAttenuationConstant() const { return _ai_light->mAttenuationConstant;  }
-		void					LightImpl::setAttenuationConstant(float val) { _ai_light->mAttenuationConstant = val; }
-		float					LightImpl::getAttenuationLinear() const { return _ai_light->mAttenuationLinear;  }
-		void					LightImpl::setAttenuationLinear(float val) { _ai_light->mAttenuationLinear = val; }
-		float					LightImpl::getAttenuationQuadratic() const { return _ai_light->mAttenuationQuadratic; }
-		void					LightImpl::setAttenuationQuadratic(float val) { _ai_light->mAttenuationQuadratic = val; }
-		glm::vec3				LightImpl::getColorAmbient() const { return glm::vec3(_ai_light->mColorAmbient.r, _ai_light->mColorAmbient.g, _ai_light->mColorAmbient.b); }
-		void					LightImpl::setColorAmbient(const glm::vec3& val) { _ai_light->mColorAmbient.r = val.x; _ai_light->mColorAmbient.g = val.y; _ai_light->mColorAmbient.b = val.z; }
-		glm::vec3				LightImpl::getColorDiffuse() const { return glm::vec3(_ai_light->mColorDiffuse.r, _ai_light->mColorDiffuse.g, _ai_light->mColorDiffuse.b); }
-		void					LightImpl::setColorDiffuse(const glm::vec3& val) { _ai_light->mColorDiffuse.r = val.x; _ai_light->mColorDiffuse.g = val.y; _ai_light->mColorDiffuse.b = val.z; }
-		glm::vec3				LightImpl::getColorSpecular() const { return glm::vec3(_ai_light->mColorSpecular.r, _ai_light->mColorSpecular.g, _ai_light->mColorSpecular.b); }
-		void					LightImpl::setColorSpecular(const glm::vec3& val) { _ai_light->mColorSpecular.r = val.x; _ai_light->mColorSpecular.g = val.y; _ai_light->mColorSpecular.b = val.z; }
-		glm::vec3				LightImpl::getDirection() const { return glm::vec3(_ai_light->mDirection.x, _ai_light->mDirection.y, _ai_light->mDirection.z); }
-		void					LightImpl::setDirection(const glm::vec3& val) { 
-			_ai_light->mDirection.x = val.x;
-			_ai_light->mDirection.y = val.y ; 
-			_ai_light->mDirection.z = val.z;
+		void						LightImpl::createProperties() {
+			_buffer_size = sizeof(float) * 4 * 5; //vec4 attributes
+			_buffer_size += sizeof(float) * 5; //float attributes
+			_buffer_size += sizeof(uint32_t); //uint type
+			
+			 //Adjust buffer size to align on 4N
+			_buffer_size += _buffer_size % (sizeof(float) * 4);
+			_buffer = new char[_buffer_size];
+			F3D_ASSERT(_buffer != nullptr, "Allocating light buffer failed");
+			std::memset(_buffer, 0, _buffer_size);
 		}
-		std::string				LightImpl::getName() const { return std::string(_ai_light->mName.data); }
-		void					LightImpl::setName(const std::string& val) { _ai_light->mName.Set(val); }
-		glm::vec3				LightImpl::getPosition() const { return glm::vec3(_ai_light->mPosition.x, _ai_light->mPosition.y, _ai_light->mPosition.z); }
-		void					LightImpl::setPosition(const glm::vec3& val) {
-			_ai_light->mPosition.x = val.x; 
-			_ai_light->mPosition.y = val.y;
-			_ai_light->mPosition.z = val.z;
+
+		void					LightImpl::updateProperties() {
+			char				*pData = _buffer;
+
+			std::memcpy(&pData[0], glm::value_ptr(_position), 4 * sizeof(float)); //vec4 position
+			std::memcpy(&pData[1 * 4 * sizeof(float)], glm::value_ptr(_direction), 4 * sizeof(float)); //vec4 direction
+			std::memcpy(&pData[2 * 4 * sizeof(float)], glm::value_ptr(_ambient_color), 4 * sizeof(float)); //vec4 ambient_color
+			std::memcpy(&pData[3 * 4 * sizeof(float)], glm::value_ptr(_diffuse_color), 4 * sizeof(float)); //vec4 diffuse_color
+			std::memcpy(&pData[4 * 4 * sizeof(float)], glm::value_ptr(_specular_color), 4 * sizeof(float)); //vec4 specular_color
+			
+			std::memcpy(&pData[5 * 4 * sizeof(float)], &_inner_cone, sizeof(float)); //float inner_cone
+			std::memcpy(&pData[5 * 4 * sizeof(float) + sizeof(float)], &_outer_cone, sizeof(float)); //float outer_cone
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 2 * sizeof(float)], &_constant, sizeof(float)); //float constant
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 3 * sizeof(float)], &_linear, sizeof(float)); //float linear
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 4 * sizeof(float)], &_quadratic, sizeof(float)); //float quadratic
+
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_type, sizeof(uint32_t)); //uint type
 		}
-		Light::eLightType		LightImpl::getType() const { return static_cast<eLightType>(_ai_light->mType); }
-		void			 		LightImpl::setType(eLightType val) { _ai_light->mType = static_cast<aiLightSourceType>(val);  }
+
+		bool								LightImpl::getProperties(void **buf, uint32_t& size) {
+			if (_buffer == nullptr || _buffer_size == 0)
+				return false;
+			updateProperties();
+			*buf = _buffer;
+			size = _buffer_size;
+			return true;
+		}
 	}
 }
