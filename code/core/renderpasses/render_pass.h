@@ -22,12 +22,12 @@ namespace f3d {
 						std::shared_ptr<f3d::core::PhysicalDevice>& physical, 
 						std::shared_ptr<f3d::core::Window>& window);			
 			virtual ~RenderPass();
-
-			RenderPass(const RenderPass& cpy_oth) = default;
-			RenderPass(const RenderPass&& move_oth) = delete;
-			RenderPass& operator=(const RenderPass& cpy_oth) = default;
-			RenderPass&	operator=(const RenderPass&& move_oth) = delete;			
-
+			
+			RenderPass(const RenderPass& cpy_oth) = delete; // No copy
+			RenderPass(const RenderPass&& move_oth) = delete; //No move
+			RenderPass& operator=(const RenderPass& cpy_oth) = delete; //No assignement
+			RenderPass&	operator=(const RenderPass&& move_oth) = delete; // No move assignement
+			
 			RenderPassType			getType() const;
 			void					setType(const RenderPassType val);
 

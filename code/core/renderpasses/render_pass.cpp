@@ -23,6 +23,9 @@ namespace f3d {
 		}
 
 		RenderPass::~RenderPass() {
+			for (auto it = _programs.begin(); it != _programs.end(); ++it)
+				it->second.reset();
+			_programs.clear();
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
@@ -44,8 +47,6 @@ namespace f3d {
 		}
 
 		void					RenderPass::setProgram(f3d::core::Program *program) {
-			std::cout << std::hex << program->getMask() << std::endl;
-
 			_programs[program->getMask()].reset(program);
 		}
 	}

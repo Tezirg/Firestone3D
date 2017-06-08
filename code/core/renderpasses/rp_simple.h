@@ -35,6 +35,9 @@
 #include "core/programs/p-0001_0000_0005_0007.h"
 #include "core/programs/p-0001_0001_0000_0000.h"
 #include "core/programs/p-0001_0001_0000_0003.h"
+#include "core/programs/p-0001_0001_0001_0002.h"
+#include "core/programs/p-0001_0001_0001_0006.h"
+#include "core/programs/p-0001_0001_0003_0006.h"
 #include "core/programs/p-0001_0001_0005_0003.h"
 
 namespace f3d {
@@ -43,7 +46,13 @@ namespace f3d {
 			class F3D_API SimpleRenderPass : public RenderPass {
 			public:
 				SimpleRenderPass(std::shared_ptr<f3d::core::Device>& device, std::shared_ptr<f3d::core::PhysicalDevice>& physical, std::shared_ptr<f3d::core::Window>& window);
-				~SimpleRenderPass();
+				virtual ~SimpleRenderPass();
+
+				SimpleRenderPass(SimpleRenderPass& copy_oth) = delete; // Non-copyable
+				SimpleRenderPass& operator=(SimpleRenderPass& copy_oth) = delete; // No-assign
+				SimpleRenderPass(SimpleRenderPass&& copy_oth) = delete; // Non-movable
+				SimpleRenderPass& operator=(SimpleRenderPass&& copy_oth) = delete; // No-move-assign
+
 
 				void												render(VkCommandBuffer cmd, std::shared_ptr<f3d::tree::Scene> scene);
 			private:

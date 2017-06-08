@@ -13,16 +13,19 @@ namespace f3d {
 			valid_commands = false;
 
 			initCommandBuffers();
-			_renders.insert(std::make_pair(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
+			_renders.emplace(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window));
 		}
 
 		RendererImpl::~RendererImpl() {
-			std::cout << "Destructor: " << __FILE__ << std::endl;
-
 			if (vk_commands != nullptr) {
 				vkFreeCommandBuffers(_device->vk_device, vk_command_pool, vk_command_count, vk_commands);
 				delete[] vk_commands;
 			}
+			
+			
+			for (auto it = _renders.begin(); it != _renders.end(); ++it)
+				it->second.reset();
+			_renders.clear();
 
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
@@ -36,7 +39,7 @@ namespace f3d {
 			valid_commands = false;
 
 			_renders.clear();
-			_renders.insert(std::make_pair(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window)));
+			_renders.emplace(F3D_RENDERPASS_SIMPLE, new f3d::core::renderpass::SimpleRenderPass(_device, _physical, _window));
 		}
 
 		void								RendererImpl::initCommandBuffers() {

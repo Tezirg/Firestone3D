@@ -42,6 +42,9 @@ namespace f3d {
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0003_0006(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0005_0003(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);

@@ -38,7 +38,6 @@ namespace f3d {
 			~Depth();
 		private:
 			void			createVk(); //!< Allocates depth buffer memory
-			void			destroyVk(); //!< Fres depth buffer memory
 		public:
 			VkImage			vk_image; //!< Vulkan iamge type
 			VkImageView		vk_view; //!< Vulkan view type from image

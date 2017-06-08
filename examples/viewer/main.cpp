@@ -18,14 +18,16 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 		(*it)->scale(glm::vec3(4.0f));
 	}
 	
-	//f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
-	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
+	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	l.setName("Test light1");
-	l.setColorAmbient(glm::vec3(0.4f));
+	l.setAttenuationConstant(1.0);
+	l.setColorAmbient(glm::vec3(0.1f));
 	l.setColorDiffuse(glm::vec3(1.0, 1.0, 1.0));
-	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
+	l.setColorSpecular(glm::vec3(1.0f));
+	l.setDirection(glm::vec3(1.0, 1.0, -1.0));
 	l.setPosition(glm::vec3(0.0, 0.0, -42.0));
 	f3d.scene->addLight(&l);
 
