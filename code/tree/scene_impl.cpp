@@ -106,7 +106,7 @@ namespace f3d {
 
 			//Load scene with assimp
 			sceneFile.append(filename);
-			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | \
+			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenSmoothNormals | \
 															aiProcess_Triangulate | aiProcess_SplitLargeMeshes | \
 															aiProcess_SortByPType | aiProcess_OptimizeMeshes | \
 															aiProcess_FlipWindingOrder);
