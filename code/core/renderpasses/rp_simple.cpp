@@ -8,11 +8,12 @@ namespace f3d {
 											   std::shared_ptr<f3d::core::PhysicalDevice>& physical, 
 											   std::shared_ptr<f3d::core::Window>& window):
 				RenderPass::RenderPass(F3D_RENDERPASS_SIMPLE, device, physical, window), 
-				_color_format(VK_FORMAT_R8G8B8A8_UNORM) {
+				_color_format(VK_FORMAT_R16G16B16A16_UNORM) {
 
 
 				WindowImpl *w = dynamic_cast<WindowImpl *>(window.get());
 
+				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				_color_format = w->vk_format;
 				vk_subpasses_count = 1;
 				vk_subpasses = new VkSubpassDescription[1];
@@ -54,8 +55,6 @@ namespace f3d {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);
 				}
-
-				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
 				initFramebuffers();
 			}
@@ -132,7 +131,7 @@ namespace f3d {
 				_attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 				_attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 				_attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				_attachments[1].format = VK_FORMAT_D16_UNORM;
+				_attachments[1].format = _depth->vk_format;
 				_attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
 				_attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 				_attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -256,7 +255,7 @@ namespace f3d {
 				mask.fields.colors = material->colorFlags();
 				mask.fields.textures = material->textureFlags();
 				mask.fields.lights = scene->getLightMask();
-				mask.fields.shading = F3D_SHADING_FLAT;
+				mask.fields.shading = F3D_SHADING_GOURAUD;
 
 				std::cout << m.getMaterialName() << std::endl;
 				std::cout << std::hex << mask.fields.colors << std::endl;
