@@ -25,14 +25,14 @@ namespace f3d {
 
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
 
-				F3D_ASSERT(createSpvShader("0002_0000_0000_0000.vert.spv", &vert_shader) != false, "Flat program vertex shader");
+				F3D_ASSERT(createSpvShader("0002_0000_0000_0000.vert.spv", &vert_shader) != false, "Program_0002_0000_0000_0000 vertex shader");
 
 				shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 				shaderStages[0].module = vert_shader;
 				shaderStages[0].pName = "main";
 
-				F3D_ASSERT(createSpvShader("0002_0000_0000_0000.frag.spv", &frag_shader) != false, "Flat program fragment shader");
+				F3D_ASSERT(createSpvShader("0002_0000_0000_0000.frag.spv", &frag_shader) != false, "Program_0002_0000_0000_0000 fragment shader");
 
 				shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;

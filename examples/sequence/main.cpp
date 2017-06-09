@@ -16,8 +16,16 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	std::list<std::string>*	sequence = static_cast<std::list<std::string>*>(arg);
 	f3d::tree::Light		l;
 
-	for (auto it = sequence->begin(); it != sequence->end(); ++it)
-		f3d.scene->loadFromFile("./", *it);
+
+	for (auto it = sequence->begin(); it != sequence->end(); ++it) {
+		std::string path(*it);
+		std::string file(*it);
+
+		path = path.substr(0, path.find_last_of("/\\") + 1);
+		file = file.substr(file.find_last_of("/\\") + 1);
+
+		f3d.scene->loadFromFile(path, file);
+	}
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
 		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
@@ -80,9 +88,9 @@ void				updateScene(f3d::Firestone& f3d, void * arg) {
 	t = glm::translate(t, glm::vec3(x, y, z));
 
 	float ay = 0.0f;
-	ay += joystick->axisState(joystick->AXIS_RS_X) / 25.0f;
+	ay += joystick->axisState(joystick->AXIS_RS_X) / 50.0f;
 	float ax = 0.0f;
-	ax += joystick->axisState(joystick->AXIS_RS_Y) / 25.0f;
+	ax += joystick->axisState(joystick->AXIS_RS_Y) / 90.0f;
 
 	if (ay != 0.0f)
 		r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));

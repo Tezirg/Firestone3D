@@ -107,15 +107,15 @@ static void										joystick_update(int joy) {
 	f3d::Firestone*								f3d = f3d::getF3D();
 	f3d::FirestoneImpl*							f3d_impl = dynamic_cast<f3d::FirestoneImpl*>(f3d);
 	int											count = 0;
-	const float *								axis;
-	const unsigned char *						buttons;
+	const float *								axis = nullptr;
+	const unsigned char *						buttons = nullptr;
 
 	if (glfwJoystickPresent(joy) == GLFW_FALSE)
 		return;
 
 	//Update axis status
 	axis = glfwGetJoystickAxes(joy, &count);
-	for (int32_t i = 0; i < count; i++) {
+	for (int32_t i = 0; i < count && axis != nullptr; i++) {
 		f3d_impl->joystickEvent.reset(new f3d::utils::JoystickInput(joy, i, axis[i]));
 		if (f3d->_joystick_input != nullptr) { //Emit one event per axis
 			f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent, f3d->_joystick_input_arg);
@@ -125,7 +125,7 @@ static void										joystick_update(int joy) {
 	count = 0;
 	buttons = glfwGetJoystickButtons(joy, &count);
 	//Update buttons status
-	for (int32_t i = 0; i < count; i++) {
+	for (int32_t i = 0; i < count && buttons != nullptr; i++) {
 		//Compute button state, defaults to Undefined
 		f3d::utils::JoystickInput::eJoystickButtonState state = f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_UNDEFINED;
 		state = (buttons[i] == GLFW_PRESS) ? f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_PRESS : state;
