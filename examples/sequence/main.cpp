@@ -142,7 +142,7 @@ int main(int ac, char **av) {
 
 	std::list<std::string>			sequence;
 
-	for (uint32_t i = 1; i < ac; i++) {
+	for (int32_t i = 1; i < ac; i++) {
 		sequence.push_back(av[i]);
 	}
 
