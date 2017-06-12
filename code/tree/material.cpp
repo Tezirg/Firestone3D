@@ -6,6 +6,7 @@ namespace f3d {
 		Material::Material(const std::string& name) :
 			_name(name), _shininess(0.0f) {
 			_color_mask = F3D_COLOR_UNDEFINED;
+			_shading = F3D_SHADING_FLAT;
 			_texture_mask = F3D_TEXTURE_UNDEFINED;
 		}
 
@@ -57,6 +58,14 @@ namespace f3d {
 
 		ColorTypeFlags			Material::colorFlags() const {
 			return _color_mask;
+		}
+
+		void					Material::setShading(const eShadingType& type) {
+			_shading = type;
+		}
+
+		eShadingType			Material::shadingFlags(void) const {
+			return _shading;
 		}
 
 		void					Material::addTexture(f3d::tree::Texture *texture) {

@@ -31,6 +31,12 @@ namespace f3d {
 				//Flat shaders
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0007(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0003_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0002_0000_0001(physical, device));
 				//Gouraud shaders
 				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0000(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0001(physical, device));
@@ -250,26 +256,28 @@ namespace f3d {
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
 
-
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
-				mask.fields.colors = material->colorFlags();
-				mask.fields.textures = material->textureFlags();
-				mask.fields.lights = scene->getLightMask();
-				mask.fields.shading = F3D_SHADING_GOURAUD;
+				if (material != nullptr) {
+					mask.fields.colors = 0x01;//material->colorFlags();
+					mask.fields.textures = 0x00;// material->textureFlags();
+					mask.fields.lights = scene->getLightMask();
+					mask.fields.shading = 0x01;// material->shadingFlags();
 
-				std::cout << m.getMaterialName() << std::endl;
-				std::cout << std::hex << mask.fields.colors << std::endl;
+					std::cout << m.getMaterialName() << std::endl;
+					std::cout << std::hex << mask.fields.colors << std::endl;
 
-				auto prog = getProgram(mask.mask);
-				if (prog != nullptr) {
-					std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
-					prog->drawToCommandBuffer(cmd, mesh, *scene);
+					auto prog = getProgram(mask.mask);
+					if (prog != nullptr) {
+						std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
+						prog->drawToCommandBuffer(cmd, mesh, *scene);
+					}
+					else {
+						std::cout << "Unknown combination: " << std::hex << mask.mask << std::endl;
+						prog = getProgram(0x0001000000000000);
+						prog->drawToCommandBuffer(cmd, mesh, *scene);
+					}
 				}
-				else {
-					std::cout << "Unknown combination: " <<  std::hex << mask.mask << std::endl;
-					prog = getProgram(0x0001000000000000);
-					prog->drawToCommandBuffer(cmd, mesh, *scene);
-				}
+
 			}
 		}
 	}

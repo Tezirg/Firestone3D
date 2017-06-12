@@ -39,7 +39,7 @@ namespace f3d {
 				if ((*it)->getName() == name)
 					return *it;
 			}
-			return  nullptr;
+			return nullptr;
 		}
 
 		void											Scene::addObject(f3d::tree::Object* obj) {

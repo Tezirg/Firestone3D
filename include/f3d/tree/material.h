@@ -30,6 +30,9 @@ namespace f3d {
 			bool					removeColor(const eColorType type);
 			ColorTypeFlags			colorFlags() const;
 
+			void					setShading(const eShadingType& type);
+			eShadingType			shadingFlags(void) const;
+
 			float					getShininess(void) const;
 			void					setShininess(const float value);
 
@@ -43,6 +46,7 @@ namespace f3d {
 			float								_shininess;
 			std::map<eColorType, glm::vec3>		_colors;
 			ColorTypeFlags						_color_mask;
+			eShadingType						_shading;
 			std::map< TextureTypeFlags, f3d::tree::Texture *>	_textures;
 			TextureTypeFlags					_texture_mask;
 		};
