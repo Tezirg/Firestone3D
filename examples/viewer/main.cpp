@@ -23,11 +23,11 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	l.setName("Test light1");
-	l.setType(f3d::F3D_LIGHT_POINT);
+	//l.setType(f3d::F3D_LIGHT_POINT);
 	l.setAttenuationConstant(3.0);
 	l.setAttenuationLinear(0.0);
-	l.setColorAmbient(glm::vec3(0.1f));
-	l.setColorDiffuse(glm::vec3(1.0, 1.0, 1.0));
+	l.setColorAmbient(glm::vec3(0.25f));
+	l.setColorDiffuse(glm::vec3(0.666, 0.666, 0.666));
 	l.setColorSpecular(glm::vec3(1.0f));
 	l.setDirection(glm::vec3(1.0, 1.0, -1.0));
 	l.setPosition(glm::vec3(0.0, 5.0, 0.0));
@@ -67,14 +67,14 @@ void				updateScene(f3d::Firestone& f3d, void * arg) {
 
 
 	float ay = 0.0f;
-	ay += (joystick->axisState(joystick->AXIS_RS_X) / 25.0f)  * stick_ratio;
+	ay -= (joystick->axisState(joystick->AXIS_RS_X) / 25.0f)  * stick_ratio;
 	float ax = 0.0f;
-	ax += (joystick->axisState(joystick->AXIS_RS_Y) / 25.0f);
+	ax -= (joystick->axisState(joystick->AXIS_RS_Y) / 25.0f);
 
 	if (ay != 0.0f)
-		r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));
+		r = glm::rotate(ay, glm::vec3(0.0f, 1.0f, 0.0f));
 	if (ax != 0.0f)
-		r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
+		r2 = glm::rotate(ax, glm::vec3(-1.0f, 0.0f, 0.0f));
 
 	f3d.scene->getCamera()->setView(t * r2 * r * f3d.scene->getCamera()->getView());
 }

@@ -35,14 +35,16 @@ layout(location = 0) out vec4 outFragColor;
 
 void main() 
 {
-
+	vec4 ambient_color = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 diffuse_color = vec4(0.0, 0.0, 0.0, 0.0);
 	vec4 specular_color = vec4(0.0, 0.0, 0.0, 0.0);
 	for (uint i = 0; i < n_light.value; i++) {
 		vec3 l = vec3(normalize(Light[i].direction));
 		float angle = max(dot(vec3(inNormal),l), 0.0);
+		
+		ambient_color += Material.ambient_color * Light[i].ambient_color;
 		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUv) * Light[i].diffuse_color * angle;
 		specular_color += Material.specular_color * Light[i].specular_color * angle * (1.0 / Light[i].constant);
 	}
-	outFragColor = clamp(diffuse_color + specular_color, 0.0, 1.0);
+	outFragColor = clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0);
 }
