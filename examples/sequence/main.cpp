@@ -9,15 +9,23 @@ static glm::mat4 r;
 static glm::mat4 r2;
 static glm::mat4 t;
 
+static bool										domain_btn = false;
+std::list<std::string>							domain_str;
+static std::list<f3d::tree::Object *>			domain;
+static std::list<f3d::tree::Object*>::iterator	domain_it;
+
+static bool										sequence_btn = false;
+static std::list<std::string>					sequence_str;
+static std::list<f3d::tree::Object *>			sequence;
 static uint32_t									sequence_frequency = 0;
 static std::list<f3d::tree::Object*>::iterator	sequence_it;
+static bool										sequence_playing = false;
 
 void		loadScene(f3d::Firestone& f3d, void * arg) {
-	std::list<std::string>*	sequence = static_cast<std::list<std::string>*>(arg);
 	f3d::tree::Light		l;
 
-
-	for (auto it = sequence->begin(); it != sequence->end(); ++it) {
+	//Load sequence objects
+	for (auto it = sequence_str.begin(); it != sequence_str.end(); ++it) {
 		std::string path(*it);
 		std::string file(*it);
 
@@ -25,79 +33,138 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 		file = file.substr(file.find_last_of("/\\") + 1);
 
 		f3d.scene->loadFromFile(path, file);
+		sequence.push_back(f3d.scene->getObjects().back());
 	}
-
-	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
-		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
-		(*it)->scale(glm::vec3(4.0f));
+	//Adjust sequence objects
+	for (auto it = sequence.begin(); it != sequence.end(); ++it) {
+		for (auto child_it = (*it)->getRoot()->getChildren().begin(); child_it != (*it)->getRoot()->getChildren().end(); ++child_it) {
+			for (auto mat_it = (*child_it)->getMeshes().begin(); mat_it != (*child_it)->getMeshes().end(); ++mat_it) {
+				auto mat = f3d.scene->getMaterialByName((*mat_it)->getMaterialName());
+				std::cout << mat->getName() << std::endl;
+				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec3(0.640f)); // Nice blue color
+				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(0.000, 0.749f, 1.000f)); // Gray diffuse spectrum
+			}
+		}
+		(*it)->scale(glm::vec3(1.0f));
 		(*it)->translate(glm::vec3(0.0, -100000.0, 0.0));
 	}
-	sequence_it = f3d.scene->getObjects().begin();
-	(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+	//Prepare sequence play
+	sequence_it = sequence.begin();
 	sequence_frequency = 0;
 
-	//f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
-	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+
+	//Load Domain object
+	for (auto it = domain_str.begin(); it != domain_str.end(); ++it) {
+		std::string path(*it);
+		std::string file(*it);
+
+		path = path.substr(0, path.find_last_of("/\\") + 1);
+		file = file.substr(file.find_last_of("/\\") + 1);
+
+		f3d.scene->loadFromFile(path, file);
+		domain.push_back(f3d.scene->getObjects().back());
+	}
+	//Adjust Domain objects
+	for (auto it = domain.begin(); it != domain.end(); ++it) {
+		(*it)->scale(glm::vec3(1.0f));
+		(*it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+	}
+	//Still show the first one
+	domain.front()->translate(glm::vec3(0.0, 100000.0, 0.0));
+	domain_it = domain.begin();
+
+
+	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
+	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
 	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
-	l.setName("Test light1");
-	l.setColorAmbient(glm::vec3(0.0f));
-	l.setColorDiffuse(glm::vec3(-1.0, 1.0, 1.0));
-	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
-	l.setPosition(glm::vec3(0.0, 0.0, -42.0));
+	l.setName("light1");
+	//l.setType(f3d::F3D_LIGHT_POINT);
+	l.setAttenuationConstant(0.1f);
+	l.setAttenuationLinear(0.05f);
+	l.setColorAmbient(glm::vec3(0.2f));
+	l.setColorDiffuse(glm::vec3(1.0f));
+	l.setColorSpecular(glm::vec3(0.0f));
+	l.setDirection(glm::vec3(0.0f, 1.0f, -1.0f));
+	l.setPosition(glm::vec3(0.0f, 20.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
-	l.setName("Test light2");
-	l.setColorAmbient(glm::vec3(0.1f));
-	l.setColorDiffuse(glm::vec3(0.0, 0.0, 1.0));
-	l.setDirection(glm::vec3(1.0, 1.0, 0.0));
-	l.setPosition(glm::vec3(0.0, 0.0, -44.0));
+	l.setName("light2");
+	//l.setColorDiffuse(glm::vec3(0.0f, 0.0f, 0.2f));
+	l.setDirection(glm::vec3(0.0f, 1.0f, 1.0f));
 	f3d.scene->addLight(&l);
+
+
 }
 
-void				updateScene(f3d::Firestone& f3d, void * arg) {
-	glm::mat4		r;
-	glm::mat4		r2;
-	glm::mat4		t;
-	/*
-		left stick move regarding to forward vector
-		right stick pan camera left / right
-		RL y aix down, RT y axis up
-	*/
+void									updateScene(f3d::Firestone& f3d, void * arg) {
+	f3d::helpers::Xbox360Controller*	joystick = (f3d::helpers::Xbox360Controller*)arg; 
+	glm::mat4							r;
+	glm::mat4							r2;
+	glm::mat4							t;
+	float								x = 0.0f;
+	float								y = 0.0f;
+	float								z = 0.0f;
+	float								ax = 0.0f;
+	float								ay = 0.0f;
 
-	sequence_frequency++;
-	if (sequence_frequency % 10 == 0) { // Every 20 frames
-		(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
-		sequence_it++;
-		if (sequence_it == f3d.scene->getObjects().end())
-			sequence_it = f3d.scene->getObjects().begin();
-		(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
-		sequence_frequency = 0;
-	}
-
-
-	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
-	
-	float z = 0.0f;
+	//Camera contrls management
 	z += joystick->axisState(joystick->AXIS_LS_Y) * 2.0f;
-	float x = 0.0f;
 	x += joystick->axisState(joystick->AXIS_LS_X) * 2.0f;
-	float y = 0.0f;
 	y += (-(joystick->axisState(joystick->AXIS_LT) + 1.0f) * 2.0f); // Y up Left trigger
 	y += (joystick->axisState(joystick->AXIS_RT) + 1.0f) * 2.0f; //Y down on right trigger
-	t = glm::translate(t, glm::vec3(x, y, z));
-
-	float ay = 0.0f;
 	ay += joystick->axisState(joystick->AXIS_RS_X) / 50.0f;
-	float ax = 0.0f;
 	ax += joystick->axisState(joystick->AXIS_RS_Y) / 90.0f;
 
+	t = glm::translate(t, glm::vec3(x, y, z));
 	if (ay != 0.0f)
 		r = glm::rotate(ay, glm::vec3(0.0f, -1.0f, 0.0f));
 	if (ax != 0.0f)
 		r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
-
 	f3d.scene->getCamera()->setView(t * r2 * r * f3d.scene->getCamera()->getView());
+
+
+	//Sequence controls management
+	if (joystick->isButtonPressed(joystick->BUTTON_B))
+		sequence_btn = true;
+	if (joystick->isButtonReleased(joystick->BUTTON_B) && sequence_btn == true) {
+		sequence_playing = !sequence_playing;
+		sequence_btn = false;
+		if (sequence_playing) // Start playing
+			(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+		else {
+			(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+			sequence_it = sequence.begin();
+			sequence_frequency = 0;
+		}
+	}
+	//Domain controls management
+	if (joystick->isButtonPressed(joystick->BUTTON_A))
+		domain_btn = true;
+	if (joystick->isButtonReleased(joystick->BUTTON_A) && domain_btn == true) {
+		(*domain_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+		++domain_it;
+		if (domain_it == domain.end())
+			domain_it = domain.begin();
+		(*domain_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+		domain_btn = false;
+	}
+
+	//Update sequence if playing
+	if (sequence_playing == true) {
+		sequence_frequency++;
+		if (sequence_frequency % 10 == 0) { // Every 10 frames
+			(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+			sequence_it++;
+			if (sequence_it == sequence.end())
+				sequence_it = sequence.begin();
+			(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+			sequence_frequency = 0;
+		}
+	}
+
+
+
 }
 
 void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg) {
@@ -140,10 +207,12 @@ void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickE
 
 int main(int ac, char **av) {
 
-	std::list<std::string>			sequence;
+	F3D_ASSERT(ac >= 3, "Need a least two domain meshes optionaly followed by a mesh sequence")
 
-	for (int32_t i = 1; i < ac; i++) {
-		sequence.push_back(av[i]);
+	domain_str.push_back(av[1]);
+	domain_str.push_back(av[2]);
+	for (int32_t i = 3; i < ac; i++) {
+		sequence_str.push_back(av[i]);
 	}
 
 	f3d::helpers::Xbox360Controller joystick;

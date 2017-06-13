@@ -228,7 +228,7 @@ namespace f3d {
 		render->computeCommandBuffers(scene);
 
 		uint64_t frame_interval = (uint64_t)1e9 / settings->fpsCap; //Compute framerate
-		uint64_t joystick_interval = (uint64_t)1e9 / 20; //Update joysticks every 50ms
+		uint64_t joystick_interval = (uint64_t)1e9 / 10; //Update joysticks every 100ms
 		while (_run == true) {
 			//Event Management
 			{

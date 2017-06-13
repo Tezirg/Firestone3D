@@ -15,7 +15,7 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 
 	for (auto it = f3d.scene->getObjects().begin(); it != f3d.scene->getObjects().end(); ++it) {
 		//(*it)->rotate(90.0f * 3.14f / 180.0f, glm::vec3(-1.0f, 0.0f, 0.0f));
-		(*it)->scale(glm::vec3(4.0f));
+		(*it)->scale(glm::vec3(2.0f));
 	}
 	
 	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
@@ -24,15 +24,18 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 
 	l.setName("Test light1");
 	//l.setType(f3d::F3D_LIGHT_POINT);
-	l.setAttenuationConstant(3.0);
-	l.setAttenuationLinear(0.0);
-	l.setColorAmbient(glm::vec3(0.25f));
-	l.setColorDiffuse(glm::vec3(0.666, 0.666, 0.666));
-	l.setColorSpecular(glm::vec3(1.0f));
-	l.setDirection(glm::vec3(1.0, 1.0, -1.0));
-	l.setPosition(glm::vec3(0.0, 5.0, 0.0));
+	l.setAttenuationConstant(0.1f);
+	l.setAttenuationLinear(0.05f);
+	l.setColorAmbient(glm::vec3(0.1f));
+	l.setColorDiffuse(glm::vec3(1.0f));
+	l.setColorSpecular(glm::vec3(0.0f));
+	l.setDirection(glm::vec3(0.0f, 1.0f, -1.0f));
+	l.setPosition(glm::vec3(0.0f, 20.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
+	//l.setColorDiffuse(glm::vec3(0.0f, 0.0f, 0.2f));
+	l.setDirection(glm::vec3(0.0f, 1.0f, 1.0f));
+	f3d.scene->addLight(&l);
 }
 
 static float distance = 400.0f;

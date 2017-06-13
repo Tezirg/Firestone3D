@@ -20,7 +20,7 @@ namespace f3d {
 				_clear[0].color.float32[0] = 0.2f;
 				_clear[0].color.float32[1] = 0.2f;
 				_clear[0].color.float32[2] = 0.2f;
-				_clear[0].color.float32[3] = 0.0f;
+				_clear[0].color.float32[3] = 0.2f;
 				_clear[1].depthStencil.depth = 1.0f;
 				_clear[1].depthStencil.stencil = 0;
 
@@ -58,6 +58,7 @@ namespace f3d {
 				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0007(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0002_0001_0003_0006(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0002_0001_0005_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0002_0000_0001(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);

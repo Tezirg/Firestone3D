@@ -78,6 +78,7 @@ SET ( f3d_program_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0001_0007.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0003_0006.h
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0005_0003.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0002_0000_0001.h
 )
 
 SET ( f3d_program_src
@@ -112,6 +113,7 @@ SET ( f3d_program_src
 	core/programs/gouraud/p-0002_0001_0001_0007.cpp
 	core/programs/gouraud/p-0002_0001_0003_0006.cpp
 	core/programs/gouraud/p-0002_0001_0005_0003.cpp
+	core/programs/gouraud/p-0002_0002_0000_0001.cpp
 )
 SOURCE_GROUP( impl\\programs FILES ${f3d_program_src} ${f3d_program_headers})
 
