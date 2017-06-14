@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.0 )
 
 SET ( bin sequence)
-SET ( src main.cpp )
+SET ( src main.cpp getopt.c getopt.h )
 
 INCLUDE_DIRECTORIES( ${F3D_INCLUDE_INSTALL_DIR}
 					 "${CMAKE_CURRENT_SOURCE_DIR}/include"

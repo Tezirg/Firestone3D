@@ -1,5 +1,8 @@
 #include <f3d/f3d.h>
 #include <f3d/helpers/xbox_360.hpp>
+#include <list>
+
+#include "getopt.h"
 
 static float distance = 400.0f;
 static glm::vec3 center;
@@ -45,7 +48,7 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(0.000, 0.749f, 1.000f)); // Gray diffuse spectrum
 			}
 		}
-		(*it)->scale(glm::vec3(1.0f));
+		(*it)->scale(glm::vec3(0.5f));
 		(*it)->translate(glm::vec3(0.0, -100000.0, 0.0));
 	}
 	//Prepare sequence play
@@ -66,7 +69,7 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	}
 	//Adjust Domain objects
 	for (auto it = domain.begin(); it != domain.end(); ++it) {
-		(*it)->scale(glm::vec3(1.0f));
+		(*it)->scale(glm::vec3(0.5f));
 		(*it)->translate(glm::vec3(0.0, -100000.0, 0.0));
 	}
 	//Still show the first one
@@ -74,9 +77,9 @@ void		loadScene(f3d::Firestone& f3d, void * arg) {
 	domain_it = domain.begin();
 
 
-	f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
-	//f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
-	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 25.0f, 400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	//f3d.scene->getCamera()->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
+	f3d.scene->getCamera()->lookAt(glm::vec3(0.0f, 120.0f, -800.0f), glm::vec3(0.0f, 20.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	l.setName("light1");
 	//l.setType(f3d::F3D_LIGHT_POINT);
@@ -127,7 +130,7 @@ void									updateScene(f3d::Firestone& f3d, void * arg) {
 	//Sequence controls management
 	if (joystick->isButtonPressed(joystick->BUTTON_B))
 		sequence_btn = true;
-	if (joystick->isButtonReleased(joystick->BUTTON_B) && sequence_btn == true) {
+	if (joystick->isButtonReleased(joystick->BUTTON_B) && sequence_btn == true && sequence.empty() == false) {
 		sequence_playing = !sequence_playing;
 		sequence_btn = false;
 		if (sequence_playing) // Start playing
@@ -151,19 +154,15 @@ void									updateScene(f3d::Firestone& f3d, void * arg) {
 	}
 
 	//Update sequence if playing
-	if (sequence_playing == true) {
+	if (sequence_playing == true && sequence.empty() == false) {
 		sequence_frequency++;
-		if (sequence_frequency % 10 == 0) { // Every 10 frames
-			(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
-			sequence_it++;
-			if (sequence_it == sequence.end())
-				sequence_it = sequence.begin();
-			(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
-			sequence_frequency = 0;
-		}
+		(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+		sequence_it++;
+		if (sequence_it == sequence.end())
+			sequence_it = sequence.begin();
+		(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+		sequence_frequency = 0;
 	}
-
-
 
 }
 
@@ -176,16 +175,28 @@ void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg
 	if (keyEvent.keycode == 256 && keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS)
 		f3d.stop();
 
-	std::cout << keyEvent.keycode << std::endl;
+	std::cout << std::dec << keyEvent.keycode << std::endl;
 	if (keyEvent.keycode == 331 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Left arrow
 		ay += -0.1f;
 	if (keyEvent.keycode == 333 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Right arrow
 		ay += 0.1f;
 	if (keyEvent.keycode == 328 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Top arrow
 		z = 5.0f;
-	if (keyEvent.keycode == 336 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) //Down arrow
+	if (keyEvent.keycode == 336 && (keyEvent.state == keyEvent.F3D_KEY_STATE_PRESS || keyEvent.state == keyEvent.F3D_KEY_STATE_REPEAT)) {//Down arrow
 		z = -5.0f;
+	}
 
+	if (keyEvent.keycode == 57 && keyEvent.state == keyEvent.F3D_KEY_STATE_RELEASE && sequence.empty() == false) { // Space bar
+		sequence_playing = !sequence_playing;
+		sequence_btn = false;
+		if (sequence_playing) // Start playing
+			(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
+		else {
+			(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
+			sequence_it = sequence.begin();
+			sequence_frequency = 0;
+		}
+	}
 	r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
 	t = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, z));
 	f3d.scene->getCamera()->setView(t * r * f3d.scene->getCamera()->getView());
@@ -205,15 +216,29 @@ void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickE
 	joystick->update(joystickEvent);
 }
 
-int main(int ac, char **av) {
+int				main(int ac, char **av) {
+	int32_t		flag = -1;
+	option		opt[] = {
+		{ "domain", 1, 0, 0 },
+		{ "sequence", 1, 0, 1 },
+		{ 0, 0, 0, 0 }
+	};
 
-	F3D_ASSERT(ac >= 3, "Need a least two domain meshes optionaly followed by a mesh sequence")
-
-	domain_str.push_back(av[1]);
-	domain_str.push_back(av[2]);
-	for (int32_t i = 3; i < ac; i++) {
-		sequence_str.push_back(av[i]);
+	while ((flag = getopt_long(ac, av, "", opt, 0)) != -1) {
+		switch (flag) {
+			case 0:
+				domain_str.push_back(optarg);
+				std::cout << "Domain:" << optarg << std::endl;
+				break;
+			case 1:
+				sequence_str.push_back(optarg);
+				std::cout << "Serquence:" << optarg << std::endl;
+				break;
+			default:
+				break;
+		}
 	}
+
 
 	f3d::helpers::Xbox360Controller joystick;
 	f3d::Firestone	*engine = f3d::getF3D();
@@ -224,7 +249,7 @@ int main(int ac, char **av) {
 	engine->mouseEventsCallback(mouseCallback, NULL);
 	engine->joystickEventsCallback(joystickCallback, &joystick);
 	engine->settings->applicationName.assign("Sample viewer");
-	engine->settings->fpsCap = 60;
+	engine->settings->fpsCap = 40;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
 	engine->settings->fullScreen = false;
