@@ -33,7 +33,7 @@ namespace f3d {
 			std::chrono::steady_clock::time_point	_stop_clock;
 			std::chrono::nanoseconds				_duration;
 		};
-		std::ostream&	operator<<(std::ostream& os, const Timer& t);
+		F3D_API std::ostream&	operator<<(std::ostream& os, const Timer& t);
 	}
 }
 

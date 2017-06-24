@@ -19,6 +19,7 @@ namespace f3d {
 			virtual void			swapBuffers() = 0;
 			int						width() const;
 			int						height() const;
+			const glm::vec4&		clearColor() const;
 			
 		protected:
 			std::shared_ptr<f3d::core::Settings>		_settings;

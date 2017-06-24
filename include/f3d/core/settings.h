@@ -22,6 +22,7 @@ namespace f3d {
 				uint32_t		applicationVersion;
 				uint32_t		windowWidth;
 				uint32_t		windowHeight;
+				glm::vec4		windowClearColor;
 				bool			fullScreen;
 				uint32_t		fpsCap;
 				bool			vSync;

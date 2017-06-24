@@ -43,6 +43,7 @@
 #include <cstdio>
 #include <memory>
 #include <utility>
+#include <functional>
 #include <iostream>
 #include <string>
 

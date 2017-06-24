@@ -17,10 +17,10 @@ namespace f3d {
 				_color_format = w->vk_format;
 				vk_subpasses_count = 1;
 				vk_subpasses = new VkSubpassDescription[1];
-				_clear[0].color.float32[0] = 0.2f;
-				_clear[0].color.float32[1] = 0.2f;
-				_clear[0].color.float32[2] = 0.2f;
-				_clear[0].color.float32[3] = 0.2f;
+				_clear[0].color.float32[0] = window->clearColor().r;
+				_clear[0].color.float32[1] = window->clearColor().g;
+				_clear[0].color.float32[2] = window->clearColor().b;
+				_clear[0].color.float32[3] = window->clearColor().a;
 				_clear[1].depthStencil.depth = 1.0f;
 				_clear[1].depthStencil.stencil = 0;
 

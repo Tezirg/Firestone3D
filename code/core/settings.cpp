@@ -14,6 +14,7 @@ namespace f3d {
 			applicationVersion = (1 << 24);
 			windowWidth = 800;
 			windowHeight = 600;
+			windowClearColor = glm::vec4(0.2, 0.2, 0.2, 1.0);
 			fullScreen = false;
 			fpsCap = 30;
 			vSync = false;
