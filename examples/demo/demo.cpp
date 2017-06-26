@@ -43,7 +43,7 @@ bool		Demo::run()
 	engine->keybordEventsCallback(keyboard_fn, nullptr);
 	engine->mouseEventsCallback(mouse_fn, nullptr);
 	engine->joystickEventsCallback(joystick_fn, nullptr);
-	engine->settings->applicationName.assign("Sample viewer");
+	engine->settings->applicationName.assign("Demo");
 	engine->settings->fpsCap = 40;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
@@ -72,7 +72,11 @@ void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
 		file = file.substr(file.find_last_of("/\\") + 1);
 
 		f3d.scene->loadFromFile(path, file);
-		_sequence_mesh.push_back(f3d.scene->getObjects().back());
+		auto obj = f3d.scene->getObjects().back();
+		_sequence_mesh.push_back(obj);
+		obj->scale(glm::vec3(0.5f));
+		hideObject(obj);
+
 	}
 	//Load sequence_frames objects
 	for (auto it = _sequence_frame_str.begin(); it != _sequence_frame_str.end(); ++it) {
@@ -83,11 +87,12 @@ void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
 		file = file.substr(file.find_last_of("/\\") + 1);
 
 		f3d.scene->loadFromFile(path, file);
-		_sequence_frame.push_back(f3d.scene->getObjects().back());
+		auto obj = f3d.scene->getObjects().back();
+		_sequence_frame.push_back(obj);
+		obj->scale(glm::vec3(0.5f));
+		hideObject(obj);
 	}
 	_sequence_it = _sequence_frame.begin();
-	//Hide sequence demo first
-	hideSequenceData();
 
 	//Load texture_mesh objects
 	for (auto it = _texture_mesh_str.begin(); it != _texture_mesh_str.end(); ++it) {
@@ -104,7 +109,6 @@ void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
 	for (auto it = _texture_material_str.begin(); it != _texture_material_str.end(); ++it) {
 		f3d::tree::Material *mat = engine->scene->getMaterialByName(*it);
 		_texture_material.push_back(mat);
-		std::cout << mat->getName() << std::endl;
 	}
 	_texture_material_it = _texture_material.begin();
 
@@ -269,53 +273,6 @@ void		Demo::updateScene(f3d::Firestone& f3d, void * arg)
 		cycleSequenceData();
 	}
 
-
-
-	/*
-	//Sequence controls management
-	if (joystick->isButtonPressed(joystick->BUTTON_B))
-		sequence_btn = true;
-	if (joystick->isButtonReleased(joystick->BUTTON_B) && sequence_btn == true && sequence.empty() == false) {
-		sequence_playing = !sequence_playing;
-		sequence_btn = false;
-		if (sequence_playing) { // Start playing
-			(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
-			sequence_timer.restart();
-		}
-		else {
-			(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
-			sequence_it = sequence.begin();
-			sequence_frequency = 0;
-			sequence_timer.stop();
-		}
-	}
-	*/
-
-	/*
-	//Texture controls management
-	if (joystick->isButtonPressed(joystick->BUTTON_A))
-		domain_btn = true;
-	if (joystick->isButtonReleased(joystick->BUTTON_A) && domain_btn == true) {
-		(*domain_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
-		++domain_it;
-		if (domain_it == domain.end())
-			domain_it = domain.begin();
-		(*domain_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
-		domain_btn = false;
-	}
-
-	//Update sequence if playing
-	if (sequence_playing == true && sequence.empty() == false && sequence_timer.seconds() >= 1) {
-		sequence_frequency++;
-		(*sequence_it)->translate(glm::vec3(0.0, -100000.0, 0.0));
-		sequence_it++;
-		if (sequence_it == sequence.end())
-			sequence_it = sequence.begin();
-		(*sequence_it)->translate(glm::vec3(0.0, 100000.0, 0.0));
-		sequence_frequency = 0;
-		sequence_timer.restart();
-	}
-	// */
 }
 
 void		Demo::keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg)

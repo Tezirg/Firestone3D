@@ -265,7 +265,7 @@ namespace f3d {
 					mask.fields.lights = scene->getLightMask();
 					mask.fields.shading = F3D_SHADING_GOURAUD;// material->shadingFlags();
 
-					//std::cout << m.getMaterialName() << std::endl;
+					//std::cout << m.getName() << " with material : " << m.getMaterialName() << std::endl;
 					//std::cout << std::hex << mask.fields.colors << std::endl;
 
 					auto prog = getProgram(mask.mask);
