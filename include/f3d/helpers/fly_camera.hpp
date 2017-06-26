@@ -79,11 +79,11 @@ namespace f3d {
 					_fov_tweak = !_fov_tweak;
 					if (_fov_tweak) {
 						_camera->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
-						_camera->lookAt(glm::vec3(0.0f, 100.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+						_camera->lookAt(glm::vec3(0.0f, 0.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 					}
 					else {
 						_camera->setPerspective2(156.5f, 30720.0f / 4320.0f, 0.1f, 2048.0f);
-						_camera->lookAt(glm::vec3(0.0f, 100.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+						_camera->lookAt(glm::vec3(0.0f, 0.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 					}
 				}
 
