@@ -55,14 +55,14 @@ namespace f3d {
 			}
 
 			Xbox360Controller(const Xbox360Controller& oth_cpy) = default;
-			Xbox360Controller(Xbox360Controller&& oth_move) = default;
+			Xbox360Controller(Xbox360Controller&& oth_move) = delete;
 			Xbox360Controller&	operator=(const Xbox360Controller& oth_assign_cpy) = default;
-			Xbox360Controller&	operator=(Xbox360Controller&& oth_assign_move) = default;
+			Xbox360Controller&	operator=(Xbox360Controller&& oth_assign_move) = delete;
 
-			void	update(const f3d::utils::JoystickInput& input) {
+			void	updateFromEvent(const f3d::utils::JoystickInput& input) {
 				if (input.type == f3d::utils::JoystickInput::eJoystickInputType::F3D_JOYSTICK_INPUT_BUTTON) {
 					eButton b = static_cast<eButton>(input.inputIndex);
-					_button_state[b] = input.buttonState == f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_PRESS;
+					_button_state[b] = input.buttonState;
 				}
 				else if (input.type == f3d::utils::JoystickInput::eJoystickInputType::F3D_JOYSTICK_INPUT_AXIS) {
 					eAxis a = static_cast<eAxis>(input.inputIndex);
@@ -73,12 +73,18 @@ namespace f3d {
 				}
 			}
 
-			bool	isButtonPressed(const eButton button) const {
-				return _button_state.at(button);
+			bool	isButtonPressed(const eButton button) {
+				if (_button_state[button] == f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_PRESS ||
+					_button_state[button] == f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_REPEAT)
+					return true;
+				return false;
 			}
 
-			bool	isButtonReleased(const eButton button) const {
-				return !_button_state.at(button);
+			bool	isButtonReleased(const eButton button){
+				if (_button_state[button] == f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_PRESS ||
+					_button_state[button] == f3d::utils::JoystickInput::eJoystickButtonState::F3D_JOYSTICK_BUTTON_REPEAT)
+					return false;
+				return true;
 			}
 
 			float	axisState(eAxis axis) const {
@@ -86,8 +92,8 @@ namespace f3d {
 			}
 
 		private:
-			std::map<eButton, bool>		_button_state;
-			std::map<eAxis, float>		_axis_state;
+			std::map<eButton, uint32_t>		_button_state;
+			std::map<eAxis, float>			_axis_state;
 
 		};
 	}// helpers::

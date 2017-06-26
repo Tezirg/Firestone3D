@@ -181,6 +181,13 @@ SET ( f3d_utils_headers
 	) 
 SOURCE_GROUP( impl\\utils FILES ${f3d_utils_src} ${f3d_utils_headers} )
 
+SET ( f3d_helpers
+	${F3D_HEADER_PATH}/helpers/keyboard.hpp
+	${F3D_HEADER_PATH}/helpers/fly_camera.hpp
+	${F3D_HEADER_PATH}/helpers/xbox_360.hpp
+	) 
+SOURCE_GROUP( sdk\\helpers FILES ${f3d_helpers})
+
 SET( f3d_src
 	${f3d_core_sdk}
 	${f3d_core_sdk_headers}
@@ -198,6 +205,8 @@ SET( f3d_src
 	${f3d_utils_sdk_headers}
 	${f3d_utils_src}
 	${f3d_utils_headers}
+	
+	${f3d_helpers}
 )
 
 if ( MSVC )

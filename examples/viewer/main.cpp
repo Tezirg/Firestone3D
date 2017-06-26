@@ -58,7 +58,7 @@ void				updateScene(f3d::Firestone& f3d, void * arg) {
 
 	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
 
-	float stick_ratio = 16.0 / 9.0;
+	float stick_ratio = 16.0f / 9.0f;
 	float z = 0.0f;
 	z += joystick->axisState(joystick->AXIS_LS_Y) * 2.0f;
 	float x = 0.0f;
@@ -113,7 +113,7 @@ void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, voi
 void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg) {
 	f3d::helpers::Xbox360Controller* joystick = (f3d::helpers::Xbox360Controller*)arg;
 
-	joystick->update(joystickEvent);
+	joystick->updateFromEvent(joystickEvent);
 }
 
 int main(int ac, char **av) {

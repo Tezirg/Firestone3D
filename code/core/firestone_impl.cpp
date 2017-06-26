@@ -249,6 +249,7 @@ namespace f3d {
 				timer->restart();
 				if (_draw != nullptr) {
 					_draw(*this, _draw_arg);
+					render->computeCommandBuffers(scene);
 				}
 			}
 			_run = (glfwWindowShouldClose(win->getGLFWwindow()) == GLFW_FALSE);

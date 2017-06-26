@@ -4,10 +4,13 @@
 
 #include <f3d/f3d.h>
 #include <f3d/helpers/xbox_360.hpp>
+#include <f3d/helpers/fly_camera.hpp>
+#include <f3d/helpers/keyboard.hpp>
 
 #include <list>
 #include <memory>
 #include <functional>
+#include <iostream>
 
 class Demo {
 public:
@@ -15,9 +18,9 @@ public:
 	~Demo();
 
 	Demo(const Demo&) = delete; //No copy constructor
-	Demo(const Demo&&) = delete;//No move contructor
+	Demo(Demo&&) = delete;//No move contructor
 	Demo& operator=(const Demo&) = delete; //No copy assignement
-	Demo& operator=(const Demo&&) = delete; // No move assignement
+	Demo& operator=(Demo&&) = delete; // No move assignement
 
 	bool		init(const std::list<std::string>& texture_mesh, const std::list<std::string>& texture_material, \
 					 const std::list<std::string>& sequence_mesh, const std::list<std::string>& sequence_frame);
@@ -29,32 +32,41 @@ public:
 	void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg);
 	void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg);
 	void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg);
+
 private:
-	f3d::helpers::Xbox360Controller			joystick;
+	void		onButtonB();
+	void		onButtonX();
+	void		onButtonA();
+	void		hideObject(f3d::tree::Object *object);
+	void		showObject(f3d::tree::Object* object);
+	void		hideTextureData();
+	void		showTextureData();
+	void		cycleTextureData();
+	void		hideSequenceData();
+	void		showSequenceData();
+	void		cycleSequenceData();
+
+private:
 	f3d::Firestone*							engine;
+	f3d::helpers::FlyCamera					fly_camera;
+	f3d::helpers::Keyboard					keyboard;
+	f3d::helpers::Xbox360Controller			joystick;
+
+	uint32_t								_demo_index;
+	bool									_btn_b;
+	bool									_btn_a;
+	bool									_btn_x;
+	bool									_btn_start;
 
 	std::list<std::string>						_texture_mesh_str;
 	std::list<std::string>						_texture_material_str;
 	std::list<std::string>						_sequence_mesh_str;
 	std::list<std::string>						_sequence_frame_str;
 
-	float									distance;
-	glm::vec3								center;
-	float									angleX;
-	float									angleY;
-
-	glm::mat4								r;
-	glm::mat4								r2;
-	glm::mat4								t;
-	float									speed;
-
-	bool										_texture_btn;
 	std::list<f3d::tree::Object*>				_texture_mesh;
 	std::list<f3d::tree::Material*>				_texture_material;
 	std::list<f3d::tree::Material*>::iterator	_texture_material_it;
 
-	bool										_sequence_btn;
-	bool										_sequence_playing;
 	f3d::utils::Timer							_sequence_timer;
 	std::list<f3d::tree::Object*>				_sequence_mesh;
 	std::list<f3d::tree::Object*>				_sequence_frame;

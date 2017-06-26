@@ -2,12 +2,19 @@
 
 namespace f3d {
 	namespace utils {
+		KeyInput::KeyInput() :
+			keycode(0),
+			state(eKeyState::F3D_KEY_STATE_UNDEFINED),
+			mods(eKeyModifiersFlagsBits::F3D_KEY_MOD_UNDEFINED)
+		{
+		}
 
-		KeyInput::KeyInput(int keycode, eKeyState state, keyModiferFlags flags) :
+		KeyInput::KeyInput(uint32_t keycode, eKeyState state, keyModiferFlags flags) :
 			keycode(keycode), 
 			state(state), 
 			mods(flags) 
-		{ }
+		{
+		}
 
 		KeyInput::~KeyInput() {}
 
