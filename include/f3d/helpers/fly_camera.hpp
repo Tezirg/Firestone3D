@@ -34,7 +34,7 @@ namespace f3d {
 			FlyCamera&	operator=(const FlyCamera& oth) = delete; //No copy assignement
 			FlyCamera&	operator=(FlyCamera&& mov) = delete; //No mov assignement
 
-			void		attachCamera(std::shared_ptr<f3d::tree::Camera>& camera) {
+			void				attachCamera(std::shared_ptr<f3d::tree::Camera>& camera) {
 				_camera = camera;
 				//Default perspective
 				_camera->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
@@ -42,12 +42,31 @@ namespace f3d {
 				_camera->lookAt(glm::vec3(0.0f, 100.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 			}
 
-			//void		updateFromMouse(f3d::helpers::Mouse& mouse);
-			void		updateFromKeyboard(f3d::helpers::Keyboard& keyboard) {
-				float	z = 0.0f;
-				float	 ay = 0.0f;
-				glm::mat4	r;
-				glm::mat4	t;
+			void				updateFromMouse(f3d::helpers::Mouse& mouse) 
+			{
+				glm::mat4		r;
+				glm::mat4		r2;
+				float			x = 0.0f;
+				float			y = 0.0f;
+
+				if (mouse.getLastEventType() == f3d::utils::MouseInput::F3D_MOUSE_INPUT_CURSOR && mouse.isButtonPressed(0) == true)
+				{
+					x -= mouse.getDeltaX() / 50.0f;
+					y += mouse.getDeltaY() / 90.0f;
+					if (x != 0.0f)
+						r = glm::rotate(x, glm::vec3(0.0f, -1.0f, 0.0f));
+					if (y != 0.0f)
+						r2 = glm::rotate(y, glm::vec3(1.0f, 0.0f, 0.0f));
+					if (x != 0.0f || y != 0.0f)
+						_camera->setView(r2 * r * _camera->getView());
+				}
+			}
+
+			void				updateFromKeyboard(f3d::helpers::Keyboard& keyboard) {
+				float			z = 0.0f;
+				float			ay = 0.0f;
+				glm::mat4		r;
+				glm::mat4		t;
 
 				if (keyboard.isKeyPressed(LEFT_ARROW)) //Left arrow
 					ay += -0.1f;
@@ -64,20 +83,20 @@ namespace f3d {
 				_camera->setView(t * r * _camera->getView());
 			}
 
-			void						updateFromXbox360(f3d::helpers::Xbox360Controller& joystick) {
-				glm::mat4				r;
-				glm::mat4				r2;
-				glm::mat4				t;
-				float					x = 0.0f;
-				float					y = 0.0f;
-				float					z = 0.0f;
-				float					ax = 0.0f;
-				float					ay = 0.0f;
+			void					updateFromXbox360(f3d::helpers::Xbox360Controller& joystick) {
+				glm::mat4			r;
+				glm::mat4			r2;
+				glm::mat4			t;
+				float				x = 0.0f;
+				float				y = 0.0f;
+				float				z = 0.0f;
+				float				ax = 0.0f;
+				float				ay = 0.0f;
 
 				//Update fov
 				if (joystick.isButtonPressed(joystick.BUTTON_BACK)) {
 					_fov_tweak = !_fov_tweak;
-					if (_fov_tweak) {
+					if (_fov_tweak) { 
 						_camera->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
 						_camera->lookAt(glm::vec3(0.0f, 0.0f, -300.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 					}
@@ -111,9 +130,9 @@ namespace f3d {
 			}
 	
 		private:
-			std::shared_ptr<f3d::tree::Camera>	_camera;
-			float								_speed;
-			bool								_fov_tweak;
+			std::shared_ptr<f3d::tree::Camera>		_camera;
+			float									_speed;
+			bool									_fov_tweak;
 		};
 	}// helpers::
 }// f3d::

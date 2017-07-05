@@ -242,6 +242,7 @@ void		Demo::updateScene(f3d::Firestone& f3d, void * arg)
 
 	//Camera controls management
 	fly_camera.updateFromKeyboard(keyboard);
+	fly_camera.updateFromMouse(mouse);
 	fly_camera.updateFromXbox360(joystick);
 
 	//Switch between demos
@@ -284,10 +285,7 @@ void		Demo::keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, voi
 void		Demo::mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg)
 {
 	(void)arg;
-	if (mouseEvent.type == mouseEvent.F3D_MOUSE_INPUT_BUTTON && \
-		mouseEvent.buttonState == mouseEvent.F3D_MOUSE_BUTTON_PRESS) {
-		std::cout << mouseEvent << std::endl;
-	}
+	mouse.updateFromEvent(mouseEvent);
 }
 
 void		Demo::joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg)

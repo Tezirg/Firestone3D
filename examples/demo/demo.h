@@ -3,9 +3,11 @@
 #define DEMO_H_
 
 #include <f3d/f3d.h>
+#include <f3d/helpers/keyboard.hpp>
+#include <f3d/helpers/mouse.hpp>
 #include <f3d/helpers/xbox_360.hpp>
 #include <f3d/helpers/fly_camera.hpp>
-#include <f3d/helpers/keyboard.hpp>
+
 
 #include <list>
 #include <memory>
@@ -50,6 +52,7 @@ private:
 	f3d::Firestone*							engine;
 	f3d::helpers::FlyCamera					fly_camera;
 	f3d::helpers::Keyboard					keyboard;
+	f3d::helpers::Mouse						mouse;
 	f3d::helpers::Xbox360Controller			joystick;
 
 	uint32_t								_demo_index;
