@@ -36,11 +36,12 @@ namespace f3d {
 			};
 			typedef uint32_t keyModiferFlags;
 
-			KeyInput(int keycode, eKeyState state, keyModiferFlags flags);
+			KeyInput();
+			KeyInput(uint32_t keycode, eKeyState state, keyModiferFlags flags);
 			virtual ~KeyInput();
 
 		public:
-			int					keycode;
+			uint32_t			keycode;
 			eKeyState			state;
 			keyModiferFlags		mods;
 		};
@@ -104,6 +105,7 @@ namespace f3d {
 				F3D_JOYSTICK_BUTTON_UNDEFINED = 0,
 				F3D_JOYSTICK_BUTTON_PRESS = 1,
 				F3D_JOYSTICK_BUTTON_RELEASE = 2,
+				F3D_JOYSTICK_BUTTON_REPEAT = 3,
 				F3D_JOYSTICK_BUTTON_BEGIN_RANGE = F3D_JOYSTICK_BUTTON_UNDEFINED,
 				F3D_JOYSTICK_BUTTON_END_RANGE = F3D_JOYSTICK_BUTTON_RELEASE,
 				F3D_JOYSTICK_BUTTON_RANGE_SIZE = (F3D_JOYSTICK_BUTTON_END_RANGE - F3D_JOYSTICK_BUTTON_BEGIN_RANGE + 1),

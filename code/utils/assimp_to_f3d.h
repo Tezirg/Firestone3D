@@ -71,7 +71,7 @@
 
 #define ASSIMP_ADDRESS_MODE_2_F3D(assimp_type, f3d_target)											\
 {																									\
-	switch(assimp_type)																				\
+	switch (assimp_type)																			\
 	{																								\
 		case aiTextureMapMode_Wrap:																	\
 			f3d_target = f3d::F3D_ADDRESS_REPEAT;													\
@@ -87,6 +87,37 @@
 			break;																					\
 		default:																					\
 			f3d_target = f3d::F3D_ADDRESS_UNDEFINED;												\
+	}																								\
+}
+
+#define ASSIMP_SHADING_MODE_2_F3D(assimp_type, f3d_target)											\
+{																									\
+	switch (assimp_type)																			\
+	{																								\
+		case aiShadingMode_Flat:																	\
+			f3d_target = f3d::F3D_SHADING_FLAT;														\
+			break;																					\
+		case aiShadingMode_Gouraud:																	\
+			f3d_target = f3d::F3D_SHADING_GOURAUD;													\
+			break;																					\
+		case aiShadingMode_Blinn:																	\
+		case aiShadingMode_Phong:																	\
+			f3d_target = f3d::F3D_SHADING_FLAT;														\
+			break;																					\
+		case aiShadingMode_Toon:																	\
+			f3d_target = f3d::F3D_SHADING_TOON;														\
+			break;																					\
+		case aiShadingMode_OrenNayar:																\
+			f3d_target = f3d::F3D_SHADING_ORENNAYAR;												\
+			break;																					\
+		case aiShadingMode_Minnaert:																\
+			f3d_target = f3d::F3D_SHADING_MINNAERT;													\
+			break;																					\
+		case aiShadingMode_CookTorrance:															\
+			f3d_target = f3d::F3D_SHADING_COOKTORRANCE;												\
+			break;																					\
+		default:																					\
+			f3d_target = F3D_SHADING_UNDEFINED;														\
 	}																								\
 }
 

@@ -41,6 +41,7 @@ namespace f3d {
 		}
 
 		VkDescriptorSet							MaterialImpl::getDescriptorSet() {
+			writeAttribute();
 			return DescriptorContainer::getDescriptorSet(2);
 		}
 
@@ -48,6 +49,7 @@ namespace f3d {
 			VkWriteDescriptorSet				pWrites;
 			VkDescriptorBufferInfo				buffer_info;
 
+			
 			//Bind buffer with this descriptor set
 			std::memset(&pWrites, 0, sizeof(VkWriteDescriptorSet));
 			pWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

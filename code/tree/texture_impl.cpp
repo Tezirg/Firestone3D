@@ -21,12 +21,6 @@ namespace f3d {
 
 		bool								TextureImpl::initializeLinearTiling(uint32_t width, uint32_t height, void *data, uint32_t size, VkFormat format) {
 			VkMemoryRequirements			memReqs;
-			VkResult						r;
-			VkDescriptorPoolSize			pool_types;
-			VkDescriptorPoolCreateInfo		pool_info;
-			VkDescriptorSetAllocateInfo		desc_set_alloc;
-			VkDescriptorSetLayoutBinding	layout_bindings;
-			VkDescriptorSetLayoutCreateInfo	desc_layout_info;
 
 			vk_image_layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			createImage(format);

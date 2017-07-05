@@ -61,6 +61,8 @@ namespace f3d {
 				aiString aiStr;
 				scene->mMaterials[aimesh->mMaterialIndex]->Get(AI_MATKEY_NAME, aiStr);
 				fmesh->setMaterialName(aiStr.C_Str());
+				if (fmesh->getMaterialName().empty())
+					fmesh->setMaterialName(AI_DEFAULT_MATERIAL_NAME);
 
 				for (uint32_t v = 0; v < aimesh->mNumVertices; v++) {
 					fmesh->addVertex(glm::vec3(aimesh->mVertices[v].x, aimesh->mVertices[v].y, aimesh->mVertices[v].z));
@@ -76,6 +78,12 @@ namespace f3d {
 					fmesh->addTriangle(aimesh->mFaces[f].mIndices[0], aimesh->mFaces[f].mIndices[1], aimesh->mFaces[f].mIndices[2]);
 				}
 
+				glm::mat4 t;
+				t[0][0] = ainode->mTransformation.a1; t[1][0] = ainode->mTransformation.a2; t[2][0] = ainode->mTransformation.a3; t[3][0] = ainode->mTransformation.a4;
+				t[0][1] = ainode->mTransformation.b1; t[1][1] = ainode->mTransformation.b2; t[2][1] = ainode->mTransformation.b3; t[3][1] = ainode->mTransformation.b4;
+				t[0][2] = ainode->mTransformation.c1; t[1][2] = ainode->mTransformation.c2; t[2][2] = ainode->mTransformation.c3; t[3][2] = ainode->mTransformation.c4;
+				t[0][3] = ainode->mTransformation.d1; t[1][3] = ainode->mTransformation.d2; t[2][3] = ainode->mTransformation.d3; t[3][3] = ainode->mTransformation.d4;
+				f3d_node->transformation().setTransformation(t);
 
 				fmesh->makeRenderReady();
 				f3d_node->addMesh(fmesh);
@@ -88,12 +96,6 @@ namespace f3d {
 				aiNode *aichild = ainode->mChildren[i];
 				f3d::tree::Node *f3dchild = new f3d::tree::Node();
 				
-				glm::mat4 t;
-				t[0][0] = aichild->mTransformation.a1; t[1][0] = aichild->mTransformation.a2; t[2][0] = aichild->mTransformation.a3; t[3][0] = aichild->mTransformation.a4;
-				t[0][1] = aichild->mTransformation.b1; t[1][1] = aichild->mTransformation.b2; t[2][1] = aichild->mTransformation.b3; t[3][1] = aichild->mTransformation.b4;
-				t[0][2] = aichild->mTransformation.c1; t[1][2] = aichild->mTransformation.c2; t[2][2] = aichild->mTransformation.c3; t[3][2] = aichild->mTransformation.c4;
-				t[0][3] = aichild->mTransformation.d1; t[1][3] = aichild->mTransformation.d2; t[2][3] = aichild->mTransformation.d3; t[3][3] = aichild->mTransformation.d4;
-				f3dchild->transformation().setTransformation(t);
 				recurs_aiNodeToF3d(scene, aichild, f3dchild);
 				f3d_node->addChildren(f3dchild);
 			}
@@ -157,6 +159,7 @@ namespace f3d {
 			aiReturn						aiRes;
 			aiString						aiStr;
 			aiColor3D						aiColor;
+			aiShadingMode					aiShading;
 			float							aiShine;
 			std::string						materialName;
 
@@ -196,6 +199,14 @@ namespace f3d {
 			aiRes = aiMat->Get(AI_MATKEY_SHININESS, aiShine);
 			if (aiRes == AI_SUCCESS)
 				mat->setShininess(aiShine);
+
+			//Shading type
+			aiRes = aiMat->Get(AI_MATKEY_SHADING_MODEL, aiShading);
+			if (aiRes == AI_SUCCESS) {
+				eShadingType s;
+				ASSIMP_SHADING_MODE_2_F3D(aiShading, s);
+				mat->setShading(s);
+			}
 
 
 			f3d::tree::TextureImpl* texture = nullptr;
@@ -240,7 +251,6 @@ namespace f3d {
 
 			std::string texture_path(path);
 			texture_path.append(aiPath.C_Str());
-
 
 			try {
 				std::cout << "Loading texture at " << texture_path << std::endl;

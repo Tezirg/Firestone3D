@@ -6,7 +6,7 @@ namespace f3d {
 					 std::shared_ptr<f3d::core::PhysicalDevice>& physical,
 					 uint32_t width, uint32_t height) 
 			: _width(width), _height(height), _phys(physical), _device(device) {
-			vk_format = VK_FORMAT_D16_UNORM;
+			vk_format = VK_FORMAT_D24_UNORM_S8_UINT;
 			createVk();
 		}
 

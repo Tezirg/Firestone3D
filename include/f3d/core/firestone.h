@@ -24,18 +24,17 @@ namespace f3d {
 
 
 	// Engine events
-	typedef void(*f3d_start_handle_t)(Firestone& f3d, void *userArgument);
-	typedef void(*f3d_end_handle_t)(Firestone& f3d, void *userArgument);
-	typedef void(*f3d_draw_handle_t)(Firestone& f3d, void *userArgument);
+	typedef std::function<void(f3d::Firestone& f3d, void * arg)> f3d_start_handle_t;
+	typedef std::function<void(f3d::Firestone& f3d, void * arg)> f3d_end_handle_t;
+	typedef std::function<void(f3d::Firestone& f3d, void * arg)> f3d_draw_handle_t;
 
 	// Window callbacks
 	typedef void(*f3d_resize_handle_t)(Firestone& f3d, int32_t width, int32_t height, void *userArgument);
 
 	// Input callback types
-	typedef void(*f3d_keyboard_input_handle_t)(Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *userArgument);
-	typedef void(*f3d_mouse_input_handle_t)(Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *userArgument);
-	typedef void(*f3d_joystick_input_handle_t)(Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *userArgument);
-
+	typedef std::function<void(Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *userArgument)> f3d_keyboard_input_handle_t;
+	typedef std::function<void(Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *userArgument)> f3d_mouse_input_handle_t;
+	typedef std::function<void(Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *userArgument)> f3d_joystick_input_handle_t;
 
 	class F3D_API Firestone {
 	public:

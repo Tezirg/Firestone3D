@@ -8,18 +8,19 @@ namespace f3d {
 											   std::shared_ptr<f3d::core::PhysicalDevice>& physical, 
 											   std::shared_ptr<f3d::core::Window>& window):
 				RenderPass::RenderPass(F3D_RENDERPASS_SIMPLE, device, physical, window), 
-				_color_format(VK_FORMAT_R8G8B8A8_UNORM) {
+				_color_format(VK_FORMAT_R16G16B16A16_UNORM) {
 
 
 				WindowImpl *w = dynamic_cast<WindowImpl *>(window.get());
 
+				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				_color_format = w->vk_format;
 				vk_subpasses_count = 1;
 				vk_subpasses = new VkSubpassDescription[1];
-				_clear[0].color.float32[0] = 0.2f;
-				_clear[0].color.float32[1] = 0.2f;
-				_clear[0].color.float32[2] = 0.2f;
-				_clear[0].color.float32[3] = 0.0f;
+				_clear[0].color.float32[0] = window->clearColor().r;
+				_clear[0].color.float32[1] = window->clearColor().g;
+				_clear[0].color.float32[2] = window->clearColor().b;
+				_clear[0].color.float32[3] = window->clearColor().a;
 				_clear[1].depthStencil.depth = 1.0f;
 				_clear[1].depthStencil.stencil = 0;
 
@@ -27,31 +28,41 @@ namespace f3d {
 
 				std::list<f3d::core::Program *> progs;
 
+				//Flat shaders
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0001_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0003_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0005_0007(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0007(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0006(physical, device));
 				progs.push_back(new f3d::core::prog::Program_0001_0001_0003_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0005_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0001_0002_0000_0001(physical, device));
+				//Gouraud shaders
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0003_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0001(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0007(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0000_0000(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0000_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0002(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0007(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0003_0006(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0001_0005_0003(physical, device));
+				progs.push_back(new f3d::core::prog::Program_0002_0002_0000_0001(physical, device));
 				for (auto it = progs.begin(); it != progs.end(); ++it) {
 					(*it)->initVkPipeline(vk_renderpass, 0);
 					setProgram(*it);
 				}
-
-				_depth.reset(new f3d::core::Depth(device, physical, window->width(), window->height()));
 				initViews();
 				initFramebuffers();
 			}
@@ -128,7 +139,7 @@ namespace f3d {
 				_attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 				_attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 				_attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				_attachments[1].format = VK_FORMAT_D16_UNORM;
+				_attachments[1].format = _depth->vk_format;
 				_attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
 				_attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 				_attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -247,26 +258,28 @@ namespace f3d {
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
 
-
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
-				mask.fields.colors = material->colorFlags();
-				mask.fields.textures = material->textureFlags();
-				mask.fields.lights = scene->getLightMask();
-				mask.fields.shading = F3D_SHADING_FLAT;
+				if (material != nullptr) {
+					mask.fields.colors = material->colorFlags();
+					mask.fields.textures = material->textureFlags();
+					mask.fields.lights = scene->getLightMask();
+					mask.fields.shading = F3D_SHADING_GOURAUD;// material->shadingFlags();
 
-				std::cout << m.getMaterialName() << std::endl;
-				std::cout << std::hex << mask.fields.colors << std::endl;
+					//std::cout << m.getName() << " with material : " << m.getMaterialName() << std::endl;
+					//std::cout << std::hex << mask.fields.colors << std::endl;
 
-				auto prog = getProgram(mask.mask);
-				if (prog != nullptr) {
-					std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
-					prog->drawToCommandBuffer(cmd, mesh, *scene);
+					auto prog = getProgram(mask.mask);
+					if (prog != nullptr) {
+						//std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
+						prog->drawToCommandBuffer(cmd, mesh, *scene);
+					}
+					else {
+						std::cout << "Unknown combination: " << std::hex << mask.mask << std::endl;
+						prog = getProgram(0x0001000000000000);
+						prog->drawToCommandBuffer(cmd, mesh, *scene);
+					}
 				}
-				else {
-					std::cout << "Unknown combination: " <<  std::hex << mask.mask << std::endl;
-					prog = getProgram(0x0001000000000000);
-					prog->drawToCommandBuffer(cmd, mesh, *scene);
-				}
+
 			}
 		}
 	}

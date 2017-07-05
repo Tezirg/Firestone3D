@@ -19,6 +19,11 @@ namespace f3d {
 				return _settings->windowHeight;
 			return 0;
 		}
+
+		const glm::vec4&		Window::clearColor() const {
+			return _settings->windowClearColor;
+		}
+
 	}
 }
 
