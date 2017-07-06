@@ -13,8 +13,8 @@ namespace f3d {
 			DescriptorContainer::addDescriptor(0);
 			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) + 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) * 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		}
 
 		SceneImpl::~SceneImpl() {
@@ -172,28 +172,28 @@ namespace f3d {
 			//Query Ambient color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_AMBIENT, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_AMBIENT, glm::vec4(aiColor.r, aiColor.g, aiColor.b, 1.0f));
 			std::cout << "has Ambient " << !aiColor.IsBlack() << std::endl;
 			//Query diffuse color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_DIFFUSE, glm::vec4(aiColor.r, aiColor.g, aiColor.b, 1.0f));
 			std::cout << "has Diffuse " << !aiColor.IsBlack() << " " << std::endl;
 
 			//Query specular color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_SPECULAR, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_SPECULAR, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_SPECULAR, glm::vec4(aiColor.r, aiColor.g, aiColor.b, 1.0f));
 
 			//Query Emmissive color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_EMISSIVE, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_EMISSIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_EMISSIVE, glm::vec4(aiColor.r, aiColor.g, aiColor.b, 1.0f));
 
 			//Query reflective color
 			aiRes = aiMat->Get(AI_MATKEY_COLOR_REFLECTIVE, aiColor);
 			if (aiRes == AI_SUCCESS && aiColor.IsBlack() == false)
-				mat->setColor(f3d::F3D_COLOR_REFLECTIVE, glm::vec3(aiColor.r, aiColor.g, aiColor.b));
+				mat->setColor(f3d::F3D_COLOR_REFLECTIVE, glm::vec4(aiColor.r, aiColor.g, aiColor.b, 1.0f));
 
 			//Shineness property
 			aiRes = aiMat->Get(AI_MATKEY_SHININESS, aiShine);
