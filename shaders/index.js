@@ -10,7 +10,7 @@ function generateGLSL(srcDir, destDir) {
 	if (fs.existsSync(destDir) === false)
 		fs.mkdirSync(destDir);
 	
-	console.log(`Processing ${input_files.length} files from ${chalk.blue(srcDir)} to ${chalk.blue(destDir)}`);
+	console.log(`Processing ${input_files.length} files from ${chalk.cyan(srcDir)} to ${chalk.cyan(destDir)}`);
 	
 	for (var i = 0; i < input_files.length; i++) {
 	
@@ -24,11 +24,11 @@ function generateGLSL(srcDir, destDir) {
 			var output_code = glsl.file(input_file, { basedir: srcDir });
 
 			fs.writeFileSync(output_path, output_code);
-			console.log(`${chalk.green("GLSL generation success")} [${chalk.blue(output_path)}]`);
+			console.log(`${chalk.green("GLSL generation success")} [${chalk.cyan(output_path)}]`);
 		}
 		catch (error) {
 			console.log(error);
-			console.log(`${chalk.red("GLSL generation error")} [${chalk.blue(output_path)}] : ${error.stdout}`);
+			console.log(`${chalk.red("GLSL generation error")} [${chalk.cyan(output_path)}] : ${error.stdout}`);
 		}
 	}
 }
@@ -39,7 +39,7 @@ function generateSPIRV(srcDir, destDir) {
 	if (fs.existsSync(destDir) === false)
 		fs.mkdirSync(destDir);
 
-	console.log(`Processing ${input_files.length} files from ${chalk.blue(srcDir)} to ${chalk.blue(destDir)}`);
+	console.log(`Processing ${input_files.length} files from ${chalk.cyan(srcDir)} to ${chalk.cyan(destDir)}`);
 
 	for (var i = 0; i < input_files.length; i++) {
 		try {
@@ -51,10 +51,10 @@ function generateSPIRV(srcDir, destDir) {
 			//Compile to spirv
 			var command_line = `glslangValidator.exe -V ${input_file} -o ${output_path}`;
 			child_process.execSync(command_line);
-			console.log(`${chalk.green("SPIRV generation success")} [${chalk.blue(output_path)}]`);
+			console.log(`${chalk.green("SPIRV generation success")} [${chalk.cyan(output_path)}]`);
 		}
 		catch (error) {
-			console.log(`${chalk.red("SPIRV generation error")} [${chalk.blue(output_path)}] : ${error.stdout}`);
+			console.log(`${chalk.red("SPIRV generation error")} [${chalk.cyan(output_path)}] : ${error.stdout}`);
 		}
 	}
 }

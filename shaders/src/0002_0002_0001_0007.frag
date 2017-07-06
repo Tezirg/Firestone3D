@@ -2,7 +2,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-#pragma glslify: phong_compute = require(glsl-specular-phong)
+#pragma glslify: phong = require(glsl-specular-phong)
 
 layout(std140, set = 2, binding = 0) buffer light_s {
 	vec4 		position;
@@ -55,8 +55,8 @@ void main()
 
 
 		ambient_color += Material.ambient_color * Light[i].ambient_color;
-		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle * att;
-		specular_color += phong_compute(lightDir, eye, n, Material.shininess);
+		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle;
+		specular_color += Material.specular_color * Light[i].specular_color * phong(lightDir, eye, n, Material.shininess);
 	}
 	outFragColor = clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0);
 }

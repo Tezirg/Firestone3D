@@ -64,8 +64,8 @@ void main()
 							Light[i].quadratic * dist * dist));
 
 		ambient_color += Material.ambient_color * Light[i].ambient_color;
-		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle * att;
-		specular_color += phongSpecular(lightDir, eye, n, Material.shininess);
+		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle;
+		specular_color += Material.specular_color * Light[i].specular_color * phongSpecular(lightDir, eye, n, Material.shininess);
 	}
 	outFragColor = clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0);
 }
