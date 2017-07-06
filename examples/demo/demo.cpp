@@ -116,19 +116,20 @@ void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
 	fly_camera.attachCamera(engine->scene->getCamera());
 
 	l.setName("light1");
-	//l.setType(f3d::F3D_LIGHT_POINT);
-	l.setAttenuationConstant(0.1f);
-	l.setAttenuationLinear(0.05f);
-	l.setColorAmbient(glm::vec3(0.2f));
+	l.setType(f3d::F3D_LIGHT_DIRECTIONAL);
+	l.setAttenuationConstant(0.0f);
+	l.setAttenuationLinear(1.0f);
+	l.setAttenuationQuadratic(0.0f);
+	l.setColorAmbient(glm::vec3(1.0f));
 	l.setColorDiffuse(glm::vec3(1.0f));
-	l.setColorSpecular(glm::vec3(0.0f));
-	l.setDirection(glm::vec3(0.0f, 1.0f, -1.0f));
-	l.setPosition(glm::vec3(0.0f, 20.0f, 0.0f));
+	l.setColorSpecular(glm::vec3(1.0f));
+	l.setDirection(glm::vec3(1.0f, 0.0f, 0.0f));
+	l.setPosition(glm::vec3(5.0f, -2.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
-	// /*
+	/*
 	l.setName("light2");
-	//l.setColorDiffuse(glm::vec3(0.0f, 0.0f, 0.2f));
+	l.setColorDiffuse(glm::vec3(0.0f, 0.0f, 0.2f));
 	l.setDirection(glm::vec3(0.0f, 1.0f, 1.0f));
 	f3d.scene->addLight(&l);
 	// */

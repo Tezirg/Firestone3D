@@ -4,7 +4,7 @@ namespace f3d {
 	namespace tree {
 
 		Material::Material(const std::string& name) :
-			_name(name), _shininess(0.0f) {
+			_name(name), _shininess(16.0f) {
 			_color_mask = F3D_COLOR_UNDEFINED;
 			_shading = F3D_SHADING_FLAT;
 			_texture_mask = F3D_TEXTURE_UNDEFINED;

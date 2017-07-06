@@ -43,12 +43,14 @@
 #include "core/programs/gouraud/p-0002_0000_0005_0007.h"
 #include "core/programs/gouraud/p-0002_0001_0000_0000.h"
 #include "core/programs/gouraud/p-0002_0001_0000_0003.h"
+#include "core/programs/gouraud/p-0002_0001_0000_0007.h"
 #include "core/programs/gouraud/p-0002_0001_0001_0002.h"
 #include "core/programs/gouraud/p-0002_0001_0001_0006.h"
 #include "core/programs/gouraud/p-0002_0001_0001_0007.h"
 #include "core/programs/gouraud/p-0002_0001_0003_0006.h"
 #include "core/programs/gouraud/p-0002_0001_0005_0003.h"
 #include "core/programs/gouraud/p-0002_0002_0000_0001.h"
+#include "core/programs/gouraud/p-0002_0002_0001_0007.h"
 
 namespace f3d {
 	namespace core {

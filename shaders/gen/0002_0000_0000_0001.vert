@@ -1,11 +1,12 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+#define GLSLIFY 1
 
 layout(set = 0, binding = 0) uniform camera_s {
 	mat4	view;
 	mat4	perspective;
-}	Camera;
+}   Camera;
 
 layout(set = 1, binding = 0) uniform mesh_s {
 	mat4	model;

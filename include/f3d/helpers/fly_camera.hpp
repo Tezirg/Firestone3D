@@ -74,9 +74,8 @@ namespace f3d {
 					ay += 0.1f;
 				if (keyboard.isKeyPressed(UP_ARROW)) //Top arrow
 					z = 2.0f * _speed;
-				if (keyboard.isKeyPressed(DOWN_ARROW)) {//Down arrow
+				if (keyboard.isKeyPressed(DOWN_ARROW)) //Down arrow
 					z = -2.0f * _speed;
-				}
 
 				r = glm::rotate(ay, glm::vec3(0.0, -1.0, 0.0));
 				t = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, z));

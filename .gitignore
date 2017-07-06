@@ -10,3 +10,5 @@ contrib/glfw*/*
 */mars_data/*
 */mars_data
 */*/mars_data
+node_modules/*
+*/node_modules/

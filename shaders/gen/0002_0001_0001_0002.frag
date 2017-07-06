@@ -1,6 +1,7 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+#define GLSLIFY 1
 
 layout(std140, set = 2, binding = 0) buffer light_s {
 	vec4 		position;
@@ -15,7 +16,7 @@ layout(std140, set = 2, binding = 0) buffer light_s {
 	float		quadratic;
 	uint		type;
 }	Light[];
-layout (set = 2, binding = 1) uniform n_light_s {
+layout(set = 2, binding = 1) uniform n_light_s {
 	uint 		value;
 }	n_light;
 layout(set = 3, binding = 0) uniform material_s {
@@ -26,25 +27,20 @@ layout(set = 3, binding = 0) uniform material_s {
 	vec4 		reflective_color;
 	float 		shininess;
 }	Material;
+layout(set = 4, binding = 0) uniform sampler2D diffuse_samplerColor;
 
-layout(location = 0) in vec3 inNormal;
-layout(location = 1) in vec3 inPosition;
+layout(location = 0) in vec2 inUv;
+layout(location = 1) in vec4 inNormal;
 
 layout(location = 0) out vec4 outFragColor;
 
-void main()
+void main() 
 {
 	vec4 diffuse_color = vec4(0.0, 0.0, 0.0, 0.0);
-	vec4 ambient_color = vec4(0.0, 0.0, 0.0, 0.0);
 	for (uint i = 0; i < n_light.value; i++) {
-		vec3 L = inPosition - vec3(Light[i].position);
-		float distance = abs(length(L));
-		float angle = max(dot(normalize(inNormal), normalize(L)), 0.0);
-		float att = (1.0 / (Light[i].constant + 
-							Light[i].linear * distance + 
-							Light[i].quadratic * distance * distance));
-		diffuse_color += Material.diffuse_color * Light[i].diffuse_color * angle * att;
-		ambient_color += Material.ambient_color * Light[i].ambient_color * att;
+		vec3 l = vec3(normalize(Light[i].direction));
+		float angle = max(dot(vec3(inNormal),l), 0.0);
+		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUv) * Light[i].diffuse_color * angle;
 	}
-	outFragColor = clamp(ambient_color + diffuse_color, 0.0, 1.0);
+	outFragColor = clamp(diffuse_color, 0.0, 1.0);
 }
