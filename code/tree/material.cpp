@@ -24,25 +24,26 @@ namespace f3d {
 			_name.assign(value);
 		}
 
-		bool					Material::getColor(const eColorType type, glm::vec3& out) const {
+		bool					Material::getColor(const eColorType type, glm::vec4& out) const {
 			auto it = _colors.find(type);
 			if (it == _colors.end())
 				return false;
 			out.x = it->second.x;
 			out.y = it->second.y;
 			out.z = it->second.z;
+			out.w = it->second.w;
 			return true;
 		}
 
-		const glm::vec3&		Material::getColor(const eColorType type) const {
-			static glm::vec3	_black(0.0f, 0.0f, 0.0f);
+		const glm::vec4&		Material::getColor(const eColorType type) const {
+			static glm::vec4	_black(0.0f);
 			auto it = _colors.find(type);
 			if (it == _colors.end())
 				return _black;
 			return it->second;
 		}
 
-		void					Material::setColor(const eColorType type, glm::vec3& in) {
+		void					Material::setColor(const eColorType type, glm::vec4& in) {
 			_colors[type] = in;
 			_color_mask |= type;
 		}

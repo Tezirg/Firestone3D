@@ -30,11 +30,11 @@ namespace f3d {
 			virtual float					getAttenuationQuadratic() const;
 			virtual void					setAttenuationQuadratic(float val);
 			virtual const glm::vec4&		getColorAmbient() const;
-			virtual void					setColorAmbient(const glm::vec3& val);
+			virtual void					setColorAmbient(const glm::vec4& val);
 			virtual const glm::vec4& 		getColorDiffuse() const;
-			virtual void					setColorDiffuse(const glm::vec3& val);
+			virtual void					setColorDiffuse(const glm::vec4& val);
 			virtual const glm::vec4& 		getColorSpecular() const;
-			virtual void					setColorSpecular(const glm::vec3& val);
+			virtual void					setColorSpecular(const glm::vec4& val);
 			virtual const glm::vec4&		getDirection() const;
 			virtual void					setDirection(const glm::vec3& val);
 			virtual std::string				getName() const;

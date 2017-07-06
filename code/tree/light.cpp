@@ -11,9 +11,9 @@ namespace f3d {
 			setAttenuationConstant(1.0);
 			setAttenuationLinear(0.0);
 			setAttenuationQuadratic(0.0);
-			setColorAmbient(glm::vec3(1.0f)); // White
-			setColorDiffuse(glm::vec3(1.0f)); // White
-			setColorSpecular(glm::vec3(1.0f)); // White
+			setColorAmbient(glm::vec4(1.0f)); // White
+			setColorDiffuse(glm::vec4(1.0f)); // White
+			setColorSpecular(glm::vec4(1.0f)); // White
 			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
 			setName(std::string("DefaultLight"));
 			setType(F3D_LIGHT_DIRECTIONAL); // Directional
@@ -34,11 +34,11 @@ namespace f3d {
 		float					Light::getAttenuationQuadratic() const { return _quadratic; }
 		void					Light::setAttenuationQuadratic(float val) { _quadratic = val; }
 		const glm::vec4&		Light::getColorAmbient() const { return _ambient_color; }
-		void					Light::setColorAmbient(const glm::vec3& val) { _ambient_color.r = val.x; _ambient_color.g = val.y; _ambient_color.b = val.z; }
+		void					Light::setColorAmbient(const glm::vec4& val) { _ambient_color = val; }
 		const glm::vec4&		Light::getColorDiffuse() const { return _diffuse_color; }
-		void					Light::setColorDiffuse(const glm::vec3& val) { _diffuse_color.r = val.x; _diffuse_color.g = val.y; _diffuse_color.b = val.z; }
+		void					Light::setColorDiffuse(const glm::vec4& val) { _diffuse_color = val; }
 		const glm::vec4&		Light::getColorSpecular() const { return _specular_color; }
-		void					Light::setColorSpecular(const glm::vec3& val) { _specular_color.r = val.x; _specular_color.g = val.y; _specular_color.b = val.z; }
+		void					Light::setColorSpecular(const glm::vec4& val) { _specular_color = val; }
 		const glm::vec4&		Light::getDirection() const { return _direction; }
 		void					Light::setDirection(const glm::vec3& val) { _direction.x = val.x; _direction.y = val.y; _direction.z = val.z; }
 		std::string				Light::getName() const { return _name; }

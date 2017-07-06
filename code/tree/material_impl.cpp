@@ -13,11 +13,11 @@ namespace f3d {
 			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 		
 			//Push default colors values
-			_colors[F3D_COLOR_AMBIENT] = glm::vec3(1.0f, 1.0f, 1.0f);
-			_colors[F3D_COLOR_DIFFUSE] = glm::vec3(1.0f, 1.0f, 1.0f);
-			_colors[F3D_COLOR_SPECULAR] = glm::vec3(0.0f, 0.0f, 0.0f);
-			_colors[F3D_COLOR_EMISSIVE] = glm::vec3(0.0f, 0.0f, 0.0f);
-			_colors[F3D_COLOR_REFLECTIVE] = glm::vec3(0.0f, 0.0f, 0.0f);
+			_colors[F3D_COLOR_AMBIENT] = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			_colors[F3D_COLOR_DIFFUSE] = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			_colors[F3D_COLOR_SPECULAR] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			_colors[F3D_COLOR_EMISSIVE] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			_colors[F3D_COLOR_REFLECTIVE] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			writeAttribute();
 			writeDescriptorSet();

@@ -1,8 +1,10 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
+#extension GL_OES_standard_derivatives : enable
 
 #pragma glslify: phong = require(glsl-specular-phong)
+#pragma glslify: lambert = require(glsl-diffuse-lambert)
 
 layout(std140, set = 2, binding = 0) buffer light_s {
 	vec4 		position;
@@ -48,15 +50,16 @@ void main()
 		vec3 lightDir = normalize(vec3(Light[i].position) - inPosition);
 		vec4 spec = vec4(0.0);
 		float dist = abs(length(lightDir));
-		float angle = max(dot(n, lightDir), 0.0);
+		float angle =  lambert(lightDir, n);
 		float att = (1.0 / (Light[i].constant + 
 							Light[i].linear * dist + 
 							Light[i].quadratic * dist * dist));
 
 
 		ambient_color += Material.ambient_color * Light[i].ambient_color;
-		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle;
+		diffuse_color += Material.diffuse_color * texture(diffuse_samplerColor, inUV) * Light[i].diffuse_color * angle * att;
 		specular_color += Material.specular_color * Light[i].specular_color * phong(lightDir, eye, n, Material.shininess);
 	}
 	outFragColor = clamp(ambient_color + diffuse_color + specular_color, 0.0, 1.0);
+	outFragColor.w = 1.0;
 }

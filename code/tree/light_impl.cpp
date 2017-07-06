@@ -16,9 +16,9 @@ namespace f3d {
 			setAttenuationConstant(light->mAttenuationConstant);
 			setAttenuationLinear(light->mAttenuationLinear);
 			setAttenuationQuadratic(light->mAttenuationQuadratic);
-			setColorAmbient(glm::vec3(light->mColorAmbient.r, light->mColorAmbient.g, light->mColorAmbient.b));
-			setColorDiffuse(glm::vec3(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b));
-			setColorSpecular(glm::vec3(light->mColorSpecular.r, light->mColorSpecular.g, light->mColorSpecular.b));
+			setColorAmbient(glm::vec4(light->mColorAmbient.r, light->mColorAmbient.g, light->mColorAmbient.b, 1.0f));
+			setColorDiffuse(glm::vec4(light->mColorDiffuse.r, light->mColorDiffuse.g, light->mColorDiffuse.b, 1.0f));
+			setColorSpecular(glm::vec4(light->mColorSpecular.r, light->mColorSpecular.g, light->mColorSpecular.b, 1.0f));
 			setDirection(glm::vec3(light->mDirection.x, light->mDirection.y, light->mDirection.z));
 			setName(std::string(light->mName.C_Str()));
 			setPosition(glm::vec3(light->mPosition.x, light->mPosition.y, light->mPosition.z));

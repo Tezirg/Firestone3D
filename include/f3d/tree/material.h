@@ -24,9 +24,9 @@ namespace f3d {
 
 			const std::string&		getName() const;
 			void					setname(const std::string& value);
-			bool					getColor(const eColorType type, glm::vec3& out) const;
-			const glm::vec3&		getColor(const eColorType type) const;
-			void					setColor(const eColorType type, glm::vec3& in);
+			bool					getColor(const eColorType type, glm::vec4& out) const;
+			const glm::vec4&		getColor(const eColorType type) const;
+			void					setColor(const eColorType type, glm::vec4& in);
 			bool					removeColor(const eColorType type);
 			ColorTypeFlags			colorFlags() const;
 
@@ -44,7 +44,7 @@ namespace f3d {
 		protected:
 			std::string							_name;
 			float								_shininess;
-			std::map<eColorType, glm::vec3>		_colors;
+			std::map<eColorType, glm::vec4>		_colors;
 			ColorTypeFlags						_color_mask;
 			eShadingType						_shading;
 			std::map< TextureTypeFlags, f3d::tree::Texture *>	_textures;

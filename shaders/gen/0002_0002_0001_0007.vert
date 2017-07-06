@@ -26,8 +26,8 @@ const mat4 vk_clip = mat4(1.0f,  0.0f, 0.0f, 0.0f,
 
 void main() 
 {
-	mat3 normalMatrix = transpose(inverse(mat3(vk_clip * Mesh.model)));
-	outPosition = vec3(vk_clip * Camera.view * Mesh.model * position);
+	mat3 normalMatrix = transpose(inverse(mat3(Mesh.model)));
+	outPosition = vec3(Camera.view * Mesh.model * position);
 	outNormal = vec3(normalMatrix * vec3(inNormal));
 	outUV = inUV;
 
