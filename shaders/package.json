@@ -16,9 +16,13 @@
 		"chalk": "2.0.1",
 		"fs-extra": "3.0.1",
 		"glslify": "6.1.0",
-		"glsl-specular-phong": "1.0.0",
-		"glsl-specular-blinn-phong": "1.0.1",
+		"glsl-specular-beckmann": "1.1.2",
+		"glsl-specular-cook-torrance": "2.0.1",
+		"glsl-diffuse-oren-nayar": "1.0.1",
 		"glsl-diffuse-lambert": "1.0.0",
-		"glsl-diffuse-oren-nayar": "1.0.2"
+		"glsl-specular-ward": "1.0.0",
+		"glsl-specular-gaussian": "1.0.0",
+		"glsl-specular-phong": "1.0.0",
+		"glsl-specular-blinn-phong": "1.0.1"
 	}
 }

@@ -123,7 +123,7 @@ void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
 	l.setColorAmbient(glm::vec4(1.0f));
 	l.setColorDiffuse(glm::vec4(1.0f));
 	l.setColorSpecular(glm::vec4(1.0f));
-	l.setDirection(glm::vec3(0.0f, 10.0f, 0.0f));
+	l.setDirection(glm::vec3(1.0f, 0.0f, 0.0f));
 	l.setPosition(glm::vec3(5.0f, -2.0f, 0.0f));
 	f3d.scene->addLight(&l);
 

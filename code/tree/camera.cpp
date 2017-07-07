@@ -72,6 +72,7 @@ namespace f3d {
 			setAspect(g_f3dCameraPresets[preset].sensor_width / g_f3dCameraPresets[preset].sensor_height);
 			fov = 2.0f * (atanf(g_f3dCameraPresets[preset].sensor_width / (2.0f * g_f3dCameraPresets[preset].focal_len)));
 			setFOV(fov);
+			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
 		}
 
 		float 				Camera::getAspect() const {

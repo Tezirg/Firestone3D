@@ -4,6 +4,8 @@ var child_process = require('child_process');
 var path = require("path");
 var chalk = require("chalk");
 
+const supported_ext = [ '.vert', '.tesc', '.tese', '.geom', '.frag', '.comp'];
+
 function generateGLSL(srcDir, destDir) {
 	//Read input folder and create output folder
 	var input_files = fs.readdirSync(srcDir);
@@ -17,12 +19,13 @@ function generateGLSL(srcDir, destDir) {
 		try {
 			//Compute file paths
 			var input_file = input_files[i];
-			var output_name = path.basename(input_files[i]);
+			var output_name = path.basename(input_file);
 			var output_path = path.join(destDir, output_name);
-		
+			
 			//Process glsl using glslify
 			var output_code = glsl.file(input_file, { basedir: srcDir });
 
+			//Write result to file
 			fs.writeFileSync(output_path, output_code);
 			console.log(`${chalk.green("GLSL generation success")} [${chalk.cyan(output_path)}]`);
 		}
@@ -45,13 +48,18 @@ function generateSPIRV(srcDir, destDir) {
 		try {
 			//Compute files paths
 			var input_file = path.join(srcDir, input_files[i]);
+			var input_ext = path.extname(input_file);
 			var output_name = path.basename(input_file) + ".spv";
 			var output_path = path.join(destDir, output_name);
-			
-			//Compile to spirv
-			var command_line = `glslangValidator.exe -V ${input_file} -o ${output_path}`;
-			child_process.execSync(command_line);
-			console.log(`${chalk.green("SPIRV generation success")} [${chalk.cyan(output_path)}]`);
+		
+			//If is supported by spirv compiler
+			if (supported_ext.includes(input_ext))
+			{
+				//Compile to spirv
+				var command_line = `glslangValidator -V ${input_file} -o ${output_path}`;
+				child_process.execSync(command_line);
+				console.log(`${chalk.green("SPIRV generation success")} [${chalk.cyan(output_path)}]`);
+			}
 		}
 		catch (error) {
 			console.log(`${chalk.red("SPIRV generation error")} [${chalk.cyan(output_path)}] : ${error.stdout}`);

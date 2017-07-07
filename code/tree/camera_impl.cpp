@@ -9,8 +9,6 @@ namespace f3d {
 		{
 			applyPreset(F3D_CAMERA_PRESET_DEFAULT);
 			setName(std::string("DefaultCamera"));
-			setPerspective(_fov, _aspect, 0.1f, 1000.0f);
-			lookAt(glm::vec3(0.0f, 0.0f, 250.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			
 			AttributeContainer::addAttribute(0, 32 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 			DescriptorContainer::addDescriptor(0);

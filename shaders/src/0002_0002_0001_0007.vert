@@ -18,11 +18,6 @@ layout(location = 0) out vec3 outPosition;
 layout(location = 1) out vec3 outNormal;
 layout(location = 2) out vec2 outUV;
 
-const mat4 vk_clip = mat4(1.0f,  0.0f, 0.0f, 0.0f,
-						  0.0f, -1.0f, 0.0f, 0.0f,
-						  0.0f,  0.0f, 0.5f, 0.0f,
-						  0.0f,  0.0f, 0.5f, 1.0f);
-
 void main() 
 {
 	mat3 normalMatrix = transpose(inverse(mat3(Mesh.model)));
@@ -30,7 +25,7 @@ void main()
 	outNormal = vec3(normalMatrix * vec3(inNormal));
 	outUV = inUV;
 
-	gl_Position = vk_clip * Camera.perspective * Camera.view * Mesh.model * position;
-	
+	gl_Position = Camera.perspective * Camera.view * Mesh.model * position;
+	gl_Position.y = -gl_Position.y;
 	
 }
