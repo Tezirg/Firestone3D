@@ -193,10 +193,10 @@ layout(set = 3, binding = 0) uniform material_s {
 layout(set = 4, binding = 0) uniform sampler2D diffuse_samplerColor;
 
 layout(location = 0) in vec3 in_frag_position_camera_space;
-#ifdef F3D_NORMAL_ATTR_
+#ifdef F3D_ATTR_NORMAL_
 layout(location = 1) in vec3 in_frag_normal_camera_space;
 #endif
-#ifdef F3D_UV_ATTR_
+#ifdef F3D_ATTR_UV_
 layout(location = 2) in vec2 in_frag_UV;
 #endif
 
@@ -209,7 +209,7 @@ void main()
 	vec4 specular_color = vec4(0.0, 0.0, 0.0, 0.0);
 
 	vec3 eye_direction = normalize(vec3(-in_frag_position_camera_space));
-	#ifdef F3D_NORMAL_ATTR_
+	#ifdef F3D_ATTR_NORMAL_
 		vec3 n = normalize(inNormal);
 	#endif
 
