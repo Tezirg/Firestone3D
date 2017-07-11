@@ -3,6 +3,13 @@
 #extension GL_ARB_shading_language_420pack : enable
 #extension GL_OES_standard_derivatives : enable
 
+#ifndef F3D_DECLARATIONS
+#define F3D_DECLARATIONS
+
+#define F3D_REPLACED_DECLARATIONS
+
+#endif //F3D_DECLARATIONS
+
 #ifdef F3D_UNIFORM_CAMERA
 layout(std140, set = 0, binding = 0) uniform camera_s {
 	mat4	view;
@@ -25,7 +32,7 @@ layout(location = 1) out vec3 out_vertex_normal_camera_space;
 #endif
 #ifdef F3D_ATTR_COLOR
 layout (location = 2) in vec4 in_vertex_color;
-layout (location = 2) out vec4 out out_vertex_color;
+layout (location = 2) out vec4 out_vertex_color;
 #endif
 #ifdef F3D_ATTR_UV
 layout(location = 3) in vec2 in_vertex_UV;
@@ -57,7 +64,7 @@ void main()
 	#endif
 	
 	#ifdef F3D_ATTR_NORMAL
-		mat4 normal = transpose(inverse(Mesh.model))
+		mat4 normal = transpose(inverse(Mesh.model));
 		out_vertex_normal_camera_space = vec3(Camera.view * normal * in_vertex_normal_model_space);
 	#endif
 	#ifdef F3D_ATTR_COLOR

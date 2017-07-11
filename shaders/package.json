@@ -23,6 +23,7 @@
 		"glsl-specular-ward": "1.0.0",
 		"glsl-specular-gaussian": "1.0.0",
 		"glsl-specular-phong": "1.0.0",
-		"glsl-specular-blinn-phong": "1.0.1"
+		"glsl-specular-blinn-phong": "1.0.1",
+		"js-combinatorics": "0.5.2"
 	}
 }

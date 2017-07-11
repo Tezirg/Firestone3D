@@ -51,8 +51,8 @@ namespace f3d {
 
 				if (mouse.getLastEventType() == f3d::utils::MouseInput::F3D_MOUSE_INPUT_CURSOR && mouse.isButtonPressed(0) == true)
 				{
-					x -= mouse.getDeltaX() / 50.0f;
-					y += mouse.getDeltaY() / 90.0f;
+					x -= static_cast<float>(mouse.getDeltaX()) / 50.0f;
+					y += static_cast<float>(mouse.getDeltaY()) / 90.0f;
 					if (x != 0.0f)
 						r = glm::rotate(x, glm::vec3(0.0f, -1.0f, 0.0f));
 					if (y != 0.0f)

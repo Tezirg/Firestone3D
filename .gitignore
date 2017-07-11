@@ -12,3 +12,5 @@ contrib/glfw*/*
 */*/mars_data
 node_modules/*
 */node_modules/
+shaders/gen/*
+shaders/gen

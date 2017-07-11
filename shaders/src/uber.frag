@@ -3,9 +3,13 @@
 #extension GL_ARB_shading_language_420pack : enable
 #extension GL_OES_standard_derivatives : enable
 
-#ifdef F3D_SHADING_DIFFUSE_GOURAUD
-	#pragma glslify: diffuse_gouraud = require(./glsl-diffuse-gouraud.glsl);
-#endif
+#ifndef F3D_DECLARATIONS
+#define F3D_DECLARATIONS
+
+#define F3D_REPLACED_DECLARATIONS
+
+#endif //F3D_DECLARATIONS
+
 #ifdef F3D_SHADING_DIFFUSE_LAMBERT
 	#pragma glslify: diffuse_lambert = require(glsl-diffuse-lambert)
 #endif
@@ -63,8 +67,7 @@ layout(set = 3, binding = 0) uniform material_s {
 	vec4 		emissive_color;
 	vec4 		reflective_color;
 	float 		shininess;
-	float		roughness;
-	float		
+	float		roughness;	
 }	Material;
 #endif
 
@@ -74,7 +77,7 @@ layout(set = 4, binding = 0) uniform sampler2D ambient_sampler;
 #ifdef F3D_UNIFORM_SAMPLER_DIFFUSE
 layout(set = 5, binding = 0) uniform sampler2D diffuse_sampler;
 #endif
-#ifdef F3D_UNIFORM_SAMPLER_SPECULAR_
+#ifdef F3D_UNIFORM_SAMPLER_SPECULAR
 layout(set = 6, binding = 0) uniform sampler2D specular_sampler;
 #endif
 #ifdef F3D_UNIFORM_SAMPLER_EMISSIVE
@@ -103,31 +106,31 @@ layout(location = 1) in vec3 in_frag_normal_camera_space;
 layout (location = 2) in vec4 in_frag_color;
 #endif
 #ifdef F3D_ATTR_UV
-layout(location = 2) in vec2 in_frag_UV;
+layout(location = 3) in vec2 in_frag_UV;
 #endif
 
 layout(location = 0) out vec4 out_frag_color;
 
 #ifdef F3D_UNIFORM_LIGHT
-	vec3	computeLightDirection(in light_s Light, 
+	vec3	computeLightDirection(in uint lightIndex, 
 								  in vec3 eyeDirection)
 	{
 		vec3 ld = vec3(0.0);
-		switch (Light.type) 
+		switch (Light[lightIndex].type) 
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
 			case 1: //F3D_LIGHT_DIRECTIONAL_
-				ld = vec3(Light.direction);
+				ld = vec3(Light[lightIndex].direction);
 				break;
 		#endif
 		#ifdef F3D_LIGHT_POINT
 			case 2: //F3D_LIGHT_POINT
-				ld = vec3(normalize(Light.position) + normalize(eyeDirection));
+				ld = vec3(normalize(vec3(Light[lightIndex].position)) + normalize(eyeDirection));
 				break;
 		#endif
 		#ifdef F3D_LIGHT_SPOT
 			case 3: //F3D_LIGHT_SPOT
-				ld = vec3(normalize(Light.position) + normalize(eyeDirection));
+				ld = vec3(normalize(vec3(Light[lightIndex].position)) + normalize(eyeDirection));
 				break;
 		#endif
 			default:
@@ -136,11 +139,11 @@ layout(location = 0) out vec4 out_frag_color;
 		return normalize(ld);
 	}
 
-	float 		computeAttenuation(in light_s Light,
+	float 		computeAttenuation(in uint lightIndex,
 								   in vec3 lightDirection)
 	{
 		float att = 0.0;
-		switch (Light.type)
+		switch (Light[lightIndex].type)
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
 			case 1: //Directionnal
@@ -150,19 +153,19 @@ layout(location = 0) out vec4 out_frag_color;
 		#ifdef F3D_LIGHT_POINT
 			case 2: //Point
 				float dist = abs(length(lightDirection));
-				att = 1.0 / (Light.constant + 
-							 Light.linear * dist + 
-							 Light.quadratic * dist * dist);
+				att = 1.0 / (Light[lightIndex].constant + 
+							 Light[lightIndex].linear * dist + 
+							 Light[lightIndex].quadratic * dist * dist);
 				break;
 		#endif
-		#ifdef F3D_LIGHT_POINT
+		#ifdef F3D_LIGHT_SPOT
 			case 3: //Spot
-				float spotEffect = dot(normalize(Light.direction), normalize(-lightDirection));
-				if (spotEffect > Light.spot_cos_cutoff) {
-					spotEffect = pow(spotEffect, Light.spot_exponent);
-					att = spotEffect / (Light.constant + 
-										Light.linear * dist + 
-										Light.quadratic * dist * dist);
+				float spotEffect = dot(normalize(vec3(Light[lightIndex].direction)), normalize(-lightDirection));
+				if (spotEffect > Light[lightIndex].spot_cos_cutoff) {
+					spotEffect = pow(spotEffect, Light[lightIndex].spot_exponent);
+					att = spotEffect / (Light[lightIndex].constant + 
+										Light[lightIndex].linear * dist + 
+										Light[lightIndex].quadratic * dist * dist);
 				}
 				break;
 		#endif
@@ -172,12 +175,10 @@ layout(location = 0) out vec4 out_frag_color;
 		return att;
 	}
 	
-	}
-	
-	vec4		computeAmbient(in light_s Light)
+	vec4		computeAmbient(in uint lightIndex)
 	{
 		#ifdef F3D_COLOR_AMBIENT
-			vec4 ambient = Light.ambient_color;
+			vec4 ambient = Light[lightIndex].ambient_color;
 			#ifdef F3D_UNIFORM_MATERIAL
 				ambient *= Material.ambient_color;
 			#endif
@@ -190,13 +191,13 @@ layout(location = 0) out vec4 out_frag_color;
 		return ambient;
 	}
 
-	vec4		computeDiffuse(in light_s Light, 
+	vec4		computeDiffuse(in uint lightIndex, 
 							   in vec3 lightDirection, 
 							   in vec3 viewDirection, 
 							   in vec3 surfaceNormal)
 	{
 		#ifdef F3D_COLOR_DIFFUSE
-			vec4 diffuse = Light.diffuse_color;
+			vec4 diffuse = Light[lightIndex].diffuse_color;
 			#if F3D_UNIFORM_MATERIAL
 				diffuse *= Material.diffuse_color;
 			#endif
@@ -222,7 +223,7 @@ layout(location = 0) out vec4 out_frag_color;
 		return diffuse;
 	}
 	
-	vec4		computeSpecular(in light_s Light, 
+	vec4		computeSpecular(in uint lightIndex, 
 								in vec3 lightDirection, 
 								in vec3 viewDirection, 
 								in vec3 surfaceNormal)
@@ -230,7 +231,7 @@ layout(location = 0) out vec4 out_frag_color;
 		#ifdef F3D_COLOR_SPECULAR
 			float shininess = 1.0;
 			float roughness = 1.0;
-			vec4 specular = Light.specular_color;
+			vec4 specular = Light[lightIndex].specular_color;
 			#if F3D_UNIFORM_MATERIAL
 				specular *= Material.specular_color;
 				shininess = Material.shininess;
@@ -280,14 +281,11 @@ void main()
 			vec4 emissive_color = vec4(0.0, 0.0, 0.0, 0.0);
 		#endif
 	#endif
-	#ifdef F3D_COLOR_REFLECTIVE
-		vec4 reflective_color = vec4(0.0, 0.0, 0.0, 0.0);
-	#endif
 
 	#ifdef F3D_ATTR_NORMAL
 		vec3 surfaceNormal = in_frag_normal_camera_space;
-		#ifdef F3D_UNIFORM_SAMPLER_NORMALS && F3D_ATTR_UV
-			surfaceNormal += texture(normals_sampler, in_frag_UV);
+		#if F3D_UNIFORM_SAMPLER_NORMALS && F3D_ATTR_UV
+			surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
 		#endif
 		surfaceNormal = normalize(surfaceNormal);
 	#else
@@ -295,8 +293,8 @@ void main()
 	#endif
 	#ifdef F3D_ATTR_POSITION
 		vec3 viewDirection = vec3(-in_frag_position_camera_space);
-		#ifdef F3D_UNIFORM_SAMPLER_HEIGHT && F3D_ATTR_UV
-			viewDirection += surfaceNormal * texture(height_sampler, in_frag_UV);
+		#if F3D_UNIFORM_SAMPLER_HEIGHT && F3D_ATTR_UV
+			viewDirection += surfaceNormal * texture(height_sampler, in_frag_UV).xyz;
 		#endif
 		viewDirection = normalize(viewDirection);
 	#else
@@ -306,17 +304,17 @@ void main()
 
 	#if F3D_UNIFORM_LIGHT
 		for (uint i = 0; i < light_count.value; i++) {
-			vec3 lightDirection = computeLightDirection(Light[i], viewDirection);
-			float attenuation = computeAttenuation(Light[i], lightDirection);
+			vec3 lightDirection = computeLightDirection(i, viewDirection);
+			float attenuation = computeAttenuation(i, lightDirection);
 			
 			#ifdef F3D_COLOR_AMBIENT
-				ambient_color += computeAmbient(Light[i]) * attenuation;
+				ambient_color += computeAmbient(i) * attenuation;
 			#endif
 			#ifdef F3D_COLOR_DIFFUSE
-				diffuse_color += computeDiffuse(Light[i], lightDirection, viewDirection, surfaceNormal) * attenuation;
+				diffuse_color += computeDiffuse(i, lightDirection, viewDirection, surfaceNormal) * attenuation;
 			#endif
 			#ifdef F3D_COLOR_SPECULAR
-				specular_color += computeSpecular(Light[i], lightDirection, viewDirection, surfaceNormal) * attenuation;
+				specular_color += computeSpecular(i, lightDirection, viewDirection, surfaceNormal) * attenuation;
 			#endif
 		}
 	#endif
@@ -335,9 +333,6 @@ void main()
 	#endif
 	#ifdef F3D_COLOR_EMISSIVE
 		out_frag_color += emissive_color;
-	#endif
-	#ifdef F3D_COLOR_REFLECTIVE
-		out_frag_color += reflective_color;
 	#endif
 	
 	out_frag_color = clamp(out_frag_color, 0.0, 1.0);

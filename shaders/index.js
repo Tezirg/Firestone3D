@@ -3,65 +3,91 @@ var fs = require('fs-extra');
 var child_process = require('child_process');
 var path = require("path");
 var chalk = require("chalk");
+var combinatronics = require('js-combinatorics');
 
+
+const supported_ext = ['.vert', '.tesc', '.tese', '.geom', '.frag', '.comp'];
 
 const f3d_constants =  {
-    'F3D_VULKAN_TRANSFORM_Y': 0x01
+    'F3D_VULKAN_TRANSFORM_Y': 0x01,
+    'F3D_COLOR_AMBIENT': 0x01,
+    'F3D_COLOR_DIFFUSE': 0x01,
+    'F3D_COLOR_SPECULAR': 0x01,
+    'F3D_COLOR_EMISSIVE': 0x01,
+    'F3D_LIGHT_DIRECTIONAL': 0x01,
+    'F3D_LIGHT_POINT': 0x01,
+    'F3D_LIGHT_SPOT': 0x01,
+    'F3D_UNIFORM_CAMERA': 0x100,
+    'F3D_UNIFORM_MODEL': 0x200,
+    'F3D_UNIFORM_MATERIAL': 0x400,
+    'F3D_UNIFORM_LIGHT': 0x800,
 };
 
-const f3d_attributes = {
+const f3d_shader_interface = {
     'F3D_ATTR_POSITION' : 0x01, 
     'F3D_ATTR_NORMAL': 0x02,
     'F3D_ATTR_COLOR': 0x04,
-    'F3D_ATTR_UV': 0x08
-};
-const f3d_uniforms = {
-    'F3D_UNIFORM_CAMERA': 0x01,
-    'F3D_UNIFORM_MODEL': 0x02,
-    'F3D_UNIFORM_MATERIAL': 0x04,
-    'F3D_UNIFORM_LIGHT': 0x08,
-    'F3D_UNIFORM_SAMPLER_AMBIENT': 0x10,
-    'F3D_UNIFORM_SAMPLER_DIFFUSE': 0x20,
-    'F3D_UNIFORM_SAMPLER_SPECULAR': 0x40,
-    'F3D_UNIFORM_SAMPLER_EMISSIVE': 0x80,
-    'F3D_UNIFORM_SAMPLER_HEIGHT': 0x100,
-    'F3D_UNIFORM_SAMPLER_NORMALS': 0x200,
-    'F3D_UNIFORM_SAMPLER_DISPLACEMENT': 0x400,
-    'F3D_UNIFORM_SAMPLER_REFLECTION': 0x800
-};
+    'F3D_ATTR_UV': 0x08,
+    /*
+    'F3D_ATTR_RESERVED_1': 0x10,
+    'F3D_ATTR_RESERVED_2': 0x20,
+    'F3D_ATTR_RESERVED_3': 0x40,
+    'F3D_ATTR_RESERVED_4': 0x80,
+    */
 
-const f3d_color_type = {
-    'F3D_COLOR_AMBIENT': 0x01,
-    'F3D_COLOR_DIFFUSE': 0x02,
-    'F3D_COLOR_SPECULAR': 0x04,
-    'F3D_COLOR_EMISSIVE': 0x08,
-    'F3D_COLOR_REFLECTIVE': 0x10
-};
-const f3d_light_type =  {
-    'F3D_LIGHT_DIRECTIONAL': 0x01,
-    'F3D_LIGHT_POINT': 0x02,
-    'F3D_LIGHT_SPOT': 0x04
-};
+    'F3D_UNIFORM_SAMPLER_AMBIENT': 0x1000,
+    'F3D_UNIFORM_SAMPLER_DIFFUSE': 0x2000,
+    'F3D_UNIFORM_SAMPLER_SPECULAR': 0x4000,
+    'F3D_UNIFORM_SAMPLER_EMISSIVE': 0x8000,
+    'F3D_UNIFORM_SAMPLER_HEIGHT': 0x10000,
+    'F3D_UNIFORM_SAMPLER_NORMALS': 0x20000,
+
+    /*
+    'F3D_UNIFORM_SAMPLER_DISPLACEMENT': 0x40000,
+    'F3D_UNIFORM_SAMPLER_REFLECTION': 0x80000,
+    'F3D_UNIFORM_RESERVED_1': 0x100000,
+    'F3D_UNIFORM_RESERVED_2': 0x200000,
+    'F3D_UNIFORM_RESERVED_3': 0x400000,
+    'F3D_UNIFORM_RESERVED_4': 0x800000,
+    */
+}
+
 const f3d_diffuse_shading_type = {
-    'F3D_SHADING_DIFFUSE_FLAT': 0x01,
-    'F3D_SHADING_DIFFUSE_GOURAUD': 0x02,
+    'F3D_SHADING_DIFFUSE_FLAT': 0x1,
     'F3D_SHADING_DIFFUSE_LAMBERT': 0x04,
     'F3D_SHADING_DIFFUSE_ORENNAYAR': 0x08,
-    'F3D_SHADING_DIFFUSE_TOON': 0x010,
+    'F3D_SHADING_DIFFUSE_TOON': 0x010
 };
 const f3d_specular_shading_type = {
-    'F3D_SHADING_SPECULAR_PHONG': 0x01,
-    'F3D_SHADING_SPECULAR_BLINN_PHONG': 0x02,
-    'F3D_SHADING_SPECULAR_BECKMANN': 0x04,
-    'F3D_SHADING_SPECULAR_COOK_TORRANCE': 0x08,
-    'F3D_SHADING_SPECULAR_WARD': 0x010,
-    'F3D_SHADING_SPECULAR_GAUSSIAN': 0x020
+    'F3D_SHADING_SPECULAR_PHONG': 0x100,
+    'F3D_SHADING_SPECULAR_BLINN_PHONG': 0x200,
+    'F3D_SHADING_SPECULAR_BECKMANN': 0x400,
+    'F3D_SHADING_SPECULAR_COOK_TORRANCE': 0x800,
+    'F3D_SHADING_SPECULAR_WARD': 0x100,
+    'F3D_SHADING_SPECULAR_GAUSSIAN': 0x200
 };
 
-const supported_ext = [ '.vert', '.tesc', '.tese', '.geom', '.frag', '.comp'];
-
-function generateDefinesCombination(input_macro_values) {
-    var r_fn = function()
+function generateDefinesCombination(enum_map) {
+    var result = [];
+    var combinations = combinatronics.power(Object.keys(enum_map));
+    combinations.forEach(function(combination) {
+        var mask = 0x00;
+        if (combination.length > 0) {
+            combination.forEach(function(elem) {
+                mask |= enum_map[elem];
+            });
+            result.push(mask);
+        }
+    });
+    return result;
+}
+function textFromMask(enum_map, mask) {
+    var text = '';
+    for (k in enum_map) {
+        if ((enum_map[k] & mask) === enum_map[k])
+            text += '#define ' + k + ' 0x' + enum_map[k].toString(16) + '\r\n';
+    }
+    return text;
 }
 
 function generateGLSL(srcDir, destDir) {
@@ -72,32 +98,58 @@ function generateGLSL(srcDir, destDir) {
 	
 	console.log(`Processing ${input_files.length} files from ${chalk.cyan(srcDir)} to ${chalk.cyan(destDir)}`);
 	
-	var constant_defines_code = "";
+	var constant_def = '';
 	for (var key in f3d_constants) {
-	    var def = "#define " + key + " " + f3d_constants[key].toString(16) + "\n";
-	    constant_defines_code += def;
+	    constant_def += '#define ' + key + ' 0x' + f3d_constants[key].toString(16) + '\r\n';
 	}
+	var shader_interface = generateDefinesCombination(f3d_shader_interface);
 
 	for (var i = 0; i < input_files.length; i++) {
 	
 		try {
 			//Compute file paths
-			var input_file = input_files[i];
-			var output_name = path.basename(input_file);
-			var output_path = path.join(destDir, output_name);
-			
-			//Process glsl using glslify
-			var output_code = glsl.file(input_file, { basedir: srcDir });
+		    var input_file = input_files[i];
+		    var input_extension = path.extname(input_files[i]);
 
-            //TODO: GENERATE MACROS HERE
-            //Adding preprocessor code
-			output_code =
-                constant_defines_code +
-                output_code;
+		    if (supported_ext.includes(input_extension)) // Supported extension ONLY
+		    {
+		        //Process glsl using glslify
+		        var output_code = glsl.file(input_file, { basedir: srcDir });
 
-		    //Write result to file
-			fs.writeFileSync(output_path, output_code);
-			console.log(`${chalk.green("GLSL generation success")} [${chalk.cyan(output_path)}]`);
+		        for (var d = 0; d < Object.keys(f3d_diffuse_shading_type).length; d++) {
+		            var diffuse_shading_mask = Object.values(f3d_diffuse_shading_type)[d]; // After the interface 32 bits
+		            var diffuse_shading_text = textFromMask(f3d_diffuse_shading_type, diffuse_shading_mask);
+
+		            for (var s = 0; s < Object.keys(f3d_specular_shading_type).length; s++) {
+		                var specular_shading_mask = Object.values(f3d_specular_shading_type)[s]; //Afeter the inteface 32 bits
+		                var specular_shading_text = textFromMask(f3d_specular_shading_type, specular_shading_mask);
+		                shader_interface.forEach(function (interface_def) {
+		                    var obj = {
+		                        text: constant_def + textFromMask(f3d_shader_interface, interface_def),
+		                        interface_mask: interface_def,
+		                        shading_mask: specular_shading_mask | diffuse_shading_mask,
+		                    }
+
+		                    var output_name = obj.interface_mask.toString(2);
+		                    while (output_name.length < 32)
+		                        output_name = '0' + output_name;
+		                    output_name = obj.shading_mask.toString(2) + output_name;
+		                    while (output_name.length < 64)
+		                        output_name = '0' + output_name;
+		                    output_name += input_extension
+		                    var output_path = path.join(destDir, output_name);
+
+		                    //Remplace in the code the generated macros
+		                    var code = output_code.replace('#define F3D_REPLACED_DECLARATIONS', obj.text);
+
+		                    //Write file
+		                    fs.writeFileSync(output_path, code);
+		                    console.log(`${chalk.green("GLSL generation success")} [${chalk.cyan(output_path)}]`);
+		                });
+		            } // Specular shading
+		        } //Diffuse shading
+
+		    }// if supported ext
 		}
 		catch (error) {
 			console.log(error);
