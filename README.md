@@ -4,11 +4,11 @@ F3D is an Open Source desktop graphics & compute library.
 It is designed so that it is easy to use for beginners, while allowing advanced users to fully configure and write their own pipelines.
 
 # Features
-	* Window management
-	* Keyboard, mouse and joystick inputs
-	* Scene graph interface
-	* Import from common 3D geometry formats, [Full list](http://www.assimp.org/main_features_formats.html)
-	* Supports common texture formats, [Full list](https://www.imagemagick.org/script/formats.php#supported)
+* Window management
+* Keyboard, mouse and joystick inputs
+* Scene graph interface
+* Import from common 3D geometry formats, [Full list](http://www.assimp.org/main_features_formats.html)
+* Supports common texture formats, [Full list](https://www.imagemagick.org/script/formats.php#supported)
 
 # Using F3D
 See the [Getting started](dead) for a basic introduction, or the [advanced guide](dead) for a complete introduction.
