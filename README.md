@@ -11,11 +11,11 @@ It is designed so that it is easy to use for beginners, while allowing advanced 
 * Supports common texture formats, [Full list](https://www.imagemagick.org/script/formats.php#supported)
 
 # Using F3D
-See the [Getting started](dead) for a basic introduction, or the [advanced guide](dead) for a complete introduction.
+See the [Getting started](INTRODUCTION.md) for a basic introduction, or the [advanced guide](ADVANCED.md) for a complete introduction.
 
-Some [Examples](https://github.com/Tezirg/Firestone3D/tree/master/examples) are also available to showcase the main features.
+Some [Examples](examples) are also available to showcase the main features.
 
-In addition, you might want to consult the [API reference](dead) (Generated with doxyen).
+In addition, you might want to consult the [API reference](doc) (Generated with doxyen).
 
 # Dependencies
 ## Exposed dependencies
