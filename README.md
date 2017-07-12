@@ -18,13 +18,13 @@ In addition, you might want to consult the [API reference](dead) (Generated with
 # Dependencies
 ## Exposed dependencies
 For convenience, F3D is using and exposing a mathematics library for graphics programming.
-	* [GLM](https://github.com/g-truc/glm), [License](http://glm.g-truc.net/copying.txt)
+* [GLM](https://github.com/g-truc/glm), [License](http://glm.g-truc.net/copying.txt)
 
 ## Hidden dependencies
 F3D is also internally using multiple libraries:
-	* [ImageMagick](http://imagemagick.org/script/index.php), [License](http://imagemagick.org/script/license.php)
-	* [Assimp](https://github.com/assimp/assimp), [License](http://assimp.sourceforge.net/main_license.html), 
-	* [GLFW] (https://github.com/glfw/glfw), [License](http://www.glfw.org/license.html)
+* [ImageMagick](http://imagemagick.org/script/index.php), [License](http://imagemagick.org/script/license.php)
+* [Assimp](https://github.com/assimp/assimp), [License](http://assimp.sourceforge.net/main_license.html), 
+* [GLFW] (https://github.com/glfw/glfw), [License](http://www.glfw.org/license.html)
 
 ## Drivers
 F3D is written is such a way that the underlying driver is completely hidden to the user.
