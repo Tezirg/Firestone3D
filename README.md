@@ -12,7 +12,9 @@ It is designed so that it is easy to use for beginners, while allowing advanced 
 
 # Using F3D
 See the [Getting started](dead) for a basic introduction, or the [advanced guide](dead) for a complete introduction.
+
 Some [Examples](https://github.com/Tezirg/Firestone3D/tree/master/examples) are also available to showcase the main features.
+
 In addition, you might want to consult the [API reference](dead) (Generated with doxyen).
 
 # Dependencies
