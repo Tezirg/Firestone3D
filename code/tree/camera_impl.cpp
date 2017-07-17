@@ -23,8 +23,8 @@ namespace f3d {
 		}
 
 		void								CameraImpl::writeAttribute() {
-			AttributeContainer::updateAttribute(0, glm::value_ptr(_view), 0, 16 * sizeof(float));
-			AttributeContainer::updateAttribute(0, glm::value_ptr(_perspective), 16 * sizeof(float), 16 * sizeof(float));
+			AttributeContainer::updateAttribute(0, glm::value_ptr(Camera::_buffer._view), offsetof(t_camera, _view), 16 * sizeof(float));
+			AttributeContainer::updateAttribute(0, glm::value_ptr(Camera::_buffer._perspective), offsetof(t_camera, _perspective), 16 * sizeof(float));
 		}
 
 		VkDescriptorSet						CameraImpl::getDescriptorSet() {

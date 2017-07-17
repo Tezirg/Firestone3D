@@ -8,7 +8,7 @@
 #include <f3d/tree/camera.h>
 #include <f3d/utils/inputs.h>
 #include <f3d/helpers/keyboard.hpp>
-//#include <f3d/helpers/mouse.hpp>
+#include <f3d/helpers/mouse.hpp>
 #include <f3d/helpers/xbox_360.hpp>
 
 

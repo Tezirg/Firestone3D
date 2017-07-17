@@ -32,17 +32,17 @@ bool		Demo::init(const std::list<std::string>& texture_mesh, const std::list<std
 
 bool		Demo::run()
 {
-	auto start_fn = std::bind(&Demo::loadScene, this, std::placeholders::_1, std::placeholders::_2);
-	auto draw_fn = std::bind(&Demo::updateScene, this, std::placeholders::_1, std::placeholders::_2);
-	auto keyboard_fn = std::bind(&Demo::keyCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	auto mouse_fn = std::bind(&Demo::mouseCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	auto joystick_fn = std::bind(&Demo::joystickCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	auto start_fn = std::bind(&Demo::loadScene, this, std::placeholders::_1);
+	auto draw_fn = std::bind(&Demo::updateScene, this, std::placeholders::_1);
+	auto keyboard_fn = std::bind(&Demo::keyCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto mouse_fn = std::bind(&Demo::mouseCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto joystick_fn = std::bind(&Demo::joystickCallback, this, std::placeholders::_1, std::placeholders::_2);
 
-	engine->startCallback(start_fn, nullptr);
-	engine->drawCallback(draw_fn, nullptr);
-	engine->keybordEventsCallback(keyboard_fn, nullptr);
-	engine->mouseEventsCallback(mouse_fn, nullptr);
-	engine->joystickEventsCallback(joystick_fn, nullptr);
+	engine->startCallback(start_fn);
+	engine->drawCallback(draw_fn);
+	engine->keybordEventsCallback(keyboard_fn);
+	engine->mouseEventsCallback(mouse_fn);
+	engine->joystickEventsCallback(joystick_fn);
 	engine->settings->applicationName.assign("Demo");
 	engine->settings->fpsCap = 40;
 	engine->settings->windowWidth = 1280;
@@ -59,7 +59,7 @@ bool		Demo::clean()
 	return false;
 }
 
-void		Demo::loadScene(f3d::Firestone& f3d, void * arg)
+void		Demo::loadScene(f3d::Firestone& f3d)
 {
 	f3d::tree::Light		l;
 
@@ -236,11 +236,8 @@ void		Demo::onButtonA()
 	}
 }
 
-void		Demo::updateScene(f3d::Firestone& f3d, void * arg)
+void		Demo::updateScene(f3d::Firestone& f3d)
 {
-
-	(void)arg;
-
 	//Camera controls management
 	fly_camera.updateFromKeyboard(keyboard);
 	fly_camera.updateFromMouse(mouse);
@@ -277,20 +274,17 @@ void		Demo::updateScene(f3d::Firestone& f3d, void * arg)
 
 }
 
-void		Demo::keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg)
+void		Demo::keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent)
 {
-	(void)arg;
 	keyboard.updateFromEvent(keyEvent);
 }
 
-void		Demo::mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg)
+void		Demo::mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent)
 {
-	(void)arg;
 	mouse.updateFromEvent(mouseEvent);
 }
 
-void		Demo::joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg)
+void		Demo::joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent)
 {
-	(void)arg;
 	joystick.updateFromEvent(joystickEvent);
 }

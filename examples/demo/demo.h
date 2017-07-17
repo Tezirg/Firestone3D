@@ -8,7 +8,6 @@
 #include <f3d/helpers/xbox_360.hpp>
 #include <f3d/helpers/fly_camera.hpp>
 
-
 #include <list>
 #include <memory>
 #include <functional>
@@ -29,11 +28,11 @@ public:
 	bool		run();
 	bool		clean();
 
-	void		loadScene(f3d::Firestone& f3d, void * arg);
-	void		updateScene(f3d::Firestone& f3d, void * arg);
-	void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent, void *arg);
-	void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent, void *arg);
-	void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent, void *arg);
+	void		loadScene(f3d::Firestone& f3d);
+	void		updateScene(f3d::Firestone& f3d);
+	void		keyCallback(f3d::Firestone& f3d, f3d::utils::KeyInput& keyEvent);
+	void		mouseCallback(f3d::Firestone& f3d, f3d::utils::MouseInput& mouseEvent);
+	void		joystickCallback(f3d::Firestone& f3d, f3d::utils::JoystickInput& joystickEvent);
 
 private:
 	void		onButtonB();

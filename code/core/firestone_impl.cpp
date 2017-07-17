@@ -23,7 +23,7 @@ static void									key_callback(GLFWwindow* window, int key, int scancode, int 
 
 	// Call keyboard input callback if defined
 	if (f3d->_key_input != nullptr) {
-		f3d->_key_input(*f3d, * f3d_impl->keyEvent.get(), f3d->_key_input_arg);
+		f3d->_key_input(*f3d, * f3d_impl->keyEvent.get());
 	}
 }
 
@@ -35,7 +35,7 @@ static void									mouse_pos_callback(GLFWwindow* window, double xpos, double y
 
 	// Call mouse input callback if defined
 	if (f3d->_mouse_input != nullptr) {
-		f3d->_mouse_input(*f3d,  * f3d_impl->mouseEvent.get(), f3d->_mouse_input_arg);
+		f3d->_mouse_input(*f3d,  * f3d_impl->mouseEvent.get());
 	}
 }
 
@@ -48,7 +48,7 @@ static void									mouse_focus_callback(GLFWwindow* window, int entered) {
 	
 	// Call mouse input callback if defined
 	if (f3d->_mouse_input != nullptr) {
-		f3d->_mouse_input(*f3d,  * f3d_impl->mouseEvent.get(), f3d->_mouse_input_arg);
+		f3d->_mouse_input(*f3d,  * f3d_impl->mouseEvent.get());
 	}
 }
 
@@ -77,7 +77,7 @@ static void										mouse_button_callback(GLFWwindow* window, int button, int a
 	f3d_impl->mouseEvent->yoffset = y;
 	// Call mouse input callback if defined
 	if (f3d->_mouse_input != nullptr) {
-		f3d->_mouse_input(*f3d, * f3d_impl->mouseEvent.get(), f3d->_mouse_input_arg);
+		f3d->_mouse_input(*f3d, * f3d_impl->mouseEvent.get());
 	}
 }
 
@@ -89,7 +89,7 @@ static void										mouse_scroll_callback(GLFWwindow* window, double xoffset, d
 
 	// Call mouse input callback if defined
 	if (f3d->_mouse_input != nullptr) {
-		f3d->_mouse_input(*f3d, *f3d_impl->mouseEvent.get(), f3d->_mouse_input_arg);
+		f3d->_mouse_input(*f3d, *f3d_impl->mouseEvent.get());
 	}
 }
 
@@ -99,7 +99,7 @@ static void										joystick_callback(int joy, int event) {
 
 	f3d_impl->joystickEvent.reset(new f3d::utils::JoystickInput(joy, event == GLFW_CONNECTED ? true : false));
 	if (f3d->_joystick_input != nullptr) {
-		f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent, f3d->_joystick_input_arg);
+		f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent);
 	}
 }
 
@@ -118,7 +118,7 @@ static void										joystick_update(int joy) {
 	for (int32_t i = 0; i < count && axis != nullptr; i++) {
 		f3d_impl->joystickEvent.reset(new f3d::utils::JoystickInput(joy, i, axis[i]));
 		if (f3d->_joystick_input != nullptr) { //Emit one event per axis
-			f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent, f3d->_joystick_input_arg);
+			f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent);
 		}
 	}
 
@@ -133,7 +133,7 @@ static void										joystick_update(int joy) {
 
 		f3d_impl->joystickEvent.reset(new f3d::utils::JoystickInput(joy, i, state));
 		if (f3d->_joystick_input != nullptr) { //Emit one event per button
-			f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent, f3d->_joystick_input_arg);
+			f3d->_joystick_input(*f3d, *f3d_impl->joystickEvent);
 		}
 	}
 
@@ -149,7 +149,7 @@ static void					size_callback(GLFWwindow *window, int width, int height) {
 	f3d_impl->applySettings();
 	// Call resize callback if defined
 	if (f3d->_resize != nullptr) {
-		f3d->_resize(*f3d, width, height, f3d->_resize_arg);
+		f3d->_resize(*f3d, width, height);
 	}
 }
 
@@ -220,7 +220,7 @@ namespace f3d {
 		glfwSetJoystickCallback(joystick_callback);
 
 		if (_start != nullptr)
-			_start(*this, _start_arg);
+			_start(*this);
 
 		_run = true;
 		timer->start();
@@ -248,7 +248,7 @@ namespace f3d {
 
 				timer->restart();
 				if (_draw != nullptr) {
-					_draw(*this, _draw_arg);
+					_draw(*this);
 					render->computeCommandBuffers(scene);
 				}
 			}
@@ -256,7 +256,7 @@ namespace f3d {
 		}
 
 		if (_end != nullptr) {
-			_end(*this, _end_arg);
+			_end(*this);
 		}
 
 		vkDeviceWaitIdle(device->vk_device);

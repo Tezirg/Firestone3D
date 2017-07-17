@@ -40,7 +40,7 @@
 #endif
 
 #include <cstdint>
-#include <cstdio>
+#include <cstddef>
 #include <memory>
 #include <utility>
 #include <functional>

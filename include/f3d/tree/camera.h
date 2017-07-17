@@ -46,6 +46,11 @@ namespace f3d {
 		public:
 			Camera();
 			virtual ~Camera();
+			Camera(Camera& cpy_oth) = default; //Default copy constructor, all attributes can be copied
+			Camera(Camera&& mov_oth) = delete; //No mov constructor
+			Camera&		operator=(Camera& cpy_oth) = default; //Default copy assignement, attributes can be copied
+			Camera&		operator=(Camera&& mov_oth) = delete; //No mov assignement
+
 
 			glm::mat4&					getView();
 			const glm::mat4&			getView() const;
@@ -62,6 +67,8 @@ namespace f3d {
 			glm::mat4&					getViewPerspective();
 			const glm::mat4&			getViewPerspective() const;
 
+			glm::mat4&					getNormal();
+			const glm::mat4&			getNormal() const;
 
 			virtual void				applyPreset(eCameraPresetType preset);
 
@@ -79,12 +86,18 @@ namespace f3d {
 			virtual void				setPosition(const glm::vec3& val);
 			void						rotate(const glm::vec3& angles);
 		protected:
+			void						updateCombined();
+
+			typedef						struct s_descriptor_camera
+			{
+				glm::mat4				_view;
+				glm::mat4				_perspective;
+				glm::mat4				_VP;
+				glm::mat4				_normal;
+			}							t_camera;
+		protected:
+			t_camera					_buffer;
 			std::string					_name;
-
-			glm::mat4					_VP;
-			glm::mat4					_view;
-			glm::mat4					_perspective;
-
 			float						_far;
 			float						_near;
 			float						_fov;
