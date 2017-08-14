@@ -26,45 +26,23 @@ namespace f3d {
 
 				initRenderPass();
 
-				std::list<f3d::core::Program *> progs;
-
-				//Flat shaders
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0000_0000_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0000_0007(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0001_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0001_0003_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0001_0002_0000_0001(physical, device));
-				//Gouraud shaders
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0000_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0001_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0003_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0000_0005_0007(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0000_0000(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0000_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0000_0007(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0002(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0001_0007(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0003_0006(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0001_0005_0003(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0002_0000_0001(physical, device));
-				progs.push_back(new f3d::core::prog::Program_0002_0002_0001_0007(physical, device));
-				for (auto it = progs.begin(); it != progs.end(); ++it) {
-					(*it)->initVkPipeline(vk_renderpass, 0);
-					setProgram(*it);
-				}
+				// Testing program masking
+				f3d::core::prog::DefaultProgram *prog = new f3d::core::prog::DefaultProgram(physical, device, 
+				{ 
+					F3D_SHADER_COLOR_AMBIENT | 
+					F3D_SHADER_COLOR_DIFFUSE | 
+					F3D_SHADER_COLOR_SPECULAR |
+					F3D_SHADER_UNIFORM_CAMERA |
+					F3D_SHADER_UNIFORM_MODEL |
+					F3D_SHADER_UNIFORM_MATERIAL |
+					F3D_SHADER_UNIFORM_LIGHT, 
+				
+					F3D_SHADING_DIFFUSE_LAMBERT | 
+					F3D_SHADING_SPECULAR_PHONG 
+				});
+				prog->initVkPipeline(vk_renderpass, 0);
+				setProgram(prog);
+				
 				initViews();
 				initFramebuffers();
 			}
@@ -262,13 +240,6 @@ namespace f3d {
 
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
 				if (material != nullptr) {
-					mask.fields.colors = material->colorFlags();
-					mask.fields.textures = material->textureFlags();
-					mask.fields.lights = scene->getLightMask();
-					mask.fields.shading = F3D_SHADING_GOURAUD;// material->shadingFlags();
-
-					//std::cout << m.getName() << " with material : " << m.getMaterialName() << std::endl;
-					//std::cout << std::hex << mask.fields.colors << std::endl;
 
 					auto prog = getProgram(mask.mask);
 					if (prog != nullptr) {

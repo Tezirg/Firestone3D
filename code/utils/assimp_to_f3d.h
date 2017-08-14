@@ -95,29 +95,31 @@
 	switch (assimp_type)																			\
 	{																								\
 		case aiShadingMode_Flat:																	\
-			f3d_target = f3d::F3D_SHADING_FLAT;														\
+			f3d_target = f3d::F3D_SHADING_DIFFUSE_FLAT;												\
 			break;																					\
 		case aiShadingMode_Gouraud:																	\
-			f3d_target = f3d::F3D_SHADING_GOURAUD;													\
+			f3d_target = f3d::F3D_SHADING_DIFFUSE_LAMBERT;											\
+			break;																					\
+		case aiShadingMode_Phong:																	\
+			f3d_target = f3d::F3D_SHADING_SPECULAR_PHONG;											\
 			break;																					\
 		case aiShadingMode_Blinn:																	\
-		case aiShadingMode_Phong:																	\
-			f3d_target = f3d::F3D_SHADING_FLAT;														\
+			f3d_target = f3d::F3D_SHADING_SPECULAR_BLINN_PHONG;										\
 			break;																					\
 		case aiShadingMode_Toon:																	\
-			f3d_target = f3d::F3D_SHADING_TOON;														\
+			f3d_target = f3d::F3D_SHADING_DIFFUSE_TOON;												\
 			break;																					\
 		case aiShadingMode_OrenNayar:																\
-			f3d_target = f3d::F3D_SHADING_ORENNAYAR;												\
+			f3d_target = f3d::F3D_SHADING_DIFFUSE_ORENNAYAR;										\
 			break;																					\
 		case aiShadingMode_Minnaert:																\
-			f3d_target = f3d::F3D_SHADING_MINNAERT;													\
+			f3d_target = f3d::F3D_SHADING_DIFFUSE_LAMBERT;											\
 			break;																					\
 		case aiShadingMode_CookTorrance:															\
-			f3d_target = f3d::F3D_SHADING_COOKTORRANCE;												\
+			f3d_target = f3d::F3D_SHADING_SPECULAR_COOK_TORRANCE;									\
 			break;																					\
 		default:																					\
-			f3d_target = F3D_SHADING_UNDEFINED;														\
+			f3d_target = f3d::F3D_SHADING_UNDEFINED;												\
 	}																								\
 }
 

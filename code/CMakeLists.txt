@@ -48,75 +48,12 @@ SOURCE_GROUP( impl\\core FILES ${f3d_core_src} ${f3d_core_headers})
 
 SET ( f3d_program_headers
 	${F3D_PRIVATE_HEADER_PATH}/core/programs/program.h
-	#Flat shading
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0000_0000_0000.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0000_0000_0001.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0000_0000_0002.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0001_0000_0000.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0001_0000_0007.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0001_0003_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0001_0001_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/flat/p-0001_0002_0000_0001.h
-	#Gouraud shading
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0000_0000.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0000_0001.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0000_0002.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0000_0003.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0001_0000.h	
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0001_0001.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0001_0002.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0001_0003.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0001_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0003_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0005_0001.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0005_0003.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0000_0005_0007.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0000_0000.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0000_0003.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0000_0007.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0001_0002.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0001_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0001_0007.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0003_0006.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0001_0005_0003.h
-	${F3D_PRIVATE_HEADER_PATH}/core/programs/gouraud/p-0002_0002_0000_0001.h
+	${F3D_PRIVATE_HEADER_PATH}/core/programs/default_program.h
 )
 
 SET ( f3d_program_src
 	core/programs/program.cpp
-	# Flat shading
-	core/programs/flat/p-0001_0000_0000_0000.cpp
-	core/programs/flat/p-0001_0000_0000_0001.cpp
-	core/programs/flat/p-0001_0000_0000_0002.cpp
-	core/programs/flat/p-0001_0001_0000_0000.cpp
-	core/programs/flat/p-0001_0001_0000_0007.cpp
-	core/programs/flat/p-0001_0001_0003_0006.cpp
-	core/programs/flat/p-0001_0001_0001_0006.cpp
-	core/programs/flat/p-0001_0002_0000_0001.cpp
-	# Gouraud shading
-	core/programs/gouraud/p-0002_0000_0000_0000.cpp
-	core/programs/gouraud/p-0002_0000_0000_0001.cpp
-	core/programs/gouraud/p-0002_0000_0000_0002.cpp
-	core/programs/gouraud/p-0002_0000_0000_0003.cpp
-	core/programs/gouraud/p-0002_0000_0001_0000.cpp
-	core/programs/gouraud/p-0002_0000_0001_0001.cpp
-	core/programs/gouraud/p-0002_0000_0001_0002.cpp
-	core/programs/gouraud/p-0002_0000_0001_0003.cpp
-	core/programs/gouraud/p-0002_0000_0001_0006.cpp
-	core/programs/gouraud/p-0002_0000_0003_0006.cpp
-	core/programs/gouraud/p-0002_0000_0005_0001.cpp
-	core/programs/gouraud/p-0002_0000_0005_0003.cpp
-	core/programs/gouraud/p-0002_0000_0005_0007.cpp
-	core/programs/gouraud/p-0002_0001_0000_0000.cpp
-	core/programs/gouraud/p-0002_0001_0000_0003.cpp
-	core/programs/gouraud/p-0002_0001_0000_0007.cpp
-	core/programs/gouraud/p-0002_0001_0001_0002.cpp
-	core/programs/gouraud/p-0002_0001_0001_0006.cpp
-	core/programs/gouraud/p-0002_0001_0001_0007.cpp
-	core/programs/gouraud/p-0002_0001_0003_0006.cpp
-	core/programs/gouraud/p-0002_0001_0005_0003.cpp
-	core/programs/gouraud/p-0002_0002_0000_0001.cpp
-	core/programs/gouraud/p-0002_0002_0001_0007.cpp
+	core/programs/default_program.cpp
 )
 SOURCE_GROUP( impl\\programs FILES ${f3d_program_src} ${f3d_program_headers})
 

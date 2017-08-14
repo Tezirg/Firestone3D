@@ -9,8 +9,19 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		F3D_Mask			Program::getMask() const {
+		F3D_Mask			Program::getMask() const
+		{
 			return mask.mask;
+		}
+
+		bool				Program::hasFlag(const f3d::eShaderInterfaceTypeBits& flagBit) const
+		{
+			return (mask.fields.interfaceMask & flagBit) == flagBit;
+		}
+
+		bool				Program::hasFlag(const f3d::eShadingTypeBits& flagBit) const
+		{
+			return (mask.fields.shadingMask & flagBit) == flagBit;
 		}
 
 		void				Program::bind(VkCommandBuffer& cmd) {

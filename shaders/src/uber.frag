@@ -54,7 +54,7 @@ layout(std140, set = 2, binding = 0) buffer light_s {
 	uint		type;
 	uint		padding_std140;
 }	Light[];
-layout (set = 2, binding = 1) uniform n_light_s {
+layout(set = 2, binding = 1) uniform n_light_s {
 	uint 		value;
 }	light_count;
 #endif

@@ -6,7 +6,7 @@ namespace f3d {
 		Material::Material(const std::string& name) :
 			_name(name), _shininess(16.0f) {
 			_color_mask = F3D_COLOR_UNDEFINED;
-			_shading = F3D_SHADING_FLAT;
+			_shading = F3D_SHADING_DIFFUSE_FLAT;
 			_texture_mask = F3D_TEXTURE_UNDEFINED;
 		}
 

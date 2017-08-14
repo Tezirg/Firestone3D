@@ -14,3 +14,4 @@ node_modules/*
 */node_modules/
 shaders/gen/*
 shaders/gen
+*.zip

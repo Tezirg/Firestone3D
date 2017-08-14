@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <vector>
 
 #include "core/platform.h"
 #include "core/types.h"
@@ -20,8 +21,15 @@ namespace f3d {
 		public:
 			Program(VkDevice device, ProgramMask mask);
 			virtual ~Program();
+			Program(const Program& oth) = delete; //No copy construction
+			Program(const Program&& mov) = delete; //No move construction
+			Program&	operator=(const Program& oth) = delete; //No copy assignement
+			Program&	operator=(const Program&& move) = delete; //No move assignement
 
 			F3D_Mask								getMask() const;
+			bool									hasFlag(const f3d::eShaderInterfaceTypeBits& flag) const;
+			bool									hasFlag(const f3d::eShadingTypeBits& flag) const;
+
 			void									bind(VkCommandBuffer& cmd);
 			virtual bool							drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) = 0;
 			virtual void							initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) = 0;
@@ -37,7 +45,8 @@ namespace f3d {
 			VkPipeline								vk_pipeline; //!< Vulkan pipeline native type
 			VkPipelineLayout						vk_pipeline_layout;//!< Piepline object
 			VkPipelineCache							vk_pipeline_cache; //!< Binary pipeline object
-			VkDescriptorSetLayout					*vk_desc_layout; //! Descriptor sets layouts
+			VkDescriptorSetLayout					*vk_desc_layout; //!< Old desc layout storage !!!! TODO: remove me !!!!
+			std::vector<VkDescriptorSetLayout>		vk_desc_layout_vec; //!< Descriptor sets layouts
 		protected:
 			VkPipelineVertexInputStateCreateInfo	_vi;
 			VkPipelineInputAssemblyStateCreateInfo	_ia;
