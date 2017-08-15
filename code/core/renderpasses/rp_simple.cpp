@@ -238,7 +238,23 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) 
 			{
-				ProgramMask				mask = {0};
+				ProgramMask				mask = {
+					F3D_SHADER_COLOR_AMBIENT |
+					F3D_SHADER_COLOR_DIFFUSE |
+					F3D_SHADER_COLOR_SPECULAR |
+					F3D_SHADER_LIGHT_DIRECTIONAL |
+					F3D_SHADER_LIGHT_POINT |
+					F3D_SHADER_LIGHT_SPOT |
+					F3D_SHADER_UNIFORM_CAMERA |
+					F3D_SHADER_UNIFORM_MODEL |
+					F3D_SHADER_UNIFORM_MATERIAL |
+					F3D_SHADER_UNIFORM_LIGHT |
+					F3D_SHADER_ATTR_POSITION |
+					F3D_SHADER_VULKAN_TRANSFORM_Y,
+
+					F3D_SHADING_DIFFUSE_LAMBERT |
+					F3D_SHADING_SPECULAR_PHONG
+				};
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
