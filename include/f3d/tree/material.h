@@ -35,6 +35,8 @@ namespace f3d {
 
 			float					getShininess(void) const;
 			void					setShininess(const float value);
+			float					getRoughness(void) const;
+			void					setRoughness(const float value);
 
 			void					addTexture(f3d::tree::Texture *texture);
 			void					removeTexture(f3d::tree::Texture *texture);
@@ -44,6 +46,7 @@ namespace f3d {
 		protected:
 			std::string							_name;
 			float								_shininess;
+			float								_roughness;
 			std::map<eColorType, glm::vec4>		_colors;
 			ColorTypeFlags						_color_mask;
 			eShadingType						_shading;

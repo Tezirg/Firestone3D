@@ -105,5 +105,13 @@ namespace f3d {
 			_shininess = value;
 		}
 
+		float					Material::getRoughness(void) const {
+			return _roughness;
+		}
+
+		void					Material::setRoughness(const float value) {
+			_roughness = value;
+		}
+
 	}// tree::
 }// f3d::

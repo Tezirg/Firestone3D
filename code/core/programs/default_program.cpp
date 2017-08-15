@@ -116,120 +116,121 @@ namespace f3d {
 				if (hasFlag(F3D_SHADER_ATTR_NORMAL)) {
 					// layout(location = 1) in vec4 in_vertex_normal_model_space
 					_vi_binds.push_back({ 1, sizeof(float) * 4, VK_VERTEX_INPUT_RATE_VERTEX });
-					_vi_attrs.push_back({ 1, 0, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+					_vi_attrs.push_back({ 1, 1, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 				if (hasFlag(F3D_SHADER_ATTR_COLOR)) {
 					// layout (location = 2) in vec4 in_vertex_color
 					_vi_binds.push_back({ 2, sizeof(float) * 4, VK_VERTEX_INPUT_RATE_VERTEX });
-					_vi_attrs.push_back({ 2, 0, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+					_vi_attrs.push_back({ 2, 2, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 				if (hasFlag(F3D_SHADER_ATTR_UV)) {
 					// layout(location = 3) in vec2 in_vertex_UV
 					_vi_binds.push_back({ 3, sizeof(float) * 2, VK_VERTEX_INPUT_RATE_VERTEX });
-					_vi_attrs.push_back({ 3, 0, VkFormat::VK_FORMAT_R32G32_SFLOAT, 0 });
+					_vi_attrs.push_back({ 3, 3, VkFormat::VK_FORMAT_R32G32_SFLOAT, 0 });
 				}
 				if (hasFlag(F3D_SHADER_ATTR_RESERVED_1)) {
 					// layout(location = 4) in vec4 in_custom_1;
 					_vi_binds.push_back({ 4, sizeof(float) * 4, VK_VERTEX_INPUT_RATE_VERTEX });
-					_vi_attrs.push_back({ 4, 0, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+					_vi_attrs.push_back({ 4, 4, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 				if (hasFlag(F3D_SHADER_ATTR_RESERVED_2)) {
 					// layout(location = 5) in vec4 in_custom_2 
 					_vi_binds.push_back({ 5, sizeof(float) * 4, VK_VERTEX_INPUT_RATE_VERTEX });
-					_vi_attrs.push_back({ 5, 0, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+					_vi_attrs.push_back({ 5, 5, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 			}
 			void									DefaultProgram::bindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint bindPoint, f3d::tree::Scene& scene, f3d::tree::Mesh& mesh) {
-				std::vector<VkDescriptorSet>		sets;
 				f3d::tree::SceneImpl&				sc = dynamic_cast<f3d::tree::SceneImpl&>(scene);
 				f3d::tree::MeshImpl&				m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl*				cam = dynamic_cast<f3d::tree::CameraImpl*>(scene.getCamera().get());
 				f3d::tree::MaterialImpl*			material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
 
+				_bound_sets.clear();
+
 				// Vertex shader uniforms
 				if (hasFlag(F3D_SHADER_UNIFORM_CAMERA))
-					sets.push_back(sc.getWorldDescriptorSet());
+					_bound_sets.push_back(sc.getWorldDescriptorSet());
 				if (hasFlag(F3D_SHADER_UNIFORM_MODEL))
-					sets.push_back(m.getDescriptorSet());
+					_bound_sets.push_back(m.getDescriptorSet());
 
 				// Fragment shader uniforms
 				if (hasFlag(F3D_SHADER_UNIFORM_MATERIAL))
-					sets.push_back(material->getDescriptorSet());
+					_bound_sets.push_back(material->getDescriptorSet());
 				if (hasFlag(F3D_SHADER_UNIFORM_LIGHT))
-					sets.push_back(sc.getLightsDescriptorSet());
+					_bound_sets.push_back(sc.getLightsDescriptorSet());
 				// Fragment shader samplers
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_AMBIENT)) {
 					// Get texture from material
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_AMBIENT));
 					// Check it worked
 					F3D_ASSERT(text != nullptr, "Ambient texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_DIFFUSE)) {
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_DIFFUSE));
 					F3D_ASSERT(text != nullptr, "Diffuse texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_SPECULAR)) {
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_SPECULAR));
 					F3D_ASSERT(text != nullptr, "Specular texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_EMISSIVE)) {
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_EMISSIVE));
 					F3D_ASSERT(text != nullptr, "Emmissive texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_HEIGHT)) {
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_HEIGHT));
 					F3D_ASSERT(text != nullptr, "Height texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_NORMALS)) {
 					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_NORMALS));
 					F3D_ASSERT(text != nullptr, "Normals texture descriptor set binding error");
-					sets.push_back(text->getDescriptorSet());
+					_bound_sets.push_back(text->getDescriptorSet());
 				}
 
 				//Perform actual call
-				vkCmdBindDescriptorSets(cmd, bindPoint, vk_pipeline_layout, 0, sets.size(), sets.data(), 0, nullptr);
+				vkCmdBindDescriptorSets(cmd, bindPoint, vk_pipeline_layout, 0, _bound_sets.size(), _bound_sets.data(), 0, nullptr);
 			}
 
 
 			void									DefaultProgram::bindAttributes(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
-				std::vector<VkBuffer>				buffers;
-				std::vector<VkDeviceSize>			offsets;
 				f3d::tree::MeshImpl&				mesh_impl = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 
+				_bound_buffers.clear();
+				_bound_offsets.clear();
 
 				// Vertex shader attributes mask
 				if (hasFlag(F3D_SHADER_ATTR_POSITION)) {
-					buffers.push_back(mesh_impl.getVertexBuffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getVertexBuffer());
+					_bound_offsets.push_back(0);
 				}
 				if (hasFlag(F3D_SHADER_ATTR_NORMAL)) {
-					buffers.push_back(mesh_impl.getNormalBuffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getNormalBuffer());
+					_bound_offsets.push_back(0);
 				}
 				if (hasFlag(F3D_SHADER_ATTR_COLOR)) {
-					buffers.push_back(mesh_impl.getColorBuffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getColorBuffer());
+					_bound_offsets.push_back(0);
 				}
 				if (hasFlag(F3D_SHADER_ATTR_UV)) {
-					buffers.push_back(mesh_impl.getUvBuffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getUvBuffer());
+					_bound_offsets.push_back(0);
 				}
 
 				if (hasFlag(F3D_SHADER_ATTR_RESERVED_1)) {
-					buffers.push_back(mesh_impl.getReserved1Buffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getReserved1Buffer());
+					_bound_offsets.push_back(0);
 				}
 				if (hasFlag(F3D_SHADER_ATTR_RESERVED_2)) {
-					buffers.push_back(mesh_impl.getReserved2Buffer());
-					offsets.push_back(0);
+					_bound_buffers.push_back(mesh_impl.getReserved2Buffer());
+					_bound_offsets.push_back(0);
 				}
 
-				vkCmdBindVertexBuffers(cmd, 0, buffers.size(), buffers.data(), offsets.data());
+				vkCmdBindVertexBuffers(cmd, 0, _bound_buffers.size(), _bound_buffers.data(), _bound_offsets.data());
 			}
 
 			void									DefaultProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) 
@@ -247,12 +248,15 @@ namespace f3d {
 				os	<< "./shaders/0x" 
 					<< std::setfill('0') << std::setw(8) << std::hex << mask.fields.shadingMask 
 					<< std::setfill('0') << std::setw(8) << std::hex << mask.fields.interfaceMask;
-				std::cout << os.str() << std::endl;
+				
 
 				vertex_shader_filename.assign(os.str());
 				vertex_shader_filename.append(".vert.spv");
 				fragment_shader_filename.assign(os.str());
 				fragment_shader_filename.append(".frag.spv");
+
+				std::cout << vertex_shader_filename << std::endl;
+				std::cout << fragment_shader_filename << std::endl;
 
 				initVkLayout();
 				initVkPipelineInfos();

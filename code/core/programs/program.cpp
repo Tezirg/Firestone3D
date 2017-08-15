@@ -48,7 +48,7 @@ namespace f3d {
 			std::memset(&_rs, 0, sizeof(_rs));
 			_rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			_rs.polygonMode = VK_POLYGON_MODE_FILL;
-			_rs.cullMode = VK_CULL_MODE_NONE;
+			_rs.cullMode = VK_CULL_MODE_BACK_BIT;
 			_rs.frontFace = VK_FRONT_FACE_CLOCKWISE;
 			_rs.depthClampEnable = VK_FALSE;
 			_rs.rasterizerDiscardEnable = VK_FALSE;
@@ -70,6 +70,7 @@ namespace f3d {
 			_dynamicStateEnables[_dynamicState.dynamicStateCount++] = VK_DYNAMIC_STATE_VIEWPORT;
 			_vp.scissorCount = 1;
 			_dynamicStateEnables[_dynamicState.dynamicStateCount++] = VK_DYNAMIC_STATE_SCISSOR;
+			_dynamicState.dynamicStateCount = 2;
 
 			std::memset(&_ds, 0, sizeof(_ds));
 			_ds.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;

@@ -325,6 +325,7 @@ namespace f3d {
 			for (auto it = _lights.begin(); it != _lights.end(); ++it) {
 				f3d::tree::LightImpl * l = dynamic_cast<f3d::tree::LightImpl *>(*it);
 				props = l->getProperties((void **)&b, light_attr_size);
+				F3D_ASSERT(props, "Light properties update failed");
 				AttributeContainer::updateAttribute(0, b, i * light_attr_size, light_attr_size); // Light buffer on binding 0
 				i++;
 				//std::cout << i * light_attr_size << std::endl;

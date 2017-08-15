@@ -46,6 +46,9 @@ namespace f3d {
 			private:
 				std::vector<VkVertexInputAttributeDescription>		_vi_attrs;
 				std::vector<VkVertexInputBindingDescription>		_vi_binds;
+				std::vector<VkDescriptorSet>						_bound_sets;
+				std::vector<VkBuffer>								_bound_buffers;
+				std::vector<VkDeviceSize>							_bound_offsets;
 			};
 		} // prog::
 	} // core::

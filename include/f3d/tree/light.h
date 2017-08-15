@@ -19,10 +19,10 @@ namespace f3d {
 			Light();
 			virtual ~Light();
 
-			virtual float					getAngleInnerCone() const;
-			virtual void					setAngleInnerCone(float val);
-			virtual float					getAngleOuterCone() const;
-			virtual void					setAngleOuterCone(float val);
+			virtual float					getSpotExponent() const;
+			virtual void					setSpotExponent(float val);
+			virtual float					getSpotCutoff() const;
+			virtual void					setSpotCutoff(float val);
 			virtual float					getAttenuationConstant() const;
 			virtual void					setAttenuationConstant(float val);
 			virtual float					getAttenuationLinear() const;
@@ -51,8 +51,9 @@ namespace f3d {
 			glm::vec4									_ambient_color;
 			glm::vec4									_diffuse_color;
 			glm::vec4									_specular_color;
-			float										_inner_cone;
-			float										_outer_cone;
+			float										_spot_exponent;
+			float										_spot_cutoff;
+			float										_spot_cos_cutoff;
 			float										_constant;
 			float										_linear;
 			float										_quadratic;

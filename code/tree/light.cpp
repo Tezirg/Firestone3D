@@ -6,15 +6,15 @@ namespace f3d {
 		Light::Light()  
 		{ 
 			// Defaults to directional, white color, from the top
-			setAngleInnerCone(0.0);
-			setAngleOuterCone(0.0);
-			setAttenuationConstant(1.0);
-			setAttenuationLinear(0.0);
+			setSpotExponent(2.0f);
+			setSpotCutoff(M_PI / 3.0f);
+			setAttenuationConstant(1.0f);
+			setAttenuationLinear(0.0f);
 			setAttenuationQuadratic(0.0);
 			setColorAmbient(glm::vec4(1.0f)); // White
 			setColorDiffuse(glm::vec4(1.0f)); // White
 			setColorSpecular(glm::vec4(1.0f)); // White
-			setDirection(glm::vec3(0.0f, 1.0f, 0.0f));// From the top
+			setDirection(glm::vec3(0.0f, 1.0f, 0.0f)); // From the top
 			setName(std::string("DefaultLight"));
 			setType(F3D_LIGHT_DIRECTIONAL); // Directional
 		}
@@ -23,10 +23,10 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
-		float					Light::getAngleInnerCone() const { return _inner_cone; }
-		void					Light::setAngleInnerCone(float val) { _inner_cone = val; }
-		float					Light::getAngleOuterCone() const { return _outer_cone; }
-		void					Light::setAngleOuterCone(float val) { _outer_cone = val; }
+		float					Light::getSpotExponent() const { return _spot_exponent; }
+		void					Light::setSpotExponent(float val) { _spot_exponent = val; }
+		float					Light::getSpotCutoff() const { return _spot_cutoff;  }
+		void					Light::setSpotCutoff(float val) { _spot_cutoff = val; _spot_cos_cutoff = cos(_spot_cutoff); }
 		float					Light::getAttenuationConstant() const { return _constant; }
 		void					Light::setAttenuationConstant(float val) { _constant = val; }
 		float					Light::getAttenuationLinear() const { return _linear; }

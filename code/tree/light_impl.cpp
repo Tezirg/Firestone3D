@@ -11,8 +11,7 @@ namespace f3d {
 		LightImpl::LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light) : 
 			_physical(phys), _device(device), _buffer(nullptr), _buffer_size(0)
 		{
-			setAngleInnerCone(light->mAngleInnerCone);
-			setAngleOuterCone(light->mAngleOuterCone);
+			setSpotCutoff(light->mAngleOuterCone);
 			setAttenuationConstant(light->mAttenuationConstant);
 			setAttenuationLinear(light->mAttenuationLinear);
 			setAttenuationQuadratic(light->mAttenuationQuadratic);
@@ -32,8 +31,8 @@ namespace f3d {
 		{
 			setName(oth.getName());
 			setType(oth.getType());
-			setAngleInnerCone(oth.getAngleInnerCone());
-			setAngleOuterCone(oth.getAngleOuterCone());
+			setSpotExponent(oth.getSpotExponent());
+			setSpotCutoff(oth.getSpotCutoff());
 			setAttenuationConstant(oth.getAttenuationConstant());
 			setAttenuationLinear(oth.getAttenuationLinear());
 			setAttenuationQuadratic(oth.getAttenuationQuadratic());
@@ -55,11 +54,11 @@ namespace f3d {
 
 		void						LightImpl::createProperties() {
 			_buffer_size = sizeof(float) * 4 * 5; //vec4 attributes
-			_buffer_size += sizeof(float) * 5; //float attributes
-			_buffer_size += sizeof(uint32_t); //uint type
+			_buffer_size += sizeof(float) * 6; //float attributes
+			_buffer_size += sizeof(uint32_t) * 2; //uint type
 			
-			 //Adjust buffer size to align on 4N
-			_buffer_size += _buffer_size % (sizeof(float) * 4);
+			// Adjust buffer size to align on 4N
+			// _buffer_size += _buffer_size % (sizeof(float) * 4);
 			_buffer = new char[_buffer_size];
 			F3D_ASSERT(_buffer != nullptr, "Allocating light buffer failed");
 			std::memset(_buffer, 0, _buffer_size);
@@ -74,13 +73,16 @@ namespace f3d {
 			std::memcpy(&pData[3 * 4 * sizeof(float)], glm::value_ptr(_diffuse_color), 4 * sizeof(float)); //vec4 diffuse_color
 			std::memcpy(&pData[4 * 4 * sizeof(float)], glm::value_ptr(_specular_color), 4 * sizeof(float)); //vec4 specular_color
 			
-			std::memcpy(&pData[5 * 4 * sizeof(float)], &_inner_cone, sizeof(float)); //float inner_cone
-			std::memcpy(&pData[5 * 4 * sizeof(float) + sizeof(float)], &_outer_cone, sizeof(float)); //float outer_cone
-			std::memcpy(&pData[5 * 4 * sizeof(float) + 2 * sizeof(float)], &_constant, sizeof(float)); //float constant
-			std::memcpy(&pData[5 * 4 * sizeof(float) + 3 * sizeof(float)], &_linear, sizeof(float)); //float linear
-			std::memcpy(&pData[5 * 4 * sizeof(float) + 4 * sizeof(float)], &_quadratic, sizeof(float)); //float quadratic
+			std::memcpy(&pData[5 * 4 * sizeof(float)], &_spot_exponent, sizeof(float)); //float spot_exponent
+			std::memcpy(&pData[5 * 4 * sizeof(float) + sizeof(float)], &_spot_cutoff, sizeof(float)); //float spot_cutoff
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 2 * sizeof(float)], &_spot_cos_cutoff, sizeof(float)); //float spot_cos_cutoff
 
-			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_type, sizeof(uint32_t)); //uint type
+
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 3 * sizeof(float)], &_constant, sizeof(float)); //float constant
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 4 * sizeof(float)], &_linear, sizeof(float)); //float linear
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 5 * sizeof(float)], &_quadratic, sizeof(float)); //float quadratic
+
+			std::memcpy(&pData[5 * 4 * sizeof(float) + 6 * sizeof(float)], &_type, sizeof(uint32_t)); //uint type
 		}
 
 		bool								LightImpl::getProperties(void **buf, uint32_t& size) {
