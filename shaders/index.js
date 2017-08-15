@@ -12,18 +12,19 @@ const f3d_constants =  {
 	'F3D_COLOR_AMBIENT' : 0x02,
 	'F3D_COLOR_DIFFUSE' : 0x04,
 	'F3D_COLOR_SPECULAR' : 0x08,
-	'F3D_COLOR_EMISSIVE' : 0x10,
 	'F3D_LIGHT_DIRECTIONAL' : 0x20,
 	'F3D_LIGHT_POINT' : 0x40,
 	'F3D_LIGHT_SPOT' : 0x80,
 	'F3D_UNIFORM_CAMERA' : 0x100,
 	'F3D_UNIFORM_MODEL' : 0x200,
 	'F3D_UNIFORM_MATERIAL' : 0x400,
-	'F3D_UNIFORM_LIGHT' : 0x800	
-	'F3D_VULKAN_TRANSFORM_Y': 0x8000000,
-};
+	'F3D_UNIFORM_LIGHT' : 0x800,
+	'F3D_ATTR_POSITION' : 0x100000,
+	'F3D_VULKAN_TRANSFORM_Y': 0x8000000
+}; 
 
 const f3d_shader_interface = {
+	'F3D_UNIFORM_UNDEFINED': 0x0,
 	'F3D_UNIFORM_SAMPLER_AMBIENT' : 0x1000,
 	'F3D_UNIFORM_SAMPLER_DIFFUSE' : 0x2000,
 	'F3D_UNIFORM_SAMPLER_SPECULAR' : 0x4000,
@@ -34,11 +35,11 @@ const f3d_shader_interface = {
 	'F3D_UNIFORM_RESERVED_1 = 0x40000,
 	'F3D_UNIFORM_RESERVED_2 = 0x80000,
 	*/
-	'F3D_ATTR_POSITION' : 0x100000,
 	'F3D_ATTR_NORMAL' : 0x200000,
 	'F3D_ATTR_COLOR' : 0x400000,
 	'F3D_ATTR_UV' : 0x800000
 	/*
+	'F3D_COLOR_EMISSIVE' : 0x10,
 	F3D_ATTR_RESERVED_1 = 0x1000000,
 	F3D_ATTR_RESERVED_2 = 0x2000000,
 	F3D_VULKAN_TRANSFORM_W = 0x4000000,
@@ -46,7 +47,7 @@ const f3d_shader_interface = {
 }
 
 const f3d_diffuse_shading_type = {
-    'F3D_SHADING_DIFFUSE_FLAT': 0x1,
+    'F3D_SHADING_DIFFUSE_FLAT': 0x2,
     'F3D_SHADING_DIFFUSE_LAMBERT': 0x04,
     'F3D_SHADING_DIFFUSE_ORENNAYAR': 0x08,
     'F3D_SHADING_DIFFUSE_TOON': 0x010
@@ -92,8 +93,10 @@ function generateGLSL(srcDir, destDir) {
 	console.log(`Processing ${input_files.length} files from ${chalk.cyan(srcDir)} to ${chalk.cyan(destDir)}`);
 	
 	var constant_def = '';
+	var constant_mask = 0x00;
 	for (var key in f3d_constants) {
 	    constant_def += '#define ' + key + ' 0x' + f3d_constants[key].toString(16) + '\r\n';
+		constant_mask |= f3d_constants[key];
 	}
 	var shader_interface = generateDefinesCombination(f3d_shader_interface);
 
@@ -118,18 +121,18 @@ function generateGLSL(srcDir, destDir) {
 		                var specular_shading_text = textFromMask(f3d_specular_shading_type, specular_shading_mask);
 		                shader_interface.forEach(function (interface_def) {
 		                    var obj = {
-		                        text: constant_def + textFromMask(f3d_shader_interface, interface_def),
-		                        interface_mask: interface_def,
+		                        text: constant_def + textFromMask(f3d_shader_interface, interface_def) + diffuse_shading_text + specular_shading_text,
+		                        interface_mask: interface_def | constant_mask,
 		                        shading_mask: specular_shading_mask | diffuse_shading_mask,
 		                    }
 
-		                    var output_name = obj.interface_mask.toString(2);
-		                    while (output_name.length < 32)
+		                    var output_name = obj.interface_mask.toString(16);
+		                    while (output_name.length < 8)
 		                        output_name = '0' + output_name;
-		                    output_name = obj.shading_mask.toString(2) + output_name;
-		                    while (output_name.length < 64)
+		                    output_name = obj.shading_mask.toString(16) + output_name;
+		                    while (output_name.length < 16)
 		                        output_name = '0' + output_name;
-		                    output_name += input_extension
+		                    output_name = '0x' + output_name + input_extension;
 		                    var output_path = path.join(destDir, output_name);
 
 		                    //Remplace in the code the generated macros

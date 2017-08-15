@@ -139,8 +139,98 @@ namespace f3d {
 					_vi_attrs.push_back({ 5, 0, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 			}
-			void									DefaultProgram::bindDescriptorSets() {}
-			void									DefaultProgram::bindAttributes() {}
+			void									DefaultProgram::bindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint bindPoint, f3d::tree::Scene& scene, f3d::tree::Mesh& mesh) {
+				std::vector<VkDescriptorSet>		sets;
+				f3d::tree::SceneImpl&				sc = dynamic_cast<f3d::tree::SceneImpl&>(scene);
+				f3d::tree::MeshImpl&				m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+				f3d::tree::CameraImpl*				cam = dynamic_cast<f3d::tree::CameraImpl*>(scene.getCamera().get());
+				f3d::tree::MaterialImpl*			material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
+
+				// Vertex shader uniforms
+				if (hasFlag(F3D_SHADER_UNIFORM_CAMERA))
+					sets.push_back(sc.getWorldDescriptorSet());
+				if (hasFlag(F3D_SHADER_UNIFORM_MODEL))
+					sets.push_back(m.getDescriptorSet());
+
+				// Fragment shader uniforms
+				if (hasFlag(F3D_SHADER_UNIFORM_MATERIAL))
+					sets.push_back(material->getDescriptorSet());
+				if (hasFlag(F3D_SHADER_UNIFORM_LIGHT))
+					sets.push_back(sc.getLightsDescriptorSet());
+				// Fragment shader samplers
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_AMBIENT)) {
+					// Get texture from material
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_AMBIENT));
+					// Check it worked
+					F3D_ASSERT(text != nullptr, "Ambient texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_DIFFUSE)) {
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_DIFFUSE));
+					F3D_ASSERT(text != nullptr, "Diffuse texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_SPECULAR)) {
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_SPECULAR));
+					F3D_ASSERT(text != nullptr, "Specular texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_EMISSIVE)) {
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_EMISSIVE));
+					F3D_ASSERT(text != nullptr, "Emmissive texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_HEIGHT)) {
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_HEIGHT));
+					F3D_ASSERT(text != nullptr, "Height texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_NORMALS)) {
+					f3d::tree::TextureImpl* text = dynamic_cast<f3d::tree::TextureImpl*>(material->getTexture(F3D_TEXTURE_NORMALS));
+					F3D_ASSERT(text != nullptr, "Normals texture descriptor set binding error");
+					sets.push_back(text->getDescriptorSet());
+				}
+
+				//Perform actual call
+				vkCmdBindDescriptorSets(cmd, bindPoint, vk_pipeline_layout, 0, sets.size(), sets.data(), 0, nullptr);
+			}
+
+
+			void									DefaultProgram::bindAttributes(VkCommandBuffer cmd, f3d::tree::Mesh& mesh) {
+				std::vector<VkBuffer>				buffers;
+				std::vector<VkDeviceSize>			offsets;
+				f3d::tree::MeshImpl&				mesh_impl = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+
+
+				// Vertex shader attributes mask
+				if (hasFlag(F3D_SHADER_ATTR_POSITION)) {
+					buffers.push_back(mesh_impl.getVertexBuffer());
+					offsets.push_back(0);
+				}
+				if (hasFlag(F3D_SHADER_ATTR_NORMAL)) {
+					buffers.push_back(mesh_impl.getNormalBuffer());
+					offsets.push_back(0);
+				}
+				if (hasFlag(F3D_SHADER_ATTR_COLOR)) {
+					buffers.push_back(mesh_impl.getColorBuffer());
+					offsets.push_back(0);
+				}
+				if (hasFlag(F3D_SHADER_ATTR_UV)) {
+					buffers.push_back(mesh_impl.getUvBuffer());
+					offsets.push_back(0);
+				}
+
+				if (hasFlag(F3D_SHADER_ATTR_RESERVED_1)) {
+					buffers.push_back(mesh_impl.getReserved1Buffer());
+					offsets.push_back(0);
+				}
+				if (hasFlag(F3D_SHADER_ATTR_RESERVED_2)) {
+					buffers.push_back(mesh_impl.getReserved2Buffer());
+					offsets.push_back(0);
+				}
+
+				vkCmdBindVertexBuffers(cmd, 0, buffers.size(), buffers.data(), offsets.data());
+			}
 
 			void									DefaultProgram::initVkPipeline(VkRenderPass& renderpass, uint32_t subpass) 
 			{
@@ -150,28 +240,32 @@ namespace f3d {
 				VkPipelineShaderStageCreateInfo		shaderStages[2];
 				VkPipelineCacheCreateInfo			cache_infos;
 				std::ostringstream					os;
+				std::string							vertex_shader_filename;
+				std::string							fragment_shader_filename;
 
 				//Get shader name from bitmask
-				os	<< "0x" 
-					<< std::uppercase << std::setfill('0') << std::setw(4) << std::hex << mask.fields.shadingMask 
-					<< std::setw(0) << "_" 
-					<< std::uppercase << std::setfill('0') << std::setw(4) << mask.fields.interfaceMask;
-
+				os	<< "./shaders/0x" 
+					<< std::setfill('0') << std::setw(8) << std::hex << mask.fields.shadingMask 
+					<< std::setfill('0') << std::setw(8) << std::hex << mask.fields.interfaceMask;
 				std::cout << os.str() << std::endl;
 
+				vertex_shader_filename.assign(os.str());
+				vertex_shader_filename.append(".vert.spv");
+				fragment_shader_filename.assign(os.str());
+				fragment_shader_filename.append(".frag.spv");
 
 				initVkLayout();
 				initVkPipelineInfos();
 
 				std::memset(&shaderStages, 0, 2 * sizeof(VkPipelineShaderStageCreateInfo));
-				F3D_ASSERT(createSpvShader("0002_0002_0001_0007.vert.spv", &vert_shader) != false, "DefaultProgram vertex shader");
+				F3D_ASSERT(createSpvShader(vertex_shader_filename, &vert_shader) != false, "DefaultProgram vertex shader");
 
 				shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 				shaderStages[0].module = vert_shader;
 				shaderStages[0].pName = "main";
 
-				F3D_ASSERT(createSpvShader("0002_0002_0001_0007.frag.spv", &frag_shader) != false, "DefaultProgram fragment shader");
+				F3D_ASSERT(createSpvShader(fragment_shader_filename, &frag_shader) != false, "DefaultProgram fragment shader");
 
 				shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 				shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -235,22 +329,15 @@ namespace f3d {
 
 			bool							DefaultProgram::drawToCommandBuffer(VkCommandBuffer& cmd, f3d::tree::Mesh& mesh, f3d::tree::Scene& scene) 
 			{
-				f3d::tree::SceneImpl&		sc = dynamic_cast<f3d::tree::SceneImpl&>(scene);
-				f3d::tree::MeshImpl&		m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
-				f3d::tree::CameraImpl*		cam = dynamic_cast<f3d::tree::CameraImpl*>(scene.getCamera().get());
-				f3d::tree::MaterialImpl*	material = dynamic_cast<f3d::tree::MaterialImpl*>(scene.getMaterialByName(mesh.getMaterialName()));
-				f3d::tree::TextureImpl*		texture = dynamic_cast<f3d::tree::TextureImpl *>(material->getTexture(F3D_TEXTURE_DIFFUSE));
-				VkBuffer					vertex_bufs[3] = { m.getVertexBuffer(), m.getNormalBuffer(), m.getUvBuffer() };
-				VkDeviceSize				vertex_offsets[3] = { 0, 0, 0 };
-				VkDescriptorSet				sets[5] = { sc.getWorldDescriptorSet(), m.getDescriptorSet(), sc.getLightsDescriptorSet(), material->getDescriptorSet(), texture->getDescriptorSet() };
-
-				vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, vk_pipeline_layout, 0, 5, sets, 0, nullptr);
+				bindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, scene, mesh);
 				Program::bind(cmd);
+				bindAttributes(cmd, mesh);
 
-				vkCmdBindVertexBuffers(cmd, 0, 3, vertex_bufs, vertex_offsets);
-				vkCmdBindIndexBuffer(cmd, m.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-				vkCmdDrawIndexed(cmd, m.numIndices(), 1, 0, 0, 0);
-
+				// Draw from index buffer, unique instance
+				f3d::tree::MeshImpl& mesh_impl = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+				vkCmdBindIndexBuffer(cmd, mesh_impl.getIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+				vkCmdDrawIndexed(cmd, mesh_impl.numIndices(), 1, 0, 0, 0);
+				
 				return true;
 			}
 

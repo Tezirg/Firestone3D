@@ -54,6 +54,7 @@ namespace f3d {
 			std::vector<uint32_t>		_indices;
 			uint32_t					_uv_count;
 			std::vector<float>			_uvs;
+			std::vector<float>			_colors;
 		};
 	}
 }

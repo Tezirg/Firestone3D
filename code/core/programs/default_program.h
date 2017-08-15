@@ -41,8 +41,8 @@ namespace f3d {
 			private:
 				void									initSetsFromMask();
 				void									initAttributesFromMask();
-				void									bindDescriptorSets();
-				void									bindAttributes();
+				void									bindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint bindPoint, f3d::tree::Scene& scene, f3d::tree::Mesh& mesh);
+				void									bindAttributes(VkCommandBuffer cmd, f3d::tree::Mesh& mesh);
 			private:
 				std::vector<VkVertexInputAttributeDescription>		_vi_attrs;
 				std::vector<VkVertexInputBindingDescription>		_vi_binds;

@@ -32,6 +32,9 @@ namespace f3d {
 			VkBuffer				getNormalBuffer();
 			VkBuffer				getIndexBuffer();
 			VkBuffer				getUvBuffer();
+			VkBuffer				getColorBuffer();
+			VkBuffer				getReserved1Buffer();
+			VkBuffer				getReserved2Buffer();
 
 			VkDescriptorSet			getDescriptorSet();
 			bool					updateDescriptorSet(glm::mat4& model);

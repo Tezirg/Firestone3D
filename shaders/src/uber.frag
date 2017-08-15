@@ -208,7 +208,7 @@ layout(location = 0) out vec4 out_frag_color;
 			#if F3D_SHADING_DIFFUSE_LAMBERT
 				diffuse *= diffuse_lambert(lightDirection, surfaceNormal);
 			#elif F3D_SHADING_DIFFUSE_TOON
-				diffuse *= diffuse_toon(lightDirection, surfaceNormal);
+				diffuse *= diffuse_toon(lightDirection, surfaceNormal, 6);
 			#elif F3D_SHADING_DIFFUSE_ORENNAYAR
 				float roughness = 0.5;
 				#if F3D_UNIFORM_MATERIAL_
@@ -251,7 +251,7 @@ layout(location = 0) out vec4 out_frag_color;
 				specular *= specular_cook_torrance(lightDirection, viewDirection, surfaceNormal, roughness, 1.0);
 			#elif F3D_SHADING_SPECULAR_WARD && F3D_ATTR_UV
 			    vec3 fiber = normalize(vec3(in_frag_UV, 0.0) - dot(vec3(in_frag_UV, 0.0), surfaceNormal) * surfaceNormal);
-				vec3 perp = normalize(cross(fiber, normal));
+				vec3 perp = normalize(cross(fiber, surfaceNormal));
 				specular *= specular_ward(lightDirection, viewDirection, surfaceNormal, fiber, perp, 0.1, roughness);
 			#elif F3D_SHADING_SPECULAR_GAUSSIAN
 				specular *= specular_gaussian(lightDirection, viewDirection, surfaceNormal, shininess);

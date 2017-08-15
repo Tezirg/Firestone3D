@@ -46,6 +46,9 @@ namespace f3d {
 		VkBuffer				MeshImpl::getNormalBuffer() { return AttributeContainer::getAttributeBuffer(2);  }
 		VkBuffer				MeshImpl::getIndexBuffer() { return AttributeContainer::getAttributeBuffer(4); }
 		VkBuffer				MeshImpl::getUvBuffer() { return AttributeContainer::getAttributeBuffer(3); }
+		VkBuffer				MeshImpl::getColorBuffer() { return AttributeContainer::getAttributeBuffer(5); };
+		VkBuffer				MeshImpl::getReserved1Buffer() { return AttributeContainer::getAttributeBuffer(6); };
+		VkBuffer				MeshImpl::getReserved2Buffer() { return AttributeContainer::getAttributeBuffer(7); };
 
 		bool			MeshImpl::makeRenderReady() {
 			AttributeContainer::addAttribute(1, _vertices.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -62,9 +65,16 @@ namespace f3d {
 				_uvs.clear();
 			}
 
+			if (_colors.empty() == false) {
+				AttributeContainer::addAttribute(5, _colors.size() * sizeof(float), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+				AttributeContainer::updateAttribute(5, _colors.data(), 0, _colors.size() * sizeof(float));
+				_colors.clear();
+			}
+				
 			AttributeContainer::addAttribute(4, _indices.size() * sizeof(uint32_t), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 			AttributeContainer::updateAttribute(4, _indices.data(), 0, _indices.size() * sizeof(uint32_t));
 			_indices.clear();
+
 
 			_ready = true;
 			return true;

@@ -36,7 +36,7 @@ int				main(int ac, char **av)
 				std::cout << "sequence_frame" << optarg << std::endl;
 				break;
 			default:
-				std::cout << (char)flag << std::endl;
+				std::cout << "Unknown command line option: " << (char)flag << std::endl;
 				break;
 		}
 	}
