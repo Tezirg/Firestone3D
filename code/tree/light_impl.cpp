@@ -52,10 +52,19 @@ namespace f3d {
 			std::cout << "Destructor: " << __FILE__ << std::endl;
 		}
 
+		uint32_t					LightImpl::bufferSize() {
+			uint32_t size = sizeof(float) * 4 * 5; // contains five vec4
+			size += sizeof(float) * 6; // And 6 floats
+			size += sizeof(uint32_t) * 2; // And two integers
+			// Adjust buffer size to align on 4N
+			// For use with layout std140 mostly
+			size += size % (sizeof(float) * 4);
+
+			return size;
+		}
+
 		void						LightImpl::createProperties() {
-			_buffer_size = sizeof(float) * 4 * 5; //vec4 attributes
-			_buffer_size += sizeof(float) * 6; //float attributes
-			_buffer_size += sizeof(uint32_t) * 2; //uint type
+			_buffer_size = bufferSize();
 			
 			// Adjust buffer size to align on 4N
 			// _buffer_size += _buffer_size % (sizeof(float) * 4);

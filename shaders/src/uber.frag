@@ -39,7 +39,7 @@
 #endif
 
 #ifdef F3D_UNIFORM_LIGHT
-layout(std140, set = 2, binding = 0) buffer light_s {
+layout(std140, set = 2, binding = 0) uniform light_s {
 	vec4 		position;
 	vec4		direction;
 	vec4 		ambient_color;
@@ -53,7 +53,7 @@ layout(std140, set = 2, binding = 0) buffer light_s {
 	float		quadratic;
 	uint		type;
 	uint		padding_std140;
-}	Light[];
+}	Light[16];
 layout(set = 2, binding = 1) uniform n_light_s {
 	uint 		value;
 }	light_count;

@@ -22,83 +22,88 @@ namespace f3d {
 
 			void									DefaultProgram::initSetsFromMask()
 			{
-				vk_desc_layout_vec.clear();
+				std::vector<uint32_t>				setNumbers;
 
 				// Vertex shader uniforms
 				if (hasFlag(F3D_SHADER_UNIFORM_CAMERA)) {  // layout (set = 0, binding = 0) uniform camera
 					DescriptorContainer::addDescriptor(0);
 					DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(0));
+					setNumbers.push_back(0);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_MODEL)) { // layout(std140, set = 1, binding = 0) uniform mesh_s
 					DescriptorContainer::addDescriptor(1);
 					DescriptorContainer::addDescriptorBinding(1, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(1));
+					setNumbers.push_back(1);
 				}
 
 
 				// Fragment shader uniforms
-				if (hasFlag(F3D_SHADER_UNIFORM_MATERIAL)) { // layout(set = 3, binding = 0) uniform material_s
-					DescriptorContainer::addDescriptor(3);
-					DescriptorContainer::addDescriptorBinding(3, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(3));
-				}
 				if (hasFlag(F3D_SHADER_UNIFORM_LIGHT)) {
 					// layout(std140, set = 2, binding = 0) buffer light_s
 					// layout (set = 2, binding = 1) uniform n_light_s
 					DescriptorContainer::addDescriptor(2);
-					DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+					DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
 					DescriptorContainer::addDescriptorBinding(2, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(2));
+					setNumbers.push_back(2);
+				}
+				if (hasFlag(F3D_SHADER_UNIFORM_MATERIAL)) { // layout(set = 3, binding = 0) uniform material_s
+					DescriptorContainer::addDescriptor(3);
+					DescriptorContainer::addDescriptorBinding(3, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+					setNumbers.push_back(3);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_AMBIENT)) {
 					// layout(set = 4, binding = 0) uniform sampler2D ambient_sampler
 					DescriptorContainer::addDescriptor(4);
 					DescriptorContainer::addDescriptorBinding(4, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(4));
-
+					setNumbers.push_back(4);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_DIFFUSE)) {
 					// layout(set = 5, binding = 0) uniform sampler2D diffuse_sampler
 					DescriptorContainer::addDescriptor(5);
 					DescriptorContainer::addDescriptorBinding(5, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(5));
+					setNumbers.push_back(5);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_SPECULAR)) {
 					// layout(set = 6, binding = 0) uniform sampler2D specular_sampler
 					DescriptorContainer::addDescriptor(6);
 					DescriptorContainer::addDescriptorBinding(6, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(6));
+					setNumbers.push_back(6);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_EMISSIVE)) {
 					// layout(set = 7, binding = 0) uniform sampler2D emmissive_sampler
 					DescriptorContainer::addDescriptor(7);
 					DescriptorContainer::addDescriptorBinding(7, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(7));
+					setNumbers.push_back(7);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_HEIGHT)) {
 					// layout(set = 8, binding = 0) uniform sampler2D height_sampler
 					DescriptorContainer::addDescriptor(8);
 					DescriptorContainer::addDescriptorBinding(8, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(8));
+					setNumbers.push_back(8);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_NORMALS)) {
 					// layout(set = 9, binding = 0) uniform sampler2D normals_sampler
 					DescriptorContainer::addDescriptor(9);
 					DescriptorContainer::addDescriptorBinding(9, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(9));
+					setNumbers.push_back(9);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_RESERVED_1)) {
 					// layout(set = 10, binding = 0) uniform sampler2D displacement_sampler
 					DescriptorContainer::addDescriptor(10);
 					DescriptorContainer::addDescriptorBinding(10, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(10));
+					setNumbers.push_back(10);
 				}
 				if (hasFlag(F3D_SHADER_UNIFORM_RESERVED_2)) {
 					// layout(set = 11, binding = 0) uniform sampler2D reflection_sampler
 					DescriptorContainer::addDescriptor(11);
 					DescriptorContainer::addDescriptorBinding(11, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(11));
+					setNumbers.push_back(11);
+				}
+
+				// Creating the descriptorSetsLayout
+				vk_desc_layout_vec.clear();
+				for (auto it = setNumbers.begin(); it != setNumbers.end(); ++it) {
+					vk_desc_layout_vec.push_back(DescriptorContainer::getDescriptorLayout(*it));
 				}
 			}
 
@@ -139,6 +144,7 @@ namespace f3d {
 					_vi_attrs.push_back({ 5, 5, VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 				}
 			}
+
 			void									DefaultProgram::bindDescriptorSets(VkCommandBuffer cmd, VkPipelineBindPoint bindPoint, f3d::tree::Scene& scene, f3d::tree::Mesh& mesh) {
 				f3d::tree::SceneImpl&				sc = dynamic_cast<f3d::tree::SceneImpl&>(scene);
 				f3d::tree::MeshImpl&				m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
@@ -154,10 +160,11 @@ namespace f3d {
 					_bound_sets.push_back(m.getDescriptorSet());
 
 				// Fragment shader uniforms
+				if (hasFlag(F3D_SHADER_UNIFORM_LIGHT)) {
+					_bound_sets.push_back(sc.getLightsDescriptorSet());
+				}
 				if (hasFlag(F3D_SHADER_UNIFORM_MATERIAL))
 					_bound_sets.push_back(material->getDescriptorSet());
-				if (hasFlag(F3D_SHADER_UNIFORM_LIGHT))
-					_bound_sets.push_back(sc.getLightsDescriptorSet());
 				// Fragment shader samplers
 				if (hasFlag(F3D_SHADER_UNIFORM_SAMPLER_AMBIENT)) {
 					// Get texture from material

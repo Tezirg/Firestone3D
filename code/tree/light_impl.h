@@ -25,6 +25,7 @@ namespace f3d {
 			LightImpl(std::shared_ptr< f3d::core::PhysicalDevice >& phys, std::shared_ptr< f3d::core::Device >& device, aiLight *light);
 			~LightImpl();
 
+			static uint32_t			bufferSize();
 			void					updateProperties();
 			void					createProperties();
 			bool					getProperties(void **ptr, uint32_t & size);

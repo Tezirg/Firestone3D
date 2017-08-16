@@ -10,10 +10,11 @@ namespace f3d {
 			
 			_matrix.push(glm::mat4());
 
-			DescriptorContainer::addDescriptor(0);
-			DescriptorContainer::addDescriptorBinding(0, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-			DescriptorContainer::addDescriptorBinding(0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-			AttributeContainer::addAttribute(0, (sizeof(float) * 25 + sizeof(uint32_t) * 6) * 16, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			// Create light descriptor set and data buffer
+			DescriptorContainer::addDescriptor(2);
+			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+			DescriptorContainer::addDescriptorBinding(2, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+			AttributeContainer::addAttribute(0, LightImpl::bufferSize() * 16, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 			AttributeContainer::addAttribute(1, sizeof(uint32_t), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		}
 
@@ -298,16 +299,16 @@ namespace f3d {
 			//Bind buffer 0 to binding 0 on this descriptor set
 			std::memset(&pWrites[0], 0, sizeof(VkWriteDescriptorSet));
 			pWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			pWrites[0].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[0].dstSet = DescriptorContainer::getDescriptorSet(2);
 			pWrites[0].descriptorCount = 1;
 			pWrites[0].dstBinding = 0;
-			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			pWrites[0].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			pWrites[0].pBufferInfo = &buffer_info[0];
-
+			
 			//Bind buffer 1 to binding 1 on this descriptor set
 			std::memset(&pWrites[1], 0, sizeof(VkWriteDescriptorSet));
 			pWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			pWrites[1].dstSet = DescriptorContainer::getDescriptorSet(0);
+			pWrites[1].dstSet = DescriptorContainer::getDescriptorSet(2);
 			pWrites[1].descriptorCount = 1;
 			pWrites[1].dstBinding = 1;
 			pWrites[1].descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -322,7 +323,7 @@ namespace f3d {
 			uint32_t						light_attr_size = 0;
 
 			//Update lights Buffer
-			for (auto it = _lights.begin(); it != _lights.end(); ++it) {
+			for (auto it = _lights.begin(); it != _lights.end() && i < 16; ++it) {
 				f3d::tree::LightImpl * l = dynamic_cast<f3d::tree::LightImpl *>(*it);
 				props = l->getProperties((void **)&b, light_attr_size);
 				F3D_ASSERT(props, "Light properties update failed");
@@ -341,7 +342,7 @@ namespace f3d {
 		}
 
 		VkDescriptorSet						SceneImpl::getLightsDescriptorSet() {
-			return DescriptorContainer::getDescriptorSet(0);
+			return DescriptorContainer::getDescriptorSet(2);
 		}
 	}
 }

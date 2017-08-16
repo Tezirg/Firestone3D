@@ -83,7 +83,7 @@ namespace f3d {
 				std::memset(&pool_infos, 0, sizeof(VkCommandPoolCreateInfo));
 				pool_infos.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 				pool_infos.queueFamilyIndex = family_index;
-				pool_infos.flags = 0;
+				pool_infos.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 				r = vkCreateCommandPool(vk_device, &pool_infos, NULL, &(vk_pools[family_index]));
 				F3D_ASSERT_VK(r, VK_SUCCESS, "Cannot create command pool for this device");
 			}

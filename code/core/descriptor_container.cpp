@@ -24,11 +24,11 @@ namespace f3d {
 			resetContainer();
 			//Create the descriptor layout
 			for (auto l = _sets_layout.begin(); l != _sets_layout.end(); ++l) {
-				//Per descriptor set layout bindings declaration
+				// Per descriptor set layout bindings declaration
 				auto bind_range = _bindings.equal_range(l->first);
 				for (auto b = bind_range.first; b != bind_range.second; ++b) {
 					pBindings.push_back(b->second);
-					//Since we are here, prepare the poolSizes for later
+					// Since we are here, prepare the poolSizes for later
 					VkDescriptorPoolSize	ps;
 					ps.type = b->second.descriptorType;
 					ps.descriptorCount = b->second.descriptorCount;
