@@ -90,7 +90,8 @@ namespace f3d {
 			VkPipelineStageFlags stageFlags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 			_device->initImageLayout(vk_images[vk_present_frame], 
 									 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-									 VK_ACCESS_HOST_READ_BIT, VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+									 VK_ACCESS_MEMORY_READ_BIT,
+									 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 									 VK_IMAGE_ASPECT_COLOR_BIT, 1, &vk_acquire_semaphore, &stageFlags, 1, &vk_swap_semaphore);
 
 			vkDeviceWaitIdle(vk_device);
@@ -239,7 +240,7 @@ namespace f3d {
 			
 			for (uint32_t i = 0; i < vk_image_count; i++) {
 				_device->initImageLayout(vk_images[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 
-										 0, VK_ACCESS_HOST_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+										 0, VK_ACCESS_HOST_READ_BIT | VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 			
 		}

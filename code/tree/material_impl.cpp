@@ -7,7 +7,7 @@ namespace f3d {
 			_physical(phys), _device(device)
 		{
 
-			AttributeContainer::addAttribute(0, 6 * 4 * sizeof(float) - (2 * sizeof(float)), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			AttributeContainer::addAttribute(0, 5 * 4 * sizeof(float) + (2 * sizeof(float)), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
 			DescriptorContainer::addDescriptor(2);
 			DescriptorContainer::addDescriptorBinding(2, 0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -36,9 +36,8 @@ namespace f3d {
 			std::memcpy(& pData[3 * 4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_EMISSIVE)), 4 * sizeof(float)); //vec4 emissive_color
 			std::memcpy(& pData[4 * 4 * sizeof(float)], glm::value_ptr(getColor(F3D_COLOR_REFLECTIVE)), 4 * sizeof(float)); //vec4 reflective_color
 			std::memcpy(& pData[5 * 4 * sizeof(float)], &_shininess, sizeof(float)); //float shininess
-			std::memcpy(&pData[5 * 4 * sizeof(float) + sizeof(float)], &_roughness, sizeof(float)); //float shininess
-
-			AttributeContainer::updateAttribute(0, pData, 0, 6 * 4 * sizeof(float) - (2 * sizeof(float)));
+			std::memcpy(&pData[5 * 4 * sizeof(float) + sizeof(float)], &_roughness, sizeof(float)); //float roughness
+			AttributeContainer::updateAttribute(0, pData, 0, 5 * 4 * sizeof(float) + (2 * sizeof(float)));
 		}
 
 		VkDescriptorSet							MaterialImpl::getDescriptorSet() {

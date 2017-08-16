@@ -77,7 +77,7 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Create depth image view failed");
 
 			r_bool = _device->initImageLayout(vk_image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 
-											 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
+											 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
 			F3D_ASSERT(r_bool == true, "Init depth buffer image layout failed");
 		}
 	}

@@ -211,8 +211,8 @@ namespace f3d {
 
 				std::memset(&prePresentBarrier, 0, sizeof(prePresentBarrier));
 				prePresentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-				prePresentBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-				prePresentBarrier.dstAccessMask = VK_ACCESS_HOST_READ_BIT;
+				prePresentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				prePresentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 				prePresentBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 				prePresentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 				prePresentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
