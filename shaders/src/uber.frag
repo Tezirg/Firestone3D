@@ -54,7 +54,6 @@ struct light_t {
 	uint		type;
 	uint		padding_std140;
 };
-
 layout(std140, set = 2, binding = 0) uniform light_s {
 	light_t			data[16];
 }	Light;
