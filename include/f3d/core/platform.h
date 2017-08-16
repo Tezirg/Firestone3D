@@ -47,9 +47,9 @@
 #include <iostream>
 #include <string>
 
-//Linear algebra dependency
-#define GLM_FORCE_LEFT_HANDED 1 //Vulkan is left handed
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE 1 //Vulkan has depth from 0 to 1
+// Linear algebra dependency
+#define GLM_FORCE_LEFT_HANDED 1 // Vulkan is left handed
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE 1 // Vulkan has depth from 0 to 1
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>

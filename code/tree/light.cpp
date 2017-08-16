@@ -6,8 +6,8 @@ namespace f3d {
 		Light::Light()  
 		{ 
 			// Defaults to directional, white color, from the top
-			setSpotExponent(2.0f);
-			setSpotCutoff(M_PI / 3.0f);
+			setSpotExponent(1.0f);
+			setSpotCutoff(M_PI_4);
 			setAttenuationConstant(1.0f);
 			setAttenuationLinear(0.0f);
 			setAttenuationQuadratic(0.0);

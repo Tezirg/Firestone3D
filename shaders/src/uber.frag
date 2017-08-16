@@ -146,6 +146,7 @@ layout(location = 0) out vec4 out_frag_color;
 								   in vec3 lightDirection)
 	{
 		float att = 0.0;
+		float dist = abs(length(lightDirection));
 		switch (Light.data[lightIndex].type)
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
@@ -155,7 +156,6 @@ layout(location = 0) out vec4 out_frag_color;
 		#endif
 		#ifdef F3D_LIGHT_POINT
 			case 2: //Point
-				float dist = abs(length(lightDirection));
 				att = 1.0 / (Light.data[lightIndex].constant + 
 							 Light.data[lightIndex].linear * dist + 
 							 Light.data[lightIndex].quadratic * dist * dist);

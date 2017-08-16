@@ -111,8 +111,7 @@ namespace f3d {
 			sceneFile.append(filename);
 			ai_scene = importer.ReadFile(sceneFile.c_str(), aiProcess_GenSmoothNormals | \
 															aiProcess_Triangulate | aiProcess_SplitLargeMeshes | \
-															aiProcess_SortByPType | aiProcess_OptimizeMeshes | \
-															aiProcess_FlipWindingOrder);
+															aiProcess_SortByPType | aiProcess_OptimizeMeshes);
 			if (ai_scene == 0x0)
 				F3D_FATAL_ERROR(importer.GetErrorString());
 
