@@ -39,7 +39,7 @@
 #endif
 
 #ifdef F3D_UNIFORM_LIGHT
-layout(std140, set = 2, binding = 0) uniform light_s {
+struct light_t {
 	vec4 		position;
 	vec4		direction;
 	vec4 		ambient_color;
@@ -53,7 +53,11 @@ layout(std140, set = 2, binding = 0) uniform light_s {
 	float		quadratic;
 	uint		type;
 	uint		padding_std140;
-}	Light[16];
+};
+
+layout(std140, set = 2, binding = 0) uniform light_s {
+	light_t			data[16];
+}	Light;
 layout(set = 2, binding = 1) uniform n_light_s {
 	uint 		value;
 }	light_count;
@@ -116,21 +120,21 @@ layout(location = 0) out vec4 out_frag_color;
 								  in vec3 eyeDirection)
 	{
 		vec3 ld = vec3(0.0);
-		switch (Light[lightIndex].type) 
+		switch (Light.data[lightIndex].type) 
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
 			case 1: //F3D_LIGHT_DIRECTIONAL_
-				ld = vec3(Light[lightIndex].direction);
+				ld = vec3(Light.data[lightIndex].direction);
 				break;
 		#endif
 		#ifdef F3D_LIGHT_POINT
 			case 2: //F3D_LIGHT_POINT
-				ld = vec3(normalize(vec3(Light[lightIndex].position)) + normalize(eyeDirection));
+				ld = vec3(normalize(vec3(Light.data[lightIndex].position)) + normalize(eyeDirection));
 				break;
 		#endif
 		#ifdef F3D_LIGHT_SPOT
 			case 3: //F3D_LIGHT_SPOT
-				ld = vec3(normalize(vec3(Light[lightIndex].position)) + normalize(eyeDirection));
+				ld = vec3(normalize(vec3(Light.data[lightIndex].position)) + normalize(eyeDirection));
 				break;
 		#endif
 			default:
@@ -143,7 +147,7 @@ layout(location = 0) out vec4 out_frag_color;
 								   in vec3 lightDirection)
 	{
 		float att = 0.0;
-		switch (Light[lightIndex].type)
+		switch (Light.data[lightIndex].type)
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
 			case 1: //Directionnal
@@ -153,19 +157,19 @@ layout(location = 0) out vec4 out_frag_color;
 		#ifdef F3D_LIGHT_POINT
 			case 2: //Point
 				float dist = abs(length(lightDirection));
-				att = 1.0 / (Light[lightIndex].constant + 
-							 Light[lightIndex].linear * dist + 
-							 Light[lightIndex].quadratic * dist * dist);
+				att = 1.0 / (Light.data[lightIndex].constant + 
+							 Light.data[lightIndex].linear * dist + 
+							 Light.data[lightIndex].quadratic * dist * dist);
 				break;
 		#endif
 		#ifdef F3D_LIGHT_SPOT
 			case 3: //Spot
-				float spotEffect = dot(normalize(vec3(Light[lightIndex].direction)), normalize(-lightDirection));
-				if (spotEffect > Light[lightIndex].spot_cos_cutoff) {
-					spotEffect = pow(spotEffect, Light[lightIndex].spot_exponent);
-					att = spotEffect / (Light[lightIndex].constant + 
-										Light[lightIndex].linear * dist + 
-										Light[lightIndex].quadratic * dist * dist);
+				float spotEffect = dot(normalize(vec3(Light.data[lightIndex].direction)), normalize(-lightDirection));
+				if (spotEffect > Light.data[lightIndex].spot_cos_cutoff) {
+					spotEffect = pow(spotEffect, Light.data[lightIndex].spot_exponent);
+					att = spotEffect / (Light.data[lightIndex].constant + 
+										Light.data[lightIndex].linear * dist + 
+										Light.data[lightIndex].quadratic * dist * dist);
 				}
 				break;
 		#endif
@@ -178,7 +182,7 @@ layout(location = 0) out vec4 out_frag_color;
 	vec4		computeAmbient(in uint lightIndex)
 	{
 		#ifdef F3D_COLOR_AMBIENT
-			vec4 ambient = Light[lightIndex].ambient_color;
+			vec4 ambient = Light.data[lightIndex].ambient_color;
 			#ifdef F3D_UNIFORM_MATERIAL
 				ambient *= Material.ambient_color;
 			#endif
@@ -197,7 +201,7 @@ layout(location = 0) out vec4 out_frag_color;
 							   in vec3 surfaceNormal)
 	{
 		#ifdef F3D_COLOR_DIFFUSE
-			vec4 diffuse = Light[lightIndex].diffuse_color;
+			vec4 diffuse = Light.data[lightIndex].diffuse_color;
 			#if F3D_UNIFORM_MATERIAL
 				diffuse *= Material.diffuse_color;
 			#endif
@@ -231,7 +235,7 @@ layout(location = 0) out vec4 out_frag_color;
 		#ifdef F3D_COLOR_SPECULAR
 			float shininess = 1.0;
 			float roughness = 1.0;
-			vec4 specular = Light[lightIndex].specular_color;
+			vec4 specular = Light.data[lightIndex].specular_color;
 			#if F3D_UNIFORM_MATERIAL
 				specular *= Material.specular_color;
 				shininess = Material.shininess;
