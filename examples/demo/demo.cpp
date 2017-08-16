@@ -44,7 +44,8 @@ bool		Demo::run()
 	engine->mouseEventsCallback(mouse_fn);
 	engine->joystickEventsCallback(joystick_fn);
 	engine->settings->applicationName.assign("Demo");
-	engine->settings->fpsCap = 40;
+	engine->settings->fpsCap = 60;
+	engine->settings->vSync = false;
 	engine->settings->windowWidth = 1280;
 	engine->settings->windowHeight = 720;
 	engine->settings->fullScreen = false;
@@ -116,15 +117,15 @@ void		Demo::loadScene(f3d::Firestone& f3d)
 	fly_camera.attachCamera(engine->scene->getCamera());
 
 	l.setName("light1");
-	l.setType(f3d::F3D_LIGHT_DIRECTIONAL);
+	l.setType(f3d::F3D_LIGHT_SPOT);
 	l.setAttenuationConstant(0.0f);
 	l.setAttenuationLinear(1.0f);
 	l.setAttenuationQuadratic(0.0f);
 	l.setColorAmbient(glm::vec4(1.0f));
 	l.setColorDiffuse(glm::vec4(1.0f));
 	l.setColorSpecular(glm::vec4(1.0f));
-	l.setDirection(glm::vec3(1.0f, 0.0f, 0.0f));
-	l.setPosition(glm::vec3(5.0f, -2.0f, 0.0f));
+	l.setDirection(glm::vec3(0.0f, 1.0f, 0.0f));
+	l.setPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
 	/*
