@@ -49,7 +49,7 @@ namespace f3d {
 			_rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 			_rs.polygonMode = VK_POLYGON_MODE_FILL;
 			_rs.cullMode = VK_CULL_MODE_BACK_BIT;
-			_rs.frontFace = VK_FRONT_FACE_CLOCKWISE;
+			_rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			_rs.depthClampEnable = VK_FALSE;
 			_rs.rasterizerDiscardEnable = VK_FALSE;
 			_rs.depthBiasEnable = VK_FALSE;

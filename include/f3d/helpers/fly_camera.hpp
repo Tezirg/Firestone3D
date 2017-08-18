@@ -39,7 +39,8 @@ namespace f3d {
 				//Default perspective
 				_camera->setPerspective(30.0f, 1280.0f / 720.0f, 0.1f, 2048.0f);
 				//Default the camera to look a center
-				_camera->lookAt(glm::vec3(0.0f, 100.0f, -100.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+				// _camera->lookAt(glm::vec3(0.0f, 100.0f, -100.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+				_camera->lookAt(glm::vec3(0.0f, 20.0f, 20.0f), glm::vec3(0.0f, 0.1f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 			}
 
 			void				updateFromMouse(f3d::helpers::Mouse& mouse) 
@@ -125,7 +126,6 @@ namespace f3d {
 				if (ax != 0.0f)
 					r2 = glm::rotate(ax, glm::vec3(1.0f, 0.0f, 0.0f));
 				_camera->setView(t * r2 * r * _camera->getView());
-				//_camera->lookAt(_camera->getPosition(), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 			}
 	
 		private:

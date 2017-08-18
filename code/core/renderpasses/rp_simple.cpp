@@ -41,10 +41,11 @@ namespace f3d {
 					F3D_SHADER_UNIFORM_LIGHT |
 					F3D_SHADER_ATTR_POSITION |
 					F3D_SHADER_ATTR_NORMAL |
-					F3D_SHADER_VULKAN_TRANSFORM_Y, 
+					F3D_SHADER_VULKAN_TRANSFORM_Y |
+					F3D_SHADER_VULKAN_TRANSFORM_Z, 
 				
 					F3D_SHADING_DIFFUSE_LAMBERT | 
-					F3D_SHADING_SPECULAR_PHONG 
+					F3D_SHADING_SPECULAR_BLINN_PHONG 
 				});
 				prog->initVkPipeline(vk_renderpass, 0);
 				setProgram(prog);
@@ -252,10 +253,11 @@ namespace f3d {
 					F3D_SHADER_UNIFORM_LIGHT |
 					F3D_SHADER_ATTR_POSITION |
 					F3D_SHADER_ATTR_NORMAL |
-					F3D_SHADER_VULKAN_TRANSFORM_Y,
+					F3D_SHADER_VULKAN_TRANSFORM_Y |
+					F3D_SHADER_VULKAN_TRANSFORM_Z,
 
 					F3D_SHADING_DIFFUSE_LAMBERT |
-					F3D_SHADING_SPECULAR_PHONG
+					F3D_SHADING_SPECULAR_BLINN_PHONG
 				};
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());

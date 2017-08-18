@@ -1,7 +1,6 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
-#extension GL_OES_standard_derivatives : enable
 
 #ifndef F3D_DECLARATIONS
 #define F3D_DECLARATIONS
@@ -101,9 +100,11 @@ layout(set = 11, binding = 0) uniform sampler2D reflection_sampler;
 
 #ifdef F3D_ATTR_POSITION
 layout(location = 0) in vec3 in_frag_position_camera_space;
+layout(location = 10) in vec3 in_frag_position_world_space;
 #endif
 #ifdef F3D_ATTR_NORMAL
 layout(location = 1) in vec3 in_frag_normal_camera_space;
+layout(location = 11) in vec3 in_frag_normal_world_space;
 #endif
 #ifdef F3D_ATTR_COLOR
 layout (location = 2) in vec4 in_frag_color;
@@ -111,42 +112,47 @@ layout (location = 2) in vec4 in_frag_color;
 #ifdef F3D_ATTR_UV
 layout(location = 3) in vec2 in_frag_UV;
 #endif
+#ifdef F3D_UNIFORM_CAMERA
+layout (location = 16) in mat4 in_view;
+#else
+mat4 in_view = mat4(1.0); // Identity matrix
+#endif
 
 layout(location = 0) out vec4 out_frag_color;
 
 #ifdef F3D_UNIFORM_LIGHT
-	vec3	computeLightDirection(in uint lightIndex, 
-								  in vec3 eyeDirection)
+	vec3	computeWorldLightDirection(in uint lightIndex, 
+									   in vec3 eyeDirection)
 	{
 		vec3 ld = vec3(0.0);
 		switch (Light.data[lightIndex].type) 
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
 			case 1: //F3D_LIGHT_DIRECTIONAL_
-				ld = vec3(Light.data[lightIndex].direction);
+				ld = vec3(- Light.data[lightIndex].direction);
 				break;
 		#endif
 		#ifdef F3D_LIGHT_POINT
 			case 2: //F3D_LIGHT_POINT
-				ld = vec3(normalize(vec3(Light.data[lightIndex].position)) + normalize(eyeDirection));
+				ld = vec3(Light.data[lightIndex].position) - eyeDirection;
 				break;
 		#endif
 		#ifdef F3D_LIGHT_SPOT
 			case 3: //F3D_LIGHT_SPOT
-				ld = vec3(normalize(vec3(Light.data[lightIndex].position)) + normalize(eyeDirection));
+				ld = vec3(Light.data[lightIndex].position) - eyeDirection;
 				break;
 		#endif
 			default:
 				break;
 		}
-		return normalize(ld);
+		return ld;
 	}
-
+	
 	float 		computeAttenuation(in uint lightIndex,
 								   in vec3 lightDirection)
 	{
 		float att = 0.0;
-		float dist = abs(length(lightDirection));
+		float dist = length(lightDirection);
 		switch (Light.data[lightIndex].type)
 		{
 		#ifdef F3D_LIGHT_DIRECTIONAL
@@ -163,7 +169,7 @@ layout(location = 0) out vec4 out_frag_color;
 		#endif
 		#ifdef F3D_LIGHT_SPOT
 			case 3: //Spot
-				float spotEffect = dot(normalize(vec3(Light.data[lightIndex].direction)), normalize(-lightDirection));
+				float spotEffect = dot(normalize(Light.data[lightIndex].direction.xyz), normalize(-lightDirection));
 				if (spotEffect > Light.data[lightIndex].spot_cos_cutoff) {
 					spotEffect = pow(spotEffect, Light.data[lightIndex].spot_exponent);
 					att = spotEffect / (Light.data[lightIndex].constant + 
@@ -227,7 +233,7 @@ layout(location = 0) out vec4 out_frag_color;
 	}
 	
 	vec4		computeSpecular(in uint lightIndex, 
-								in vec3 lightDirection, 
+								in vec3 lightDirection,
 								in vec3 viewDirection, 
 								in vec3 surfaceNormal)
 	{
@@ -268,6 +274,7 @@ layout(location = 0) out vec4 out_frag_color;
 
 void main()
 {
+	out_frag_color = vec4(0.0);
 	#ifdef F3D_COLOR_AMBIENT
 		vec4 ambient_color = vec4(0.0, 0.0, 0.0, 0.0);
 	#endif
@@ -285,39 +292,46 @@ void main()
 		#endif
 	#endif
 
-	#ifdef F3D_ATTR_NORMAL
-		vec3 surfaceNormal = in_frag_normal_camera_space;
+	#if F3D_ATTR_NORMAL
+		vec3 world_surfaceNormal = in_frag_normal_world_space;
+		vec3 camera_surfaceNormal = in_frag_normal_camera_space;
 		#if F3D_UNIFORM_SAMPLER_NORMALS && F3D_ATTR_UV
-			surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
+			world_surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
+			camera_surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
 		#endif
-		surfaceNormal = normalize(surfaceNormal);
+		world_surfaceNormal = normalize(world_surfaceNormal);
+		camera_surfaceNormal = normalize(camera_surfaceNormal);
 	#else
-		vec3 surfaceNormal = vec3(0.0, 1.0, 0.0);
-	#endif
-	#ifdef F3D_ATTR_POSITION
-		vec3 viewDirection = vec3(-in_frag_position_camera_space);
-		#if F3D_UNIFORM_SAMPLER_HEIGHT && F3D_ATTR_UV
-			viewDirection += surfaceNormal * texture(height_sampler, in_frag_UV).xyz;
-		#endif
-		viewDirection = normalize(viewDirection);
-	#else
-		vec3 viewDirection = vec3(0.0, 0.0, 1.0);
+		vec3 world_surfaceNormal = vec3(0.0, 1.0, 0.0);
+		vec3 camera_surfaceNormal = vec3(0.0, 1.0, 0.0);
 	#endif
 
+	#if F3D_ATTR_POSITION
+		vec3 world_fragPosition = in_frag_position_world_space;
+		vec3 camera_fragPosition = in_frag_position_camera_space;
+		#if F3D_UNIFORM_SAMPLER_HEIGHT && F3D_ATTR_UV
+			world_fragPosition += world_surfaceNormal * texture(height_sampler, in_frag_UV).xyz;
+		#endif
+	#else
+		vec3 world_fragPosition = vec3(0.0, 0.0, 1.0);
+		vec3 camera_fragPosition = vec3(0.0, 0.0, 1.0);
+	#endif
 
 	#if F3D_UNIFORM_LIGHT
 		for (uint i = 0; i < light_count.value; i++) {
-			vec3 lightDirection = computeLightDirection(i, viewDirection);
-			float attenuation = computeAttenuation(i, lightDirection);
+			vec3 world_lightDirection = computeWorldLightDirection(i, world_fragPosition);
+			vec3 viewDirection = normalize(in_view[2].xyz - world_fragPosition);
+			float attenuation = computeAttenuation(i, world_lightDirection);
 			
 			#ifdef F3D_COLOR_AMBIENT
-				ambient_color += computeAmbient(i) * attenuation;
+				ambient_color += computeAmbient(i);
 			#endif
+			// Use world coordinates for diffuse illumination
 			#ifdef F3D_COLOR_DIFFUSE
-				diffuse_color += computeDiffuse(i, lightDirection, viewDirection, surfaceNormal) * attenuation;
+				diffuse_color += computeDiffuse(i, normalize(world_lightDirection), normalize(world_fragPosition), world_surfaceNormal) * attenuation;
 			#endif
 			#ifdef F3D_COLOR_SPECULAR
-				specular_color += computeSpecular(i, lightDirection, viewDirection, surfaceNormal) * attenuation;
+				specular_color += computeSpecular(i, normalize(world_lightDirection), viewDirection, world_surfaceNormal) * attenuation;
 			#endif
 		}
 	#endif
