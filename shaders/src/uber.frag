@@ -99,12 +99,10 @@ layout(set = 11, binding = 0) uniform sampler2D reflection_sampler;
 #endif
 
 #ifdef F3D_ATTR_POSITION
-layout(location = 0) in vec3 in_frag_position_camera_space;
-layout(location = 10) in vec3 in_frag_position_world_space;
+layout(location = 0) in vec3 in_frag_position_world_space;
 #endif
 #ifdef F3D_ATTR_NORMAL
-layout(location = 1) in vec3 in_frag_normal_camera_space;
-layout(location = 11) in vec3 in_frag_normal_world_space;
+layout(location = 1) in vec3 in_frag_normal_world_space;
 #endif
 #ifdef F3D_ATTR_COLOR
 layout (location = 2) in vec4 in_frag_color;
@@ -113,9 +111,7 @@ layout (location = 2) in vec4 in_frag_color;
 layout(location = 3) in vec2 in_frag_UV;
 #endif
 #ifdef F3D_UNIFORM_CAMERA
-layout (location = 16) in mat4 in_view;
-#else
-mat4 in_view = mat4(1.0); // Identity matrix
+layout(location = 10) in vec3 in_camera_position_world_space;
 #endif
 
 layout(location = 0) out vec4 out_frag_color;
@@ -294,33 +290,33 @@ void main()
 
 	#if F3D_ATTR_NORMAL
 		vec3 world_surfaceNormal = in_frag_normal_world_space;
-		vec3 camera_surfaceNormal = in_frag_normal_camera_space;
 		#if F3D_UNIFORM_SAMPLER_NORMALS && F3D_ATTR_UV
 			world_surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
-			camera_surfaceNormal += texture(normals_sampler, in_frag_UV).xyz;
 		#endif
 		world_surfaceNormal = normalize(world_surfaceNormal);
-		camera_surfaceNormal = normalize(camera_surfaceNormal);
 	#else
 		vec3 world_surfaceNormal = vec3(0.0, 1.0, 0.0);
-		vec3 camera_surfaceNormal = vec3(0.0, 1.0, 0.0);
 	#endif
 
 	#if F3D_ATTR_POSITION
 		vec3 world_fragPosition = in_frag_position_world_space;
-		vec3 camera_fragPosition = in_frag_position_camera_space;
 		#if F3D_UNIFORM_SAMPLER_HEIGHT && F3D_ATTR_UV
 			world_fragPosition += world_surfaceNormal * texture(height_sampler, in_frag_UV).xyz;
 		#endif
 	#else
 		vec3 world_fragPosition = vec3(0.0, 0.0, 1.0);
-		vec3 camera_fragPosition = vec3(0.0, 0.0, 1.0);
 	#endif
 
+	#if F3D_UNIFORM_CAMERA
+		vec3 world_camPosition = in_camera_position_world_space;
+	#else
+		vec3 world_camPosition = vec3(0.0);
+	#endif
+	
 	#if F3D_UNIFORM_LIGHT
 		for (uint i = 0; i < light_count.value; i++) {
 			vec3 world_lightDirection = computeWorldLightDirection(i, world_fragPosition);
-			vec3 viewDirection = normalize(in_view[2].xyz - world_fragPosition);
+			vec3 viewDirection = normalize(world_camPosition - world_fragPosition);
 			float attenuation = computeAttenuation(i, world_lightDirection);
 			
 			#ifdef F3D_COLOR_AMBIENT

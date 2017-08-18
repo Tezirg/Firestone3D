@@ -23,13 +23,11 @@ layout(std140, set = 1, binding = 0) uniform mesh_s {
 
 #ifdef F3D_ATTR_POSITION
 layout(location = 0) in vec4 in_vertex_position_local_space;
-layout(location = 0) out vec3 out_vertex_position_camera_space;
-layout(location = 10) out vec3 out_vertex_position_world_space;
+layout(location = 0) out vec3 out_vertex_position_world_space;
 #endif
 #ifdef F3D_ATTR_NORMAL
 layout(location = 1) in vec4 in_vertex_normal_local_space;
-layout(location = 1) out vec3 out_vertex_normal_camera_space;
-layout(location = 11) out vec3 out_vertex_normal_world_space;
+layout(location = 1) out vec3 out_vertex_normal_world_space;
 #endif
 #ifdef F3D_ATTR_COLOR
 layout (location = 2) in vec4 in_vertex_color;
@@ -40,25 +38,21 @@ layout(location = 3) in vec2 in_vertex_UV;
 layout(location = 3) out vec2 out_vertex_UV;
 #endif
 #ifdef F3D_UNIFORM_CAMERA
-layout (location = 16) out mat4 out_view;
+layout (location = 10) out vec3 out_camera_position_world_space;
 #endif
 
 void main() 
 {
 	#if F3D_ATTR_POSITION && F3D_UNIFORM_CAMERA && F3D_UNIFORM_MODEL
-		out_vertex_position_camera_space = vec3(Camera.view * Mesh.model * in_vertex_position_local_space);
 		out_vertex_position_world_space = vec3(Mesh.model * in_vertex_position_local_space);
 		gl_Position = Camera.perspective * Camera.view * Mesh.model * in_vertex_position_local_space;
 	#elif F3D_ATTR_POSITION && F3D_UNIFORM_CAMERA
-		out_vertex_position_camera_space = vec3(Camera.view * in_vertex_position_local_space);
 		out_vertex_position_world_space = vec3(in_vertex_position_local_space);
 		gl_Position = Camera.perspective * Camera.view * in_vertex_position_local_space;
 	#elif F3D_ATTR_POSITION && F3D_UNIFORM_MODEL
-		out_vertex_position_camera_space = vec3(Mesh.model * in_vertex_position_local_space);
 		out_vertex_position_world_space = vec3(out_vertex_position_camera_space);
 		gl_Position = out_vertex_position_camera_space;
 	#elif F3D_ATTR_POSITION
-		out_vertex_position_camera_space = vec3(in_vertex_position_local_space);
 		out_vertex_position_world_space = vec3(in_vertex_position_local_space);
 		gl_Position = in_vertex_position_local_space;
 	#elif F3D_UNIFORM_CAMERA && F3D_UNIFORM_MODEL
@@ -72,25 +66,20 @@ void main()
 	#endif
 	
 	#if F3D_ATTR_NORMAL && F3D_UNIFORM_CAMERA && F3D_UNIFORM_MODEL
-		mat4 camera_normal = transpose(inverse(Camera.view * Mesh.model));
 		mat4 world_normal = transpose(inverse(Mesh.model));
-		out_vertex_normal_camera_space = vec3(camera_normal * in_vertex_normal_local_space);
 		out_vertex_normal_world_space = vec3(world_normal * in_vertex_normal_local_space);
 	#elif F3D_ATTR_NORMAL && F3D_UNIFORM_MODEL
 		mat4 normal = transpose(inverse(Mesh.model));
-		out_vertex_normal_camera_space = vec3(normal * in_vertex_normal_local_space);
 		out_vertex_normal_world_space = vec3(normal * in_vertex_normal_local_space);
 	#elif F3D_ATTR_NORMAL && F3D_UNIFORM_CAMERA
 		mat4 camera_normal = transpose(inverse(Camera.view));
-		out_vertex_normal_camera_space = vec3(camera_normal * in_vertex_normal_local_space);
 		out_vertex_normal_world_space = vec3(in_vertex_normal_local_space);
 	#elif F3D_ATTR_NORMAL
-		out_vertex_normal_camera_space = vec3(in_vertex_normal_local_space);
 		out_vertex_normal_world_space = vec3(in_vertex_normal_local_space);
 	#endif
 	
 	#ifdef F3D_UNIFORM_CAMERA
-		out_view = transpose(inverse(Camera.view));
+		out_camera_position_world_space = Camera.view[2].xyz;
 	#endif
 	
 	#ifdef F3D_ATTR_COLOR
