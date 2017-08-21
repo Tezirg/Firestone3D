@@ -1,4 +1,8 @@
-# Coordinate system
+# Coordinates system
+
+## Handedness
+
+Currently, F3D uses a right-handed system with counter clockwise faces ordering. There is no way to change the coordinate system used by F3D, such option will be considered for future releases. 
 
 ## Spaces definitions
 
