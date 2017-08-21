@@ -45,7 +45,7 @@ namespace f3d {
 					F3D_SHADER_VULKAN_TRANSFORM_Z, 
 				
 					F3D_SHADING_DIFFUSE_LAMBERT | 
-					F3D_SHADING_SPECULAR_BLINN_PHONG 
+					F3D_SHADING_SPECULAR_BLINN_PHONG
 				});
 				prog->initVkPipeline(vk_renderpass, 0);
 				setProgram(prog);
@@ -240,25 +240,7 @@ namespace f3d {
 
 			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) 
 			{
-				ProgramMask				mask = {
-					F3D_SHADER_COLOR_AMBIENT |
-					F3D_SHADER_COLOR_DIFFUSE |
-					F3D_SHADER_COLOR_SPECULAR |
-					F3D_SHADER_LIGHT_DIRECTIONAL |
-					F3D_SHADER_LIGHT_POINT |
-					F3D_SHADER_LIGHT_SPOT |
-					F3D_SHADER_UNIFORM_CAMERA |
-					F3D_SHADER_UNIFORM_MODEL |
-					F3D_SHADER_UNIFORM_MATERIAL |
-					F3D_SHADER_UNIFORM_LIGHT |
-					F3D_SHADER_ATTR_POSITION |
-					F3D_SHADER_ATTR_NORMAL |
-					F3D_SHADER_VULKAN_TRANSFORM_Y |
-					F3D_SHADER_VULKAN_TRANSFORM_Z,
-
-					F3D_SHADING_DIFFUSE_LAMBERT |
-					F3D_SHADING_SPECULAR_BLINN_PHONG
-				};
+				uint64_t				mask = _programs.begin()->first;
 				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
 				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
 				f3d::tree::TextureImpl*	texture = nullptr;
@@ -266,13 +248,13 @@ namespace f3d {
 				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
 				if (material != nullptr) {
 
-					auto prog = getProgram(mask.mask);
+					auto prog = getProgram(mask);
 					if (prog != nullptr) {
 						//std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
 						prog->drawToCommandBuffer(cmd, mesh, *scene);
 					}
 					else {
-						std::cout << "Unknown combination: " << std::hex << mask.mask << std::endl;
+						std::cout << "Unknown combination: " << std::hex << mask << std::endl;
 						prog = getProgram(0x0001000000000000);
 						prog->drawToCommandBuffer(cmd, mesh, *scene);
 					}

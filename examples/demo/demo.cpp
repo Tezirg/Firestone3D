@@ -121,40 +121,39 @@ void		Demo::loadScene(f3d::Firestone& f3d)
 	l.setName("light1_spot");
 	l.setType(f3d::F3D_LIGHT_SPOT);
 	l.setSpotCutoff(3.14259 / 8.0f);
-	l.setAttenuationConstant(0.8f);
-	l.setAttenuationLinear(0.1f);
+	l.setAttenuationConstant(1.0f);
+	l.setAttenuationLinear(0.0f);
 	l.setAttenuationQuadratic(0.0f);
-	l.setColorAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	l.setColorAmbient(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	l.setColorDiffuse(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
 	l.setColorSpecular(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	l.setDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-	l.setPosition(glm::vec3(3.0f, 10.0f, 0.0f));
+	l.setPosition(glm::vec3(5.0f, 20.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
 	l.setName("light2_spot");
 	l.setType(f3d::F3D_LIGHT_SPOT);
 	l.setSpotCutoff(3.14259 / 8.0f);
-	l.setAttenuationConstant(0.8f);
-	l.setAttenuationLinear(0.1f);
+	l.setAttenuationConstant(1.0f);
+	l.setAttenuationLinear(0.0f);
 	l.setAttenuationQuadratic(0.0f);
-	l.setColorAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+	l.setColorAmbient(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	l.setColorDiffuse(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
 	l.setColorSpecular(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	l.setDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-	l.setPosition(glm::vec3(-3.0f, 10.0f, 0.0f));
+	l.setPosition(glm::vec3(-3.0f, 20.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
 	l.setName("light3_point");
 	l.setType(f3d::F3D_LIGHT_POINT);
-	l.setSpotCutoff(3.14259 / 8.0f);
-	l.setAttenuationConstant(0.8f);
-	l.setAttenuationLinear(0.1f);
-	l.setAttenuationQuadratic(0.0f);
-	l.setColorAmbient(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-	l.setColorDiffuse(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+	l.setAttenuationConstant(1.0f);
+	l.setAttenuationLinear(0.01f);
+	l.setAttenuationQuadratic(0.00f);
+	l.setColorAmbient(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+	l.setColorDiffuse(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	l.setColorSpecular(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 	l.setDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-	l.setPosition(glm::vec3(0.0f, 0.07f, 0.0f));
+	l.setPosition(glm::vec3(0.0f, 1.0f, 0.0f));
 	f3d.scene->addLight(&l);
 
 
