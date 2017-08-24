@@ -17,10 +17,10 @@ namespace f3d {
 			Renderer();
 			virtual ~Renderer();
 
-			Renderer(Renderer& copy_oth) = delete; //No copies
-			Renderer(Renderer&& move_oth) = delete; //No moves
-			Renderer& operator=(Renderer& copy_oth) = delete; //No copy assignement
-			Renderer& operator=(Renderer&& move_oth) = delete; //No move assignement
+			Renderer(Renderer& copy_oth) = delete; // No copies
+			Renderer(Renderer&& move_oth) = delete; // No moves
+			Renderer& operator=(Renderer& copy_oth) = delete; // No copy assignement
+			Renderer& operator=(Renderer&& move_oth) = delete; // No move assignement
 
 
 			virtual void	render(std::shared_ptr<f3d::tree::Scene> scene) = 0;

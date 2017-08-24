@@ -255,8 +255,6 @@ namespace f3d {
 					}
 					else {
 						std::cout << "Unknown combination: " << std::hex << mask << std::endl;
-						prog = getProgram(0x0001000000000000);
-						prog->drawToCommandBuffer(cmd, mesh, *scene);
 					}
 				}
 
