@@ -11,6 +11,8 @@ It is designed so that it is easy to use for beginners, while allowing advanced 
 * Supports common texture formats, [Full list](https://www.imagemagick.org/script/formats.php#supported)
 
 # Using F3D
+WIP !! Doc has to be written/generated
+
 See the [Getting started](INTRODUCTION.md) for a basic introduction, or the [advanced guide](ADVANCED.md) for a complete introduction.
 
 Some [Examples](examples) are also available to showcase the main features.

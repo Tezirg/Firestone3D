@@ -6,7 +6,7 @@ namespace f3d {
 		Material::Material(const std::string& name) :
 			_name(name), _shininess(32.0f), _roughness(2.0f) {
 			_color_mask = F3D_COLOR_UNDEFINED;
-			_shading = F3D_SHADING_DIFFUSE_FLAT;
+			_shading = F3D_SHADING_DIFFUSE_LAMBERT | F3D_SHADING_SPECULAR_BLINN_PHONG;
 			_texture_mask = F3D_TEXTURE_UNDEFINED;
 		}
 
@@ -62,10 +62,15 @@ namespace f3d {
 		}
 
 		void					Material::setShading(const eShadingType& type) {
-			_shading = type;
+			_shading |= type;
 		}
 
-		eShadingType			Material::shadingFlags(void) const {
+		void					Material::unsetShading(const eShadingType& type) {
+			_shading &= ~type;
+		}
+
+
+		ShadingTypeFlags		Material::shadingFlags(void) const {
 			return _shading;
 		}
 
@@ -84,6 +89,11 @@ namespace f3d {
 			//Removes from bitmask
 			_texture_mask &= ~type;
 		}
+
+		bool					Material::hasTexture(TextureTypeFlags type) const {
+			return (_texture_mask & type) == type;
+		}
+
 
 		f3d::tree::Texture*		Material::getTexture(const TextureTypeFlags type) const {
 			auto it = _textures.find(type);

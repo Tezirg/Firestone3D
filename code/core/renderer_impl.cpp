@@ -70,12 +70,15 @@ namespace f3d {
 			f3d::tree::CameraImpl *		cam = dynamic_cast<f3d::tree::CameraImpl *>(scene->getCamera().get());
 			f3d::tree::TextureImpl *	texture = nullptr;
 
-			sc->writeDescriptorSet();
 
+			sc->writeDescriptorSet(); 
+			
 			for (uint32_t i = 0; i < win->vk_image_count; i++) {
 				win->vk_present_frame = i;
 				_renders[F3D_RENDERPASS_SIMPLE]->render(vk_commands[i], scene);
 			}
+				
+
 			win->vk_present_frame = 0;
 			valid_commands = true;
 		}
@@ -88,7 +91,9 @@ namespace f3d {
 			f3d::tree::TextureImpl *	texture = nullptr;
 			uint32_t					fam_idx = _device->getQueueFamilyIndex(true, VK_QUEUE_GRAPHICS_BIT, win->vk_surface);
 
-			if (valid_commands == false) {
+			if (scene->isDirty()) {
+				reset();
+				scene->setDirty(false);
 				computeCommandBuffers(scene);
 			}
 
@@ -96,7 +101,9 @@ namespace f3d {
 				scene_impl->recursive_uniformUpdate((*it)->getRoot());
 			cam->writeAttribute();
 			scene_impl->writeAttribute();
+
 			win->swapBuffers();
+
 
 			VkPipelineStageFlags pipe_stage_flags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			VkSubmitInfo submit_info;

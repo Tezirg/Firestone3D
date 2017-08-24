@@ -105,7 +105,7 @@ namespace f3d {
 			usize = file.tellg();
 			size = file.tellg();
 			file.seekg(0, file.beg);
-			code = new char[size];
+			code = new char[usize];
 			file.read((char *)code, size);
 
 			std::memset(&shader_info, 0, sizeof(VkShaderModuleCreateInfo));

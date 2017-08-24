@@ -87,14 +87,12 @@ namespace f3d {
 			F3D_ASSERT_VK(r, VK_SUCCESS, "Acquire swapchain next image");
 
 			// /*
-			VkPipelineStageFlags stageFlags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			VkPipelineStageFlags stageFlags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			_device->initImageLayout(vk_images[vk_present_frame], 
 									 VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 									 VK_ACCESS_MEMORY_READ_BIT,
 									 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 									 VK_IMAGE_ASPECT_COLOR_BIT, 1, &vk_acquire_semaphore, &stageFlags, 1, &vk_swap_semaphore);
-
-			vkDeviceWaitIdle(vk_device);
 			// */
 		}
 

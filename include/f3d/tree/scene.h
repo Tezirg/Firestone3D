@@ -40,6 +40,9 @@ namespace f3d {
 			void											removeMaterial(f3d::tree::Material* material);
 
 			virtual void									loadFromFile(const std::string& path, const std::string& file) = 0;
+
+			bool											isDirty() const;
+			void											setDirty(bool value);
 		protected:
 			bool											_dirty;
 			std::shared_ptr< f3d::tree::Camera >			_camera;

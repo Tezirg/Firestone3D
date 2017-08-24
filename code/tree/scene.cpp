@@ -43,10 +43,12 @@ namespace f3d {
 		}
 
 		void											Scene::addObject(f3d::tree::Object* obj) {
+			_dirty = true;
 			_objects.push_back(obj);
 		}
 
 		void											Scene::removeObject(f3d::tree::Object* obj) {
+			_dirty = true;
 			_objects.remove(obj);
 		}
 
@@ -60,11 +62,9 @@ namespace f3d {
 
 		void											Scene::addLight(f3d::tree::Light* light) {
 			_lights.push_back(light);
-			_dirty = true;
 		}
 		void											Scene::removeLight(f3d::tree::Light* light) {
 			_lights.remove(light);
-			_dirty = true;
 		}
 
 		void											Scene::addMaterial(f3d::tree::Material* material) {
@@ -75,6 +75,14 @@ namespace f3d {
 		void											Scene::removeMaterial(f3d::tree::Material* material) {
 			_materials.remove(material);
 			_dirty = true;
+		}
+
+		bool											Scene::isDirty() const {
+			return _dirty;
+		}
+
+		void											Scene::setDirty(bool value) {
+			_dirty = value;
 		}
 
 	}

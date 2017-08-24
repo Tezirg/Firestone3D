@@ -25,33 +25,24 @@ namespace f3d {
 				_clear[1].depthStencil.stencil = 0;
 
 				initRenderPass();
+			
+				initViews();
+				initFramebuffers();
 
-				// Testing program masking
-				f3d::core::prog::DefaultProgram *prog = new f3d::core::prog::DefaultProgram(physical, device, 
-				{ 
-					F3D_SHADER_COLOR_AMBIENT | 
-					F3D_SHADER_COLOR_DIFFUSE | 
+				_shaders_common = // All shaders minimum interface & features
+					F3D_SHADER_COLOR_AMBIENT |
+					F3D_SHADER_COLOR_DIFFUSE |
 					F3D_SHADER_COLOR_SPECULAR |
 					F3D_SHADER_LIGHT_DIRECTIONAL |
 					F3D_SHADER_LIGHT_POINT |
-					F3D_SHADER_LIGHT_SPOT | 
+					F3D_SHADER_LIGHT_SPOT |
 					F3D_SHADER_UNIFORM_CAMERA |
 					F3D_SHADER_UNIFORM_MODEL |
 					F3D_SHADER_UNIFORM_MATERIAL |
 					F3D_SHADER_UNIFORM_LIGHT |
 					F3D_SHADER_ATTR_POSITION |
-					F3D_SHADER_ATTR_NORMAL |
 					F3D_SHADER_VULKAN_TRANSFORM_Y |
-					F3D_SHADER_VULKAN_TRANSFORM_Z, 
-				
-					F3D_SHADING_DIFFUSE_LAMBERT | 
-					F3D_SHADING_SPECULAR_BLINN_PHONG
-				});
-				prog->initVkPipeline(vk_renderpass, 0);
-				setProgram(prog);
-				
-				initViews();
-				initFramebuffers();
+					F3D_SHADER_VULKAN_TRANSFORM_Z;
 			}
 			
 			SimpleRenderPass::~SimpleRenderPass() {
@@ -174,6 +165,9 @@ namespace f3d {
 				VkImageMemoryBarrier				prePresentBarrier;
 				VkResult							r;
 
+				// Start by making sure we have the programs loaded
+				updateRenderState(scene);
+
 				std::memset(&cmd_hinfo, 0, sizeof(VkCommandBufferInheritanceInfo));
 				cmd_hinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 				cmd_hinfo.renderPass = VK_NULL_HANDLE;
@@ -228,7 +222,45 @@ namespace f3d {
 				vkEndCommandBuffer(cmd);
 			}
 			
-			void			SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj) {
+			void					SimpleRenderPass::updateRenderState(std::shared_ptr< f3d::tree::Scene > scene) {
+				for (auto it = scene->getObjects().begin(); it != scene->getObjects().end(); ++it) {
+					makeNodeProgram(scene, (*it)->getRoot());
+				}
+			}
+
+			void							SimpleRenderPass::makeNodeProgram(std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj) {
+				for (auto it = obj->getMeshes().begin(); it != obj->getMeshes().end(); ++it) {
+					f3d::tree::MeshImpl*		m = dynamic_cast<f3d::tree::MeshImpl *>(*it);
+					f3d::tree::Material*		material = scene->getMaterialByName(m->getMaterialName());
+
+					//Compute mask to render this mesh
+					ProgramMask					mask = {
+						_shaders_common |
+						(m->numNormals() > 0 ? F3D_SHADER_ATTR_NORMAL : 0) |
+						//(mesh.numColor() > 0 ? F3D_SHADER_ATTR_COLOR : 0) |
+						(m->numUV() > 0 ? F3D_SHADER_ATTR_UV : 0) |
+						(material->hasTexture(F3D_TEXTURE_AMBIENT) ? F3D_SHADER_UNIFORM_SAMPLER_AMBIENT : 0) |
+						(material->hasTexture(F3D_TEXTURE_DIFFUSE) ? F3D_SHADER_UNIFORM_SAMPLER_DIFFUSE : 0) |
+						(material->hasTexture(F3D_TEXTURE_SPECULAR) ? F3D_SHADER_UNIFORM_SAMPLER_SPECULAR : 0) |
+						(material->hasTexture(F3D_TEXTURE_EMISSIVE) ? F3D_SHADER_UNIFORM_SAMPLER_EMISSIVE : 0) |
+						(material->hasTexture(F3D_TEXTURE_NORMALS) ? F3D_SHADER_UNIFORM_SAMPLER_NORMALS : 0) |
+						(material->hasTexture(F3D_TEXTURE_HEIGHT) ? F3D_SHADER_UNIFORM_SAMPLER_HEIGHT : 0),
+						material->shadingFlags()
+					};
+					auto prog = getProgram(mask.mask);
+					if (prog == nullptr) {
+						prog = new f3d::core::prog::DefaultProgram(physical, device, mask);
+						prog->initVkPipeline(vk_renderpass, 0);
+						setProgram(prog);
+					}
+				}
+				
+				for (auto it = obj->getChildren().begin(); it != obj->getChildren().end(); ++it)
+					makeNodeProgram(scene, *it);
+			}
+
+
+			void					SimpleRenderPass::cmdDrawObject(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj) {
 				if (obj == nullptr)
 					return;
 
@@ -238,27 +270,41 @@ namespace f3d {
 					cmdDrawObject(cmd, scene, *it);
 			}
 
-			void						SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) 
+			void							SimpleRenderPass::cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh) 
 			{
-				uint64_t				mask = _programs.begin()->first;
-				f3d::tree::MeshImpl&	m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
-				f3d::tree::CameraImpl&	cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
-				f3d::tree::TextureImpl*	texture = nullptr;
+				f3d::tree::MeshImpl&		m = dynamic_cast<f3d::tree::MeshImpl&>(mesh);
+				f3d::tree::CameraImpl&		cam = dynamic_cast<f3d::tree::CameraImpl&>( * scene->getCamera().get());
+				f3d::tree::TextureImpl*		texture = nullptr;
+				f3d::tree::Material*		material = scene->getMaterialByName(m.getMaterialName());
+				
+				if (material != nullptr)
+				{
+					//Compute mask to render this mesh
+					ProgramMask					mask = {
+						_shaders_common |
+						(mesh.numNormals() > 0 ? F3D_SHADER_ATTR_NORMAL : 0) |
+						//(mesh.numColor() > 0 ? F3D_SHADER_ATTR_COLOR : 0) |
+						(mesh.numUV() > 0 ? F3D_SHADER_ATTR_UV : 0) | 
+						(material->hasTexture(F3D_TEXTURE_AMBIENT) ? F3D_SHADER_UNIFORM_SAMPLER_AMBIENT : 0) |
+						(material->hasTexture(F3D_TEXTURE_DIFFUSE) ? F3D_SHADER_UNIFORM_SAMPLER_DIFFUSE : 0) |
+						(material->hasTexture(F3D_TEXTURE_SPECULAR) ? F3D_SHADER_UNIFORM_SAMPLER_SPECULAR : 0) | 
+						(material->hasTexture(F3D_TEXTURE_EMISSIVE) ? F3D_SHADER_UNIFORM_SAMPLER_EMISSIVE : 0) |
+						(material->hasTexture(F3D_TEXTURE_NORMALS) ? F3D_SHADER_UNIFORM_SAMPLER_NORMALS : 0) |
+						(material->hasTexture(F3D_TEXTURE_HEIGHT) ? F3D_SHADER_UNIFORM_SAMPLER_HEIGHT : 0),
+						material->shadingFlags()
+					};
 
-				f3d::tree::Material* material = scene->getMaterialByName(m.getMaterialName());
-				if (material != nullptr) {
-
-					auto prog = getProgram(mask);
+					auto prog = getProgram(mask.mask);
 					if (prog != nullptr) {
-						//std::cout << "Using combination: " << std::hex << prog->getMask() << std::endl;
+						// std::cout << "Using combination: " << std::hex << mask.mask << std::endl;
 						prog->drawToCommandBuffer(cmd, mesh, *scene);
 					}
 					else {
-						std::cout << "Unknown combination: " << std::hex << mask << std::endl;
-					}
+						std::cout << "Unknown combination: " << std::hex << mask.mask << std::endl;
+					}	
 				}
-
 			}
-		}
-	}
-}
+
+		} // renderpass::
+	} // core::
+} // f3d::

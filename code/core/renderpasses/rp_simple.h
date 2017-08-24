@@ -41,6 +41,8 @@ namespace f3d {
 				void												initRenderPass();
 				void												initViews();
 				void												initFramebuffers();
+				void												updateRenderState(std::shared_ptr< f3d::tree::Scene > scene);
+				void												makeNodeProgram(std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj);
 				void												cmdDrawObject(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Node* obj);
 				void												cmdDrawMesh(VkCommandBuffer cmd, std::shared_ptr< f3d::tree::Scene > scene, f3d::tree::Mesh& mesh);
 			private:
@@ -57,7 +59,7 @@ namespace f3d {
 				VkFormat											depth_vk_format; //!< Depth buffer format
 
 				std::stack<glm::mat4>								_matrix; //!< World transformation matrix stack. Used to reproduce glPushMatrix & glPopMatrix
-
+				ShaderInterfaceTypeFlags							_shaders_common; // Default shader interface mask
 			};
 		}
 	}

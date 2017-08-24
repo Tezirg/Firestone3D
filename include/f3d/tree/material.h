@@ -31,7 +31,8 @@ namespace f3d {
 			ColorTypeFlags			colorFlags() const;
 
 			void					setShading(const eShadingType& type);
-			eShadingType			shadingFlags(void) const;
+			void					unsetShading(const eShadingType& type);
+			ShadingTypeFlags		shadingFlags(void) const;
 
 			float					getShininess(void) const;
 			void					setShininess(const float value);
@@ -41,17 +42,18 @@ namespace f3d {
 			void					addTexture(f3d::tree::Texture *texture);
 			void					removeTexture(f3d::tree::Texture *texture);
 			void					removeTexture(TextureTypeFlags type);
+			bool					hasTexture(TextureTypeFlags type) const;
 			f3d::tree::Texture *	getTexture(const TextureTypeFlags type) const;
 			TextureTypeFlags		textureFlags() const;
 		protected:
-			std::string							_name;
-			float								_shininess;
-			float								_roughness;
-			std::map<eColorType, glm::vec4>		_colors;
-			ColorTypeFlags						_color_mask;
-			eShadingType						_shading;
+			std::string											_name;
+			float												_shininess;
+			float												_roughness;
+			std::map<eColorType, glm::vec4>						_colors;
+			ColorTypeFlags										_color_mask;
 			std::map< TextureTypeFlags, f3d::tree::Texture *>	_textures;
-			TextureTypeFlags					_texture_mask;
+			ShadingTypeFlags									_shading;
+			TextureTypeFlags									_texture_mask;
 		};
 	}// tree::
 }// f3d::
